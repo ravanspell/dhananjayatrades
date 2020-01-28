@@ -8,15 +8,18 @@ router.post('/add', async (req, res) => {
     if (!req.body.hasOwnProperty('orderNo')) {
         while (!Boolean(orderId)) {
             let orderid = Math.floor(Math.random() * 99999);
-            let orders = await Order.find({ orderId: orderid });
+            let orders = await Status.find({ _id: orderid });
             if (orders.length < 1) {
-                let orderitem = new Order({
-                    orderId: orderid
+                let orderitem = new Status({
+                    _id: orderid,
+                    gotPriceTotal: 0,
+                    total: 0,
+                    profit: 0
                 });
                 let orderStatus = await orderitem.save(orderitem)
                 console.log(orderStatus);
-                orderId = orderStatus.orderId;
-                res.status(200).json({ status: true, response: orderStatus.orderId });
+                orderId = orderStatus._id;
+                res.status(200).json({ status: true, response: orderStatus._id });
             }
         }
     } else {
@@ -33,10 +36,11 @@ router.post('/add', async (req, res) => {
             }
         })
         try {
-            await removeOrderData(orderNo);
-            await reduceStrock(newOrder);
-            await updateOrderStatus(newOrder, orderNo);
-            let status = await Order.insertMany(newOrder);
+            let [status] = await Promise.all([
+                Order.insertMany(newOrder),
+                reduceStrock(newOrder),
+                updateOrderStatus(newOrder, orderNo)
+            ]);
             res.status(200).json({ status: true });
         } catch (error) {
             console.log(error);
@@ -73,7 +77,7 @@ const updateOrderStatus = async (order, orderNo) => {
             total: total,
             profit: (total - gotPriceTotal),
         });
-        await statusData.save(statusData);
+        await statusData.updateOne(statusData);
     } catch (error) {
         console.log(error);
     }
