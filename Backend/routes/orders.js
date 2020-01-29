@@ -36,7 +36,7 @@ router.post('/add', async (req, res) => {
             }
         })
         try {
-            let [status] = await Promise.all([
+            await Promise.all([
                 Order.insertMany(newOrder),
                 reduceStrock(newOrder),
                 updateOrderStatus(newOrder, orderNo)
@@ -100,4 +100,13 @@ router.get('/:orderId', async (req, res) => {
         res.status(400).json({ status: false, error: error });
     }
 });
+router.get('/cancle', async (req, res) => {
+    try {
+        await Order.deleteOne({ _id: req.body.orderId });
+        res.status(200).json({ status: true, message: 'Order has been cancled' });
+    } catch (error) {
+        res.status(400).json({ status: false, error: error.message });
+    }
+
+})
 module.exports = router;
