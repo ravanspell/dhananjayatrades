@@ -4,33 +4,25 @@ const Items = require('../models/items.model');
 const Status = require('../models/status.model');
 
 router.post('/add', async (req, res) => {
-    let orderId = 0;
     if (!req.body.hasOwnProperty('orderNo')) {
-        while (!Boolean(orderId)) {
-            let orderid = Math.floor(Math.random() * 99999);
-            let orders = await Status.find({ _id: orderid });
-            if (orders.length < 1) {
-                let orderitem = new Status({
-                    _id: orderid,
-                    gotPriceTotal: 0,
-                    total: 0,
-                    profit: 0
-                });
-                let orderStatus = await orderitem.save(orderitem)
-                console.log(orderStatus);
-                orderId = orderStatus._id;
-                res.status(200).json({ status: true, response: orderStatus._id });
-            }
-        }
+        const newOrderId = await createNewOrderId();
+        res.status(200).json({ status: true, response: newOrderId });
     } else {
         const { orderItems, orderNo, totalPrice, totalGotPrice } = req.body;
         try {
+            let statusData = new Status({
+                _id: `${orderNo}`,
+                gotPriceTotal: totalGotPrice,
+                total: totalPrice,
+                profit: (totalPrice - totalGotPrice),
+            });
             await Promise.all([
                 Order.insertMany(orderItems),
+                statusData.updateOne(statusData),
                 reduceStrock(orderItems),
-                updateOrderStatus(orderNo, totalPrice, totalGotPrice)
             ]);
-            res.status(200).json({ status: true });
+            const nextOrderId = await createNewOrderId();
+            res.status(200).json({ status: true, response: nextOrderId });
         } catch (error) {
             console.log(error);
         }
@@ -51,27 +43,32 @@ const reduceStrock = async (newOrder) => {
     }
 }
 
-const updateOrderStatus = async (orderNo, totalPrice, totalGotPrice) => {
-    console.log(`${orderNo}  total:${totalPrice}, totalGotPrice:${totalGotPrice}`)
-    try {
-        let statusData = new Status({
-            _id: `${orderNo}`,
-            gotPriceTotal: totalGotPrice,
-            total: totalPrice,
-            profit: (totalPrice - totalGotPrice),
-        });
-        await statusData.updateOne(statusData);
-    } catch (error) {
-        console.log(error);
-    }
-}
-
 const getItem = async (barcode) => {
     try {
         let itemsData = await Items.findOne({ _id: barcode });
         return itemsData;
     } catch (error) {
         console.log(error);
+    }
+}
+
+const createNewOrderId = async () => {
+    let orderId = 0;
+    while (!Boolean(orderId)) {
+        let orderid = Math.floor(Math.random() * 99999);
+        let orders = await Status.find({ _id: orderid });
+        if (orders.length < 1) {
+            let orderitem = new Status({
+                _id: orderid,
+                gotPriceTotal: 0,
+                total: 0,
+                profit: 0
+            });
+            let orderStatus = await orderitem.save(orderitem)
+            console.log(orderStatus);
+            orderId = orderStatus._id;
+            return orderStatus._id
+        }
     }
 }
 router.get('/:orderId', async (req, res) => {

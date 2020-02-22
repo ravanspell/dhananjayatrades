@@ -14,11 +14,12 @@ class App extends Component {
 
   finishOrder = () => {
     let order = this.state.order;
-    axios.post("http://localhost:3800/api/orders/add", order).then(resolve => {
+    axios.post("http://dhananjayatrades.com/api/orders/add", order).then(resolve => {
       console.log(resolve);
+      const { data } = resolve;
       localStorage.clear();
       this.setState({ order: '' });
-      this.initOrder();
+      this.initOrderData(data);
     })
   }
   updateCounts = (order) => {
@@ -33,10 +34,10 @@ class App extends Component {
       } else {
         totalPrice =
           totalPrice +
-          item.unitPrice * item.amount;
+          (item.unitPrice * item.amount);
       }
       itemsAmount = itemsAmount + 1;
-      totalGotPrice = totalGotPrice + item.gotPrice;
+      totalGotPrice = totalGotPrice + (item.gotPrice * item.amount);
     });
     order.itemsAmount = itemsAmount;
     order.totalPrice = totalPrice;
@@ -56,18 +57,22 @@ class App extends Component {
     if (currantOrder != null) {
       this.setState({ order: JSON.parse(currantOrder) });
     } else {
-      axios.post("http://localhost:3800/api/orders/add", {}).then(resolve => {
+      axios.post("http://dhananjayatrades.com/api/orders/add", {}).then(resolve => {
         const { data } = resolve;
-        localStorage.setItem("order", `{"orderNo":${data.response}, "orderItems": [], "itemsAmount": 0, "totalPrice": 0, "totalGotPrice": 0}`);
-        this.setState({ order: { orderNo: data.response, orderItems: {}, itemsAmount: 0, totalPrice: 0 } });
+        this.initOrderData(data);
       }).catch(error => {
         console.log(error);
       });
     }
   }
+
+  initOrderData = (data) => {
+    localStorage.setItem("order", `{"orderNo":${data.response}, "orderItems": [], "itemsAmount": 0, "totalPrice": 0, "totalGotPrice": 0}`);
+    this.setState({ order: { orderNo: data.response, orderItems: {}, itemsAmount: 0, totalPrice: 0 } });
+  }
   deleteOrderItem = (orderId) => {
     let order = this.state.order;
-    order.orderItems = order.orderItems.filter(orderItem => orderItem.barcode != orderId);
+    order.orderItems = order.orderItems.filter(orderItem => orderItem.barcode !== orderId);
     this.setState({ order: this.updateCounts(order) });
     localStorage.setItem('order', JSON.stringify(order));
   }
