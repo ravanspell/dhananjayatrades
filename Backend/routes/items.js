@@ -14,14 +14,15 @@ router.route('/test').get((req, res) => {
 
 router.route('/search').get(async (req, res) => {
   try {
-    let items = await Items.find({}, { name: 1, t: 1, r: 1, w: 1 });
+    let items = await Items.find({}, { name: 1, t: 1, r: 1, w: 1, gotPrice: 1 });
     let newItems = items.map(searchItem => {
       return {
         id: searchItem._id,
         value: searchItem.name,
         tPrice: searchItem.t,
         wPrice: searchItem.w,
-        rPrice: searchItem.r
+        rPrice: searchItem.r,
+        gotPrice: searchItem.gotPrice
       }
     })
     res.status(200).json(newItems);
@@ -58,4 +59,5 @@ router.route('/empty/stockes').get(async (req, res) => {
     res.status(400).json(error);
   }
 });
+
 module.exports = router;

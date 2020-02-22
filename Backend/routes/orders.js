@@ -23,23 +23,12 @@ router.post('/add', async (req, res) => {
             }
         }
     } else {
-        const { orderItems, orderNo } = req.body;
-        console.log(orderItems);
-        let newOrder = Object.keys(orderItems).map(item => {
-            return {
-                barcode: orderItems[item].id,
-                orderId: orderItems[item].orderId,
-                itemName: orderItems[item].itemName,
-                unitPrice: orderItems[item].unitPrice,
-                amount: orderItems[item].amount,
-                total: orderItems[item].total
-            }
-        })
+        const { orderItems, orderNo, totalPrice, totalGotPrice } = req.body;
         try {
             await Promise.all([
-                Order.insertMany(newOrder),
-                reduceStrock(newOrder),
-                updateOrderStatus(newOrder, orderNo)
+                Order.insertMany(orderItems),
+                reduceStrock(orderItems),
+                updateOrderStatus(orderNo, totalPrice, totalGotPrice)
             ]);
             res.status(200).json({ status: true });
         } catch (error) {
@@ -62,20 +51,14 @@ const reduceStrock = async (newOrder) => {
     }
 }
 
-const updateOrderStatus = async (order, orderNo) => {
+const updateOrderStatus = async (orderNo, totalPrice, totalGotPrice) => {
+    console.log(`${orderNo}  total:${totalPrice}, totalGotPrice:${totalGotPrice}`)
     try {
-        let gotPriceTotal = 0;
-        let total = 0;
-        for (const item of order) {
-            let itemData = await getItem(item.barcode);
-            gotPriceTotal = gotPriceTotal + itemData.gotPrice;
-            total = total + item.total;
-        }
         let statusData = new Status({
             _id: `${orderNo}`,
-            gotPriceTotal: gotPriceTotal,
-            total: total,
-            profit: (total - gotPriceTotal),
+            gotPriceTotal: totalGotPrice,
+            total: totalPrice,
+            profit: (totalPrice - totalGotPrice),
         });
         await statusData.updateOne(statusData);
     } catch (error) {
@@ -108,5 +91,5 @@ router.get('/cancle', async (req, res) => {
         res.status(400).json({ status: false, error: error.message });
     }
 
-})
+});
 module.exports = router;

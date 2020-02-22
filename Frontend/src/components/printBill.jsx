@@ -2,7 +2,9 @@ import React, { Component } from "react";
 import { Button, Modal } from "react-bootstrap";
 
 class PrintBill extends Component {
-  state = {};
+  handleKeyDown = e => {
+    console.log(e.keyCode);
+  };
   printx = () => {
     var mywindow = window.open("", "PRINT", "height=800,width=600");
 
@@ -56,7 +58,10 @@ class PrintBill extends Component {
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <div className="row justify-content-center">
+          <div
+            className="row justify-content-center"
+            onKeyDown={this.handleKeyDown}
+          >
             <div className="col-auto">
               <div id="bill">
                 <table id="records_table" border="1">
@@ -82,20 +87,15 @@ class PrintBill extends Component {
                   <tbody>
                     {Object.keys(this.props.order.orderItems || {}).map(
                       item => (
-                        <tr key={this.props.order?.orderItems[item].id}>
+                        <tr key={this.props.order?.orderItems[item].barcode}>
                           <td>{this.props.order.orderItems[item].itemName}</td>
                           <td>
                             {this.props?.order.orderItems[item].customPrice > 0
                               ? this.props?.order.orderItems[item].customPrice
-                              : this.props?.order.orderItems[item].price}
+                              : this.props?.order.orderItems[item].unitPrice}
                           </td>
                           <td>{this.props.order.orderItems[item].amount}</td>
-                          <td>
-                            {(this.props?.order.orderItems[item].customPrice > 0
-                              ? this.props?.order.orderItems[item].customPrice
-                              : this.props?.order.orderItems[item].price) *
-                              this.props?.order.orderItems[item].amount}
-                          </td>
+                          <td>{this.props?.order.orderItems[item].total}</td>
                         </tr>
                       )
                     )}

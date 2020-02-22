@@ -3,7 +3,7 @@ import { Button, Modal, Form } from "react-bootstrap";
 class PricingBox extends Component {
   state = {
     customPrice: 0,
-    priceType: "rPrice",
+    priceType: "tPrice",
     itemAmount: 0
   };
   updateOrder = orderItem => {
@@ -14,13 +14,18 @@ class PricingBox extends Component {
     let order = JSON.parse(localStorage.getItem("order"));
     const { rprice } = this.props;
     let newItem = {
-      id: rprice.id,
+      barcode: rprice.id,
       itemName: rprice.value,
       customPrice: this.state.customPrice,
       amount: this.state.itemAmount,
-      price: rprice[this.state.priceType]
+      unitPrice: rprice[this.state.priceType],
+      gotPrice: rprice.gotPrice,
+      orderId: order.orderNo,
+      total:
+        (this.state.customPrice || rprice[this.state.priceType]) *
+        this.state.itemAmount
     };
-    order.orderItems[rprice.id] = newItem;
+    order.orderItems.push(newItem);
     this.updateOrder(order);
     localStorage.setItem("order", JSON.stringify(order));
     this.setState({ customPrice: 0 });

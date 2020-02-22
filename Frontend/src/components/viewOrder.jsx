@@ -109,21 +109,16 @@ class ViewOrder extends Component {
                       <td>
                         {this.props?.order.orderItems[item].customPrice > 0
                           ? this.props?.order.orderItems[item].customPrice
-                          : this.props?.order.orderItems[item].price}
+                          : this.props?.order.orderItems[item].unitPrice}
                       </td>
                       <td>{this.props?.order.orderItems[item].amount}</td>
-                      <td>
-                        {(this.props?.order.orderItems[item].customPrice > 0
-                          ? this.props?.order.orderItems[item].customPrice
-                          : this.props?.order.orderItems[item].price) *
-                          this.props?.order.orderItems[item].amount}
-                      </td>
+                      <td>{this.props?.order.orderItems[item].total}</td>
                       <td className="text-center">
                         <i className="fa fa-edit mr-2"></i>
                         <button
                           onClick={e => {
                             this.deleteItemFromList(
-                              this.props?.order.orderItems[item].id
+                              this.props?.order.orderItems[item].barcode
                             );
                           }}
                         >

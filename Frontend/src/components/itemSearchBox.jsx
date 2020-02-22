@@ -11,7 +11,7 @@ class SearchBox extends Component {
   };
   texts = {};
   componentWillMount() {
-    axios.get("http://dhananjayatrades.com/api/items/search").then(resolve => {
+    axios.get("http://localhost:3800/api/items/search").then(resolve => {
       this.texts = resolve;
       console.log(resolve);
     });
