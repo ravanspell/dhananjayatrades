@@ -51,6 +51,12 @@ class SearchBox extends Component {
   modalClose = () => {
     this.setState({ showPricingBox: false });
   };
+  //CHANGE ITEM NAME
+  changeCurrantItemName = newName => {
+    let currantItem = this.state.currantItem;
+    currantItem.value = newName;
+    this.setState({ currantItem: currantItem });
+  };
 
   closeDropDown = () => {
     this.setState({ suggestions: [] });
@@ -118,6 +124,7 @@ class SearchBox extends Component {
           show={this.state.showPricingBox}
           onHide={this.modalClose}
           rprice={this.state.currantItem}
+          changeItemName={this.changeCurrantItemName}
           updateOrder={this.props.updateOrder}
         />
       </Fragment>

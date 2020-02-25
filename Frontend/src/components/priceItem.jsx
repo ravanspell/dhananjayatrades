@@ -4,8 +4,7 @@ class PricingBox extends Component {
   state = {
     customPrice: 0,
     priceType: "tPrice",
-    itemAmount: 0,
-    customItemName: ""
+    itemAmount: 0
   };
   updateOrder = orderItem => {
     this.props.updateOrder(orderItem);
@@ -17,7 +16,7 @@ class PricingBox extends Component {
     let newItem = {
       id: order.orderItems.length + 1,
       barcode: rprice.id,
-      itemName: this.state.customItemName || rprice.value,
+      itemName: rprice.value,
       customPrice: this.state.customPrice,
       amount: this.state.itemAmount,
       unitPrice: rprice[this.state.priceType],
@@ -44,10 +43,6 @@ class PricingBox extends Component {
 
   changeItemAmount = event => {
     this.setState({ itemAmount: event.target.value });
-  };
-
-  changeCustomItemName = event => {
-    this.setState({ customItemName: event.target.value });
   };
 
   render() {
@@ -81,8 +76,8 @@ class PricingBox extends Component {
             <Form.Group controlId="formBasicCustomItemName">
               <Form.Control
                 type="text"
-                placeholder={this.props.rprice?.value}
-                onChange={this.changeCustomItemName}
+                value={this.props.rprice?.value}
+                onChange={e => this.props.changeItemName(e.target.value)}
               />
             </Form.Group>
             <Form.Group controlId="formBasicCustomValue">
