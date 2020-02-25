@@ -58,7 +58,7 @@ class PricingBox extends Component {
         aria-labelledby="contained-modal-title-vcenter"
         centered
       >
-        <Modal.Header closeButton>
+        <Modal.Header>
           <Modal.Title id="contained-modal-title-vcenter">
             <h6>{this.props.rprice?.value}</h6>
           </Modal.Title>
