@@ -16,12 +16,12 @@ router.post('/add', async (req, res) => {
                 total: totalPrice,
                 profit: (totalPrice - totalGotPrice),
             });
-            await Promise.all([
+            const [nextOrderId] = await Promise.all([
+                createNewOrderId(),
                 Order.insertMany(orderItems),
                 statusData.updateOne(statusData),
                 reduceStrock(orderItems),
             ]);
-            const nextOrderId = await createNewOrderId();
             res.status(200).json({ status: true, response: nextOrderId });
         } catch (error) {
             console.log(error);
