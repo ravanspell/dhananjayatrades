@@ -13,7 +13,6 @@ class SearchBox extends Component {
   componentWillMount() {
     axios.get("http://dhananjayatrades.com/api/items/search").then(resolve => {
       this.texts = resolve;
-      console.log(resolve);
     });
   }
 
@@ -26,13 +25,16 @@ class SearchBox extends Component {
 
     fontSize: "10pt",
     listStyleType: "none",
-    padding: 0
+    padding: "2px"
   };
 
   dropDown = {
     position: "relative",
     display: "inline-block"
   };
+
+  dropDownListItem = {};
+
   searchItem = value => {
     let suggestions = [];
 
@@ -56,15 +58,20 @@ class SearchBox extends Component {
   handleKeyDown = e => {
     const { cursor, suggestions } = this.state;
     // arrow up/down button should select next/previous list element
-    if (e.keyCode === 38 && cursor > 0) {
+    let suggestionsLength = suggestions.length;
+    if (e.keyCode === 38) {
+      e.preventDefault();
+      if (cursor < 1) this.setState({ cursor: suggestionsLength });
       this.setState(prevState => ({
         cursor: prevState.cursor - 1
       }));
-    } else if (e.keyCode === 40 && cursor < suggestions.length - 1) {
+    } else if (e.keyCode === 40) {
+      e.preventDefault();
+      if (cursor > suggestionsLength - 2) this.setState({ cursor: -1 });
       this.setState(prevState => ({
         cursor: prevState.cursor + 1
       }));
-    } else if (e.key === "Enter" && this.state.suggestions.length > 0) {
+    } else if (e.keyCode === 13 && this.state.suggestions.length > 0) {
       this.setState({
         textBoxValue: "",
         showPricingBox: true,

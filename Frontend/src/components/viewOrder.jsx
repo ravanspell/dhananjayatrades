@@ -42,20 +42,20 @@ class ViewOrder extends Component {
                 <button
                   onClick={this.print}
                   type="button"
-                  className="btn btn-info mr-3"
+                  className="btn btn-dark mr-3"
                 >
                   <i className="fa fa-print">
                     <span className="ml-1">Print Bill</span>
                   </i>
                 </button>
-                <button type="button" className="btn btn-info mr-3">
+                <button type="button" className="btn btn-dark mr-3">
                   <i className="fa fa-check">
                     <span onClick={this.props.finishOrder} className="ml-1">
                       Finish Order
                     </span>
                   </i>
                 </button>
-                <button type="button" className="btn btn-info">
+                <button type="button" className="btn btn-dark">
                   <i className="fa fa-close">
                     <span className="ml-1">Cancle Order</span>
                   </i>
@@ -118,7 +118,7 @@ class ViewOrder extends Component {
                         <button
                           onClick={e => {
                             this.deleteItemFromList(
-                              this.props?.order.orderItems[item].barcode
+                              this.props?.order.orderItems[item].id
                             );
                           }}
                         >

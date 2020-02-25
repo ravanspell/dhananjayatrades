@@ -72,7 +72,7 @@ class App extends Component {
   }
   deleteOrderItem = (orderId) => {
     let order = this.state.order;
-    order.orderItems = order.orderItems.filter(orderItem => orderItem.barcode !== orderId);
+    order.orderItems = order.orderItems.filter(orderItem => orderItem.id !== orderId);
     this.setState({ order: this.updateCounts(order) });
     localStorage.setItem('order', JSON.stringify(order));
   }

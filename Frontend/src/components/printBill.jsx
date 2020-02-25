@@ -94,14 +94,14 @@ class PrintBill extends Component {
                               ? this.props?.order.orderItems[item].customPrice
                               : this.props?.order.orderItems[item].unitPrice}
                           </td>
-                          <td>{this.props.order.orderItems[item].amount}</td>
+                          <td>{this.props?.order.orderItems[item].amount}</td>
                           <td>{this.props?.order.orderItems[item].total}</td>
                         </tr>
                       )
                     )}
 
                     <tr>
-                      <td>1 items</td>
+                      <td>{this.props?.order.itemsAmount} items</td>
                       <td colSpan="2">
                         <b> Total Cost </b>
                       </td>
