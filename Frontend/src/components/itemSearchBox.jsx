@@ -81,7 +81,10 @@ class SearchBox extends Component {
       this.setState({
         textBoxValue: "",
         showPricingBox: true,
-        currantItem: this.state.suggestions[this.state.cursor],
+        currantItem: Object.assign(
+          {},
+          this.state.suggestions[this.state.cursor]
+        ),
         suggestions: []
       });
     }
