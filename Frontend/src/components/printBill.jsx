@@ -6,6 +6,24 @@ class PrintBill extends Component {
     console.log(e.keyCode);
   };
   printx = () => {
+    let str = "";
+    Object.keys(this.props.order.orderItems || {}).forEach(
+      item =>
+        (str =
+          str +
+          `<tr key=${this.props.order?.orderItems[item].barcode}>
+          <td rowspan="1">${this.props.order.orderItems[item].itemName}</td>
+          <td>
+            ${
+              this.props?.order.orderItems[item].customPrice > 0
+                ? this.props?.order.orderItems[item].customPrice
+                : this.props?.order.orderItems[item].unitPrice
+            }
+          </td>
+          <td>${this.props?.order.orderItems[item].amount}</td>
+          <td>${this.props?.order.orderItems[item].total}</td>
+        </tr>`)
+    );
     var mywindow = window.open("", "PRINT", "height=800,width=600");
 
     mywindow.document.write(`
@@ -31,9 +49,66 @@ class PrintBill extends Component {
       <div class="row">
         <div class="col-sm-2" >
         </div>
-        <div class="col-sm-8" >`);
-    mywindow.document.write(document.getElementById("bill").innerHTML);
-    mywindow.document.write(`</div>
+        <div class="col-sm-8" >
+        <table id="records_table" border="1">
+        <thead>
+          <tr>
+            <th colSpan="3"> Dhananjaya Trade Center</th>
+            <th> Order ${this.props.order?.orderNo}</th>
+          </tr>
+          <tr>
+            <th colSpan="4">
+              193/A, Diyawala, Kirindiwela
+              <br /> TP-033.2267558 Date- 31-12-2019
+            </th>
+          </tr>
+
+          <tr>
+            <th>Purchase</th>
+            <th style = 'width:15%;'>Unit Price</th>
+            <th style = 'width:8%;'>Qty</th>
+            <th style = 'width:15%;'>Total</th>
+          </tr>
+        </thead>
+        <tbody>
+            ${str}
+            <tr>
+            <td>${this.props?.order.itemsAmount} items</td>
+            <td colSpan="2">
+              <b> Total Cost </b>
+            </td>
+            <td>
+              <b>${this.props?.order.totalPrice}</b>
+            </td>
+          </tr>
+          <tr>
+            <td></td>
+            <td colSpan="2">
+              <b> Cach </b>
+            </td>
+            <td>
+              <b>${this.props.paidamount}</b>
+            </td>
+          </tr>
+          <tr>
+            <td></td>
+            <td colSpan="2">
+              <b> Balance </b>
+            </td>
+            <td>
+              <b>
+                ${this.props.paidamount - this.props?.order.totalPrice}
+              </b>
+            </td>
+          </tr>
+          <tr>
+            <td colSpan="4">
+              <b> Thank You Come Again! </b>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
     <div class="col-sm-2" >
     </div>
   </div>
@@ -46,102 +121,11 @@ class PrintBill extends Component {
   };
   render() {
     return (
-      <Modal
-        {...this.props}
-        size="md"
-        aria-labelledby="contained-modal-title-vcenter"
-        centered
-      >
-        <Modal.Header closeButton>
-          <Modal.Title id="contained-modal-title-vcenter">
-            <h6>Bill</h6>
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <div
-            className="row justify-content-center"
-            onKeyDown={this.handleKeyDown}
-          >
-            <div className="col-auto">
-              <div id="bill">
-                <table id="records_table" border="1">
-                  <thead>
-                    <tr>
-                      <th colSpan="3"> Dhananjaya Trade Center</th>
-                      <th> Order {this.props.order?.orderNo}</th>
-                    </tr>
-                    <tr>
-                      <th colSpan="4">
-                        193/A, Diyawala, Kirindiwela
-                        <br /> TP-033.2267558 Date- 31-12-2019
-                      </th>
-                    </tr>
-
-                    <tr>
-                      <th>Purchase</th>
-                      <th style={{ width: "15%" }}>Unit Price</th>
-                      <th style={{ width: "8%" }}>Qty</th>
-                      <th style={{ width: "15%" }}>Total</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {Object.keys(this.props.order.orderItems || {}).map(
-                      item => (
-                        <tr key={this.props.order?.orderItems[item].barcode}>
-                          <td>{this.props.order.orderItems[item].itemName}</td>
-                          <td>
-                            {this.props?.order.orderItems[item].customPrice > 0
-                              ? this.props?.order.orderItems[item].customPrice
-                              : this.props?.order.orderItems[item].unitPrice}
-                          </td>
-                          <td>{this.props?.order.orderItems[item].amount}</td>
-                          <td>{this.props?.order.orderItems[item].total}</td>
-                        </tr>
-                      )
-                    )}
-
-                    <tr>
-                      <td>{this.props?.order.itemsAmount} items</td>
-                      <td colSpan="2">
-                        <b> Total Cost </b>
-                      </td>
-                      <td>
-                        <b>{this.props?.order.totalPrice}</b>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td></td>
-                      <td colSpan="2">
-                        <b> Cach </b>
-                      </td>
-                      <td>
-                        <b>{this.props.paidamount}</b>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td></td>
-                      <td colSpan="2">
-                        <b> Balance </b>
-                      </td>
-                      <td>
-                        <b>
-                          {this.props.paidamount - this.props?.order.totalPrice}
-                        </b>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td colSpan="4">
-                        <b> Thank You Come Again! </b>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-          <button onClick={this.printx}>print</button>
-        </Modal.Body>
-      </Modal>
+      <button onClick={this.printx} type="button" className="btn btn-dark mr-3">
+        <i className="fa fa-print">
+          <span className="ml-1">Print Bill</span>
+        </i>
+      </button>
     );
   }
 }
