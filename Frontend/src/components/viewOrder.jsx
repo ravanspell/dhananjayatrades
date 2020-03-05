@@ -5,16 +5,10 @@ import PrintBill from "./printBill";
 import Dashboard from "./dashboard";
 class ViewOrder extends Component {
   state = {
-    showPricingBox: false,
     paidAmount: 0
   };
   modalClose = () => {
     this.setState({ showPricingBox: false });
-  };
-  print = () => {
-    this.setState({
-      showPricingBox: true
-    });
   };
   setTotalPaidAmount = value => {
     this.setState({ paidAmount: value });
@@ -22,10 +16,6 @@ class ViewOrder extends Component {
   deleteItemFromList = orderId => {
     this.props.removeOrderItem(orderId);
   };
-
-  // finishOrder = ()=>{
-
-  // }
   render() {
     return (
       <Fragment>
@@ -39,15 +29,12 @@ class ViewOrder extends Component {
                 <SearchBox updateOrder={this.props.updateOrder} />
               </div>
               <div className="col-md-5">
-                <button
-                  onClick={this.print}
-                  type="button"
-                  className="btn btn-dark mr-3"
-                >
-                  <i className="fa fa-print">
-                    <span className="ml-1">Print Bill</span>
-                  </i>
-                </button>
+                <PrintBill
+                  //show={this.state.showPricingBox}
+                  //onHide={this.modalClose}
+                  order={this.props.order}
+                  paidamount={this.state.paidAmount}
+                />
                 <button type="button" className="btn btn-dark mr-3">
                   <i className="fa fa-check">
                     <span onClick={this.props.finishOrder} className="ml-1">
@@ -132,12 +119,7 @@ class ViewOrder extends Component {
             </Table>
           </div>
         </div>
-        <PrintBill
-          show={this.state.showPricingBox}
-          onHide={this.modalClose}
-          order={this.props.order}
-          paidamount={this.state.paidAmount}
-        />
+
         <Dashboard />
       </Fragment>
     );
