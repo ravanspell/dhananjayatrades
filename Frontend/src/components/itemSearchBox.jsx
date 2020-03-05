@@ -11,7 +11,7 @@ class SearchBox extends Component {
   };
   texts = {};
   componentWillMount() {
-    axios.get("http://dhananjayatrades.com/api/items/search").then(resolve => {
+    axios.get("http://localhost:3800/api/items/search").then(resolve => {
       this.texts = resolve;
     });
   }
@@ -81,7 +81,10 @@ class SearchBox extends Component {
       this.setState({
         textBoxValue: "",
         showPricingBox: true,
-        currantItem: this.state.suggestions[this.state.cursor],
+        currantItem: Object.assign(
+          {},
+          this.state.suggestions[this.state.cursor]
+        ),
         suggestions: []
       });
     }
