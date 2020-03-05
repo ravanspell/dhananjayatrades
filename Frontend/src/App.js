@@ -14,7 +14,7 @@ class App extends Component {
 
   finishOrder = () => {
     let order = this.state.order;
-    axios.post("http://dhananjayatrades.com/api/orders/add", order).then(resolve => {
+    axios.post("http://localhost:3800/api/orders/add", order).then(resolve => {
       console.log(resolve);
       const { data } = resolve;
       localStorage.clear();
@@ -57,7 +57,7 @@ class App extends Component {
     if (currantOrder != null) {
       this.setState({ order: JSON.parse(currantOrder) });
     } else {
-      axios.post("http://dhananjayatrades.com/api/orders/add", {}).then(resolve => {
+      axios.post("http://localhost:3800/api/orders/add", {}).then(resolve => {
         const { data } = resolve;
         this.initOrderData(data);
       }).catch(error => {
