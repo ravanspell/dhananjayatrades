@@ -22,9 +22,12 @@ class PricingBox extends Component {
       unitPrice: rprice[this.state.priceType],
       gotPrice: rprice.gotPrice,
       orderId: order.orderNo,
-      total:
-        (this.state.customPrice || rprice[this.state.priceType]) *
-        this.state.itemAmount
+      total: parseFloat(
+        (
+          (this.state.customPrice || rprice[this.state.priceType]) *
+          this.state.itemAmount
+        ).toFixed(2)
+      )
     };
     order.orderItems.push(newItem);
     this.updateOrder(order);
