@@ -1,7 +1,4 @@
 const router = require('express').Router();
-const Order = require('../models/orders.model');
-const Items = require('../models/items.model');
-const Status = require('../models/status.model');
 let mysqldb = require('../mysqldb');
 
 router.post('/add', async (req, res) => {
@@ -19,7 +16,7 @@ router.post('/add', async (req, res) => {
                                                 profit=${totalPrice - totalGotPrice} 
                                             WHERE order_id="${orderNo}"`;
 
-            let insertNewOrderItemsQuery = `INSERT INTO sale (barcode, order_id, order_name, unit_price, qty, total) 
+            let insertNewOrderItemsQuery = `INSERT INTO Sale (barcode, order_id, order_name, unit_price, qty, total) 
                                             VALUES ?`;
             const insertAllNewOrderItemsQuery = orderItems.map(item => {
                 return [
@@ -51,7 +48,7 @@ const removeOrderData = async (orderId) => {
 const reduceStrock = async (newOrder) => {
     try {
         await Promise.all(newOrder.map(orderItem => {
-            let updateAmountQuery = `UPDATE items SET stock = stock - ${orderItem.amount} WHERE barcode ='${orderItem.barcode}'`;
+            let updateAmountQuery = `UPDATE Items SET stock = stock - ${orderItem.amount} WHERE barcode ='${orderItem.barcode}'`;
             return mysqldb.query(updateAmountQuery);
         }));
     } catch (error) {
@@ -91,22 +88,22 @@ const createNewOrderId = async () => {
         }
     }
 }
-router.get('/:orderId', async (req, res) => {
-    try {
-        let orderId = req.params.orderId;
-        let orderData = await Order.find({ orderId: orderId });
-        res.status(200).json(orderData);
-    } catch (error) {
-        res.status(400).json({ status: false, error: error });
-    }
-});
-router.get('/cancle', async (req, res) => {
-    try {
-        await Order.deleteOne({ _id: req.body.orderId });
-        res.status(200).json({ status: true, message: 'Order has been cancled' });
-    } catch (error) {
-        res.status(400).json({ status: false, error: error.message });
-    }
+// router.get('/:orderId', async (req, res) => {
+//     try {
+//         let orderId = req.params.orderId;
+//         let orderData = await Order.find({ orderId: orderId });
+//         res.status(200).json(orderData);
+//     } catch (error) {
+//         res.status(400).json({ status: false, error: error });
+//     }
+// });
+// router.get('/cancle', async (req, res) => {
+//     try {
+//         await Order.deleteOne({ _id: req.body.orderId });
+//         res.status(200).json({ status: true, message: 'Order has been cancled' });
+//     } catch (error) {
+//         res.status(400).json({ status: false, error: error.message });
+//     }
 
-});
+// });
 module.exports = router;

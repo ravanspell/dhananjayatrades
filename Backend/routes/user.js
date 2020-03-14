@@ -1,10 +1,9 @@
 const router = require('express').Router();
 const jwt = require('jsonwebtoken');
-let User = require('../models/user.model');
 let mysqldb = require('../mysqldb');
 
 router.get('/t', async (req, res) => {
-    let query = "SELECT * FROM `user` ORDER BY id ASC";
+    let query = "SELECT * FROM User ORDER BY id ASC";
     try {
         const users = await mysqldb.query(query);
         res.json(users)

@@ -5,7 +5,6 @@ const cors = require('cors');
 require('dotenv').config();
 
 const port = process.env.PORT;
-//const dburl = process.env.DB_URL;
 
 const app = Express();
 //Middlewares
