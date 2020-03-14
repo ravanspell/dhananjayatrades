@@ -1,11 +1,16 @@
 const router = require('express').Router();
 const jwt = require('jsonwebtoken');
 let User = require('../models/user.model');
+let mysqldb = require('../mysqldb');
 
-router.route('/').get((req, res) => {
-    User.find()
-        .then(users => res.json(users))
-        .catch(error => res.status(400).json({ status: false, error: error }));
+router.get('/t', async (req, res) => {
+    let query = "SELECT * FROM `user` ORDER BY id ASC";
+    try {
+        const users = await mysqldb.query(query);
+        res.json(users)
+    } catch (error) {
+        res.status(400).json({ status: false, error: error.message })
+    }
 });
 
 router.route('/add').post((req, res) => {

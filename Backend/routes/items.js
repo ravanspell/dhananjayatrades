@@ -1,6 +1,7 @@
 const router = require('express').Router();
 let Items = require('../models/items.model');
 const items = require("./itemss.json");
+let mysqldb = require('../mysqldb');
 
 router.route('/').get((req, res) => {
   Items.find()
@@ -14,20 +15,22 @@ router.route('/test').get((req, res) => {
 
 router.route('/search').get(async (req, res) => {
   try {
-    let items = await Items.find({}, { name: 1, t: 1, r: 1, w: 1, gotPrice: 1 });
+    const query = "SELECT name,t,w,r,got_price,barcode FROM items;"
+    let items = await mysqldb.query(query); //await Items.find({}, { name: 1, t: 1, r: 1, w: 1, gotPrice: 1 });
+    //console.log(items);
     let newItems = items.map(searchItem => {
       return {
-        id: searchItem._id,
+        id: searchItem.barcode,
         value: searchItem.name,
         tPrice: searchItem.t,
         wPrice: searchItem.w,
         rPrice: searchItem.r,
-        gotPrice: searchItem.gotPrice
+        gotPrice: searchItem.got_price
       }
     })
     res.status(200).json(newItems);
   } catch (error) {
-    res.status(400).json({ status: false, error: error });
+    res.status(400).json({ status: false, error: error.message });
   }
 });
 

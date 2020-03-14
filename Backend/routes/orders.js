@@ -2,6 +2,7 @@ const router = require('express').Router();
 const Order = require('../models/orders.model');
 const Items = require('../models/items.model');
 const Status = require('../models/status.model');
+let mysqldb = require('../mysqldb');
 
 router.post('/add', async (req, res) => {
     if (!req.body.hasOwnProperty('orderNo')) {
@@ -10,16 +11,30 @@ router.post('/add', async (req, res) => {
     } else {
         const { orderItems, orderNo, totalPrice, totalGotPrice } = req.body;
         try {
-            let statusData = new Status({
-                _id: `${orderNo}`,
-                gotPriceTotal: totalGotPrice,
-                total: totalPrice,
-                profit: (totalPrice - totalGotPrice),
+
+            const orderStatusUpdateQuery = `UPDATE status 
+                                            SET ORDER_ID = "${orderNo}",
+                                                got_price_total= ${totalGotPrice},
+                                                total= ${totalPrice},
+                                                profit=${totalPrice - totalGotPrice} 
+                                            WHERE order_id="${orderNo}"`;
+
+            let insertNewOrderItemsQuery = `INSERT INTO sale (barcode, order_id, order_name, unit_price, qty, total) 
+                                            VALUES ?`;
+            const insertAllNewOrderItemsQuery = orderItems.map(item => {
+                return [
+                    item.barcode,
+                    `${orderNo}`,
+                    `${item.itemName}`,
+                    item.unitPrice,
+                    item.amount,
+                    item.total
+                ]
             });
             const [nextOrderId] = await Promise.all([
                 createNewOrderId(),
-                Order.insertMany(orderItems),
-                statusData.updateOne(statusData),
+                mysqldb.query(insertNewOrderItemsQuery, insertAllNewOrderItemsQuery),
+                mysqldb.query(orderStatusUpdateQuery), //udate order satus with total order profit and total got price
                 reduceStrock(orderItems),
             ]);
             res.status(200).json({ status: true, response: nextOrderId });
@@ -36,7 +51,8 @@ const removeOrderData = async (orderId) => {
 const reduceStrock = async (newOrder) => {
     try {
         await Promise.all(newOrder.map(orderItem => {
-            return Items.findByIdAndUpdate(orderItem.barcode, { $inc: { stock: (- orderItem.amount) } })
+            let updateAmountQuery = `UPDATE items SET stock = stock - ${orderItem.amount} WHERE barcode ='${orderItem.barcode}'`;
+            return mysqldb.query(updateAmountQuery);
         }));
     } catch (error) {
         console.log(error);
@@ -51,23 +67,27 @@ const getItem = async (barcode) => {
         console.log(error);
     }
 }
-
+const date = () => {
+    var currentDate = new Date();
+    var day = currentDate.getDate();
+    var month = currentDate.getMonth() + 1;
+    var year = currentDate.getFullYear();
+    return `${year}-${month}-${day}`;
+}
 const createNewOrderId = async () => {
     let orderId = 0;
     while (!Boolean(orderId)) {
         let orderid = Math.floor(Math.random() * 99999);
-        let orders = await Status.find({ _id: orderid });
+        // let orders = await Status.find({ _id: orderid });
+        let query = `SELECT * FROM Sale WHERE order_id ="${orderid}"`;
+        let orders = await mysqldb.query(query);
         if (orders.length < 1) {
-            let orderitem = new Status({
-                _id: orderid,
-                gotPriceTotal: 0,
-                total: 0,
-                profit: 0
-            });
-            let orderStatus = await orderitem.save(orderitem)
+            const statusTableQuery = `INSERT INTO status (order_id, date,got_price_total,total,profit) 
+                                      VALUES ("${orderid}",${date()},0,0,0)`;
+            let orderStatus = await mysqldb.query(statusTableQuery);
             console.log(orderStatus);
-            orderId = orderStatus._id;
-            return orderStatus._id
+            orderId = orderid
+            return orderId
         }
     }
 }

@@ -15,13 +15,13 @@ class PrintBill extends Component {
           <td rowspan="1">${this.props.order.orderItems[item].itemName}</td>
           <td>
             ${
-              this.props?.order.orderItems[item].customPrice > 0
+              parseFloat(this.props?.order.orderItems[item].customPrice > 0
                 ? this.props?.order.orderItems[item].customPrice
-                : this.props?.order.orderItems[item].unitPrice
+                : this.props?.order.orderItems[item].unitPrice).toFixed(2)
             }
           </td>
           <td>${this.props?.order.orderItems[item].amount}</td>
-          <td>${this.props?.order.orderItems[item].total}</td>
+          <td>${parseFloat(this.props?.order.orderItems[item].total).toFixed(2)}</td>
         </tr>`)
     );
     var mywindow = window.open("", "PRINT", "height=800,width=600");
