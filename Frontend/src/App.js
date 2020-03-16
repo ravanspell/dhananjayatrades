@@ -33,8 +33,8 @@ class App extends Component {
           item.customPrice * item.amount;
       } else {
         totalPrice =
-          totalPrice +
-          (item.unitPrice * item.amount);
+          Math.round(parseFloat(totalPrice +
+            (item.unitPrice * item.amount)) * 100) / 100;
       }
       itemsAmount = itemsAmount + 1;
       totalGotPrice = totalGotPrice + (item.gotPrice * item.amount);

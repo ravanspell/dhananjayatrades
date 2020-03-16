@@ -14,14 +14,14 @@ class PrintBill extends Component {
           `<tr key=${this.props.order?.orderItems[item].barcode}>
           <td rowspan="1">${this.props.order.orderItems[item].itemName}</td>
           <td>
-            ${
-              parseFloat(this.props?.order.orderItems[item].customPrice > 0
+            ${parseFloat(
+              this.props?.order.orderItems[item].customPrice > 0
                 ? this.props?.order.orderItems[item].customPrice
-                : this.props?.order.orderItems[item].unitPrice).toFixed(2)
-            }
+                : this.props?.order.orderItems[item].unitPrice
+            ).toFixed(2)}
           </td>
           <td>${this.props?.order.orderItems[item].amount}</td>
-          <td>${parseFloat(this.props?.order.orderItems[item].total).toFixed(2)}</td>
+          <td>${this.props?.order.orderItems[item].total.toFixed(2)}</td>
         </tr>`)
     );
     var mywindow = window.open("", "PRINT", "height=800,width=600");
@@ -78,7 +78,7 @@ class PrintBill extends Component {
               <b> Total Cost </b>
             </td>
             <td>
-              <b>${this.props?.order.totalPrice}</b>
+              <b>${parseFloat(this.props?.order.totalPrice).toFixed(2)}</b>
             </td>
           </tr>
           <tr>
@@ -97,7 +97,9 @@ class PrintBill extends Component {
             </td>
             <td>
               <b>
-                ${this.props.paidamount - this.props?.order.totalPrice}
+                ${parseFloat(
+                  this.props.paidamount - this.props?.order.totalPrice
+                ).toFixed(2)}
               </b>
             </td>
           </tr>

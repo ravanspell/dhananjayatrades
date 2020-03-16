@@ -67,7 +67,10 @@ class ViewOrder extends Component {
               <h6>Total Items: {this.props.order.itemsAmount}</h6>
             </div>
             <div className="col-md-4">
-              <h6>Total Amount: Rs.{this.props.order.totalPrice}</h6>
+              <h6>
+                Total Amount: Rs.
+                {parseFloat(this.props.order.totalPrice).toFixed(2)}
+              </h6>
             </div>
             <div className="col-md-4"></div>
           </div>
@@ -94,14 +97,20 @@ class ViewOrder extends Component {
                     <tr key={i}>
                       <td>{this.props?.order.orderItems[item].itemName}</td>
                       <td>
-                        {this.props?.order.orderItems[item].customPrice > 0
-                          ? this.props?.order.orderItems[item].customPrice
-                          : this.props?.order.orderItems[item].unitPrice}
+                        {parseFloat(
+                          this.props?.order.orderItems[item].customPrice > 0
+                            ? this.props?.order.orderItems[item].customPrice
+                            : this.props?.order.orderItems[item].unitPrice
+                        ).toFixed(2)}
                       </td>
                       <td>{this.props?.order.orderItems[item].amount}</td>
-                      <td>{this.props?.order.orderItems[item].total}</td>
+                      <td>
+                        {parseFloat(
+                          this.props?.order.orderItems[item].total
+                        ).toFixed(2)}
+                      </td>
                       <td className="text-center">
-                      <button
+                        <button
                           onClick={e => {
                             this.deleteItemFromList(
                               this.props?.order.orderItems[item].id
@@ -110,7 +119,7 @@ class ViewOrder extends Component {
                         >
                           <i className="fa fa-edit mr-2"></i>
                         </button>
-                        
+
                         <button
                           onClick={e => {
                             this.deleteItemFromList(

@@ -17,14 +17,15 @@ class PricingBox extends Component {
       id: order.orderItems.length + 1,
       barcode: rprice.id,
       itemName: rprice.value,
-      customPrice: this.state.customPrice,
+      customPrice: parseFloat(this.state.customPrice),
       amount: this.state.itemAmount,
-      unitPrice: rprice[this.state.priceType],
-      gotPrice: rprice.gotPrice,
+      unitPrice: parseFloat(rprice[this.state.priceType]),
+      gotPrice: parseFloat(rprice.gotPrice),
       orderId: order.orderNo,
-      total:
+      total: parseFloat(
         (this.state.customPrice || rprice[this.state.priceType]) *
-        this.state.itemAmount
+          this.state.itemAmount
+      )
     };
     order.orderItems.push(newItem);
     this.updateOrder(order);
