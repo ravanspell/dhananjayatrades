@@ -1,13 +1,36 @@
 import React, { Component } from "react";
 import { Button, Modal, Form } from "react-bootstrap";
+import { useDispatch } from "react-redux";
+import { createOrder } from "../actions";
 class PricingBox extends Component {
   state = {
     customPrice: 0,
     priceType: "tPrice",
     itemAmount: 0
   };
-  updateOrder = orderItem => {
-    this.props.updateOrder(orderItem);
+  // updateOrder = orderItem => {
+  //   this.props.updateOrder(orderItem);
+  // };
+
+  updateCounts = order => {
+    const dispatch = useDispatch();
+    let totalPrice = 0;
+    let itemsAmount = 0;
+    let totalGotPrice = 0;
+    (order.orderItems || []).forEach(item => {
+      if (item.customPrice > 0) {
+        totalPrice = totalPrice + item.customPrice * item.amount;
+      } else {
+        totalPrice = totalPrice + item.unitPrice * item.amount;
+      }
+      itemsAmount = itemsAmount + 1;
+      totalGotPrice = totalGotPrice + item.gotPrice * item.amount;
+    });
+    order.itemsAmount = itemsAmount;
+    order.totalPrice = totalPrice;
+    order.totalGotPrice = totalGotPrice;
+    dispatch(createOrder(order));
+    // return order
   };
   handleSubmit = event => {
     event.preventDefault();
@@ -27,7 +50,7 @@ class PricingBox extends Component {
         this.state.itemAmount
     };
     order.orderItems.push(newItem);
-    this.updateOrder(order);
+    this.updateCounts(order);
     localStorage.setItem("order", JSON.stringify(order));
     this.setState({ customPrice: 0, customItemName: "" });
     this.props.onHide();
