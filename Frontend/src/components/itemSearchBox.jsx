@@ -7,11 +7,11 @@ class SearchBox extends Component {
     suggestions: [],
     showPricingBox: false,
     currantItem: {},
-    textBoxValue: ""
+    textBoxValue: "",
   };
   texts = {};
   componentWillMount() {
-    axios.get("http://localhost:3800/api/items/search").then(resolve => {
+    axios.get("http://localhost:3800/api/items/search").then((resolve) => {
       this.texts = resolve;
     });
   }
@@ -22,29 +22,37 @@ class SearchBox extends Component {
     backgroundColor: "white",
     width: "100%",
     position: "absolute",
-
     fontSize: "10pt",
     listStyleType: "none",
-    padding: "2px"
+    padding: "2px",
+    active: {
+      backgroundColor: "#626189ed",
+      color: "white",
+    },
   };
 
+  showDropDown = {
+    display: "none",
+  };
   dropDown = {
     position: "relative",
-    display: "inline-block"
+    display: "inline-block",
   };
 
   dropDownListItem = {};
 
-  searchItem = value => {
+  searchItem = (value) => {
     let suggestions = [];
 
     if (value.length > 0) {
-      suggestions = this.texts.data.filter(item => item.value.includes(value));
+      suggestions = this.texts.data.filter((item) =>
+        item.value.includes(value)
+      );
     }
     this.setState({ suggestions: suggestions, cursor: 0, textBoxValue: value });
   };
 
-  clickMe = event => {
+  clickMe = (event) => {
     alert(event);
   };
 
@@ -52,7 +60,7 @@ class SearchBox extends Component {
     this.setState({ showPricingBox: false });
   };
   //CHANGE ITEM NAME
-  changeCurrantItemName = newName => {
+  changeCurrantItemName = (newName) => {
     let currantItem = this.state.currantItem;
     currantItem.value = newName;
     this.setState({ currantItem: currantItem });
@@ -61,21 +69,21 @@ class SearchBox extends Component {
   closeDropDown = () => {
     this.setState({ suggestions: [] });
   };
-  handleKeyDown = e => {
+  handleKeyDown = (e) => {
     const { cursor, suggestions } = this.state;
     // arrow up/down button should select next/previous list element
     let suggestionsLength = suggestions.length;
     if (e.keyCode === 38) {
       e.preventDefault();
       if (cursor < 1) this.setState({ cursor: suggestionsLength });
-      this.setState(prevState => ({
-        cursor: prevState.cursor - 1
+      this.setState((prevState) => ({
+        cursor: prevState.cursor - 1,
       }));
     } else if (e.keyCode === 40) {
       e.preventDefault();
       if (cursor > suggestionsLength - 2) this.setState({ cursor: -1 });
-      this.setState(prevState => ({
-        cursor: prevState.cursor + 1
+      this.setState((prevState) => ({
+        cursor: prevState.cursor + 1,
       }));
     } else if (e.keyCode === 13 && this.state.suggestions.length > 0) {
       this.setState({
@@ -85,7 +93,7 @@ class SearchBox extends Component {
           {},
           this.state.suggestions[this.state.cursor]
         ),
-        suggestions: []
+        suggestions: [],
       });
     }
   };
@@ -103,19 +111,25 @@ class SearchBox extends Component {
             onKeyDown={this.handleKeyDown}
             ref={this.refrs}
             value={this.state.textBoxValue}
-            onChange={e => {
+            onChange={(e) => {
               this.searchItem(e.target.value);
             }}
           />
 
-          <ul style={this.styles}>
+          <ul
+            style={
+              this.state.suggestions.length > 0
+                ? this.styles
+                : this.showDropDown
+            }
+          >
             {this.state.suggestions.map((item, i) => (
               <li
-                onClick={event => {
+                onClick={(event) => {
                   this.clickMe(item.id);
                 }}
                 key={item.id}
-                className={this.state.cursor === i ? "active" : null}
+                style={this.state.cursor === i ? this.styles.active : null}
               >
                 {item.value}
               </li>

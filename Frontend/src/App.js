@@ -14,6 +14,7 @@ class App extends Component {
 
   finishOrder = () => {
     let order = this.state.order;
+    order["date"] = this.currantDate();
     axios.post("http://localhost:3800/api/orders/add", order).then(resolve => {
       console.log(resolve);
       const { data } = resolve;
@@ -57,13 +58,18 @@ class App extends Component {
     if (currantOrder != null) {
       this.setState({ order: JSON.parse(currantOrder) });
     } else {
-      axios.post("http://localhost:3800/api/orders/add", {}).then(resolve => {
+      axios.post("http://localhost:3800/api/orders/add", { date: this.currantDate() }).then(resolve => {
         const { data } = resolve;
         this.initOrderData(data);
       }).catch(error => {
         console.log(error);
       });
     }
+  }
+
+  currantDate = () => {
+    const dateObj = new Date();
+    return `${dateObj.getFullYear()}-${dateObj.getMonth() + 1}-${dateObj.getDate()}`
   }
 
   initOrderData = (data) => {

@@ -1,12 +1,16 @@
 const router = require('express').Router();
 let mysqldb = require('../mysqldb');
 
+/**
+ * Add new order or finish and intiate new order 
+ */
 router.post('/add', async (req, res) => {
+    console.log(JSON.stringify(req.body));
     if (!req.body.hasOwnProperty('orderNo')) {
-        const newOrderId = await createNewOrderId();
+        const newOrderId = await createNewOrderId(req.body.date);
         res.status(200).json({ status: true, response: newOrderId });
     } else {
-        const { orderItems, orderNo, totalPrice, totalGotPrice } = req.body;
+        const { orderItems, orderNo, totalPrice, totalGotPrice, date } = req.body;
         try {
 
             const orderStatusUpdateQuery = `UPDATE status 
@@ -29,7 +33,7 @@ router.post('/add', async (req, res) => {
                 ]
             });
             const [nextOrderId] = await Promise.all([
-                createNewOrderId(),
+                createNewOrderId(date),
                 mysqldb.query(insertNewOrderItemsQuery, insertAllNewOrderItemsQuery),
                 mysqldb.query(orderStatusUpdateQuery), //udate order satus with total order profit and total got price
                 reduceStrock(orderItems),
@@ -64,23 +68,16 @@ const getItem = async (barcode) => {
         console.log(error);
     }
 }
-const date = () => {
-    var currentDate = new Date();
-    var day = currentDate.getDate();
-    var month = currentDate.getMonth() + 1;
-    var year = currentDate.getFullYear();
-    return `${year}-${month}-${day}`;
-}
-const createNewOrderId = async () => {
+
+const createNewOrderId = async (date) => {
     let orderId = 0;
     while (!Boolean(orderId)) {
         let orderid = Math.floor(Math.random() * 99999);
-        // let orders = await Status.find({ _id: orderid });
         let query = `SELECT * FROM Sale WHERE order_id ="${orderid}"`;
         let orders = await mysqldb.query(query);
         if (orders.length < 1) {
             const statusTableQuery = `INSERT INTO status (order_id, date,got_price_total,total,profit) 
-                                      VALUES ("${orderid}",${date()},0,0,0)`;
+                                      VALUES ("${orderid}","${date}",0,0,0)`;
             let orderStatus = await mysqldb.query(statusTableQuery);
             console.log(orderStatus);
             orderId = orderid

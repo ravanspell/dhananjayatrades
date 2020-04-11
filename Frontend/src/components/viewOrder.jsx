@@ -5,15 +5,13 @@ import PrintBill from "./printBill";
 import Dashboard from "./dashboard";
 class ViewOrder extends Component {
   state = {
-    paidAmount: 0
+    paidAmount: 0,
   };
-  modalClose = () => {
-    this.setState({ showPricingBox: false });
-  };
-  setTotalPaidAmount = value => {
+
+  setTotalPaidAmount = (value) => {
     this.setState({ paidAmount: value });
   };
-  deleteItemFromList = orderId => {
+  deleteItemFromList = (orderId) => {
     this.props.removeOrderItem(orderId);
   };
   render() {
@@ -53,7 +51,7 @@ class ViewOrder extends Component {
                 <input
                   className="form-control mr-sm-1"
                   placeholder="amount"
-                  onChange={e => {
+                  onChange={(e) => {
                     this.setTotalPaidAmount(e.target.value);
                   }}
                 />
@@ -101,8 +99,8 @@ class ViewOrder extends Component {
                       <td>{this.props?.order.orderItems[item].amount}</td>
                       <td>{this.props?.order.orderItems[item].total}</td>
                       <td className="text-center">
-                      <button
-                          onClick={e => {
+                        <button
+                          onClick={(e) => {
                             this.deleteItemFromList(
                               this.props?.order.orderItems[item].id
                             );
@@ -110,9 +108,9 @@ class ViewOrder extends Component {
                         >
                           <i className="fa fa-edit mr-2"></i>
                         </button>
-                        
+
                         <button
-                          onClick={e => {
+                          onClick={(e) => {
                             this.deleteItemFromList(
                               this.props?.order.orderItems[item].id
                             );
