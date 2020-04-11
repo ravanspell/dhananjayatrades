@@ -29,10 +29,10 @@ global.db = db;
 const user = require('./routes/user');
 const items = require('./routes/items');
 const orders = require('./routes/orders');
+
 app.use('/api/user', user);
 app.use('/api/items', items);
 app.use('/api/orders', orders);
-
 //start node js server
 app.listen(port, () => {
     console.log("server started");

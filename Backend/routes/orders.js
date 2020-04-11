@@ -1,5 +1,6 @@
 const router = require('express').Router();
-let mysqldb = require('../mysqldb');
+const mysqldb = require('../mysqldb');
+const auth = require('../middleware/auth');
 
 router.post('/add', async (req, res) => {
     if (!req.body.hasOwnProperty('orderNo')) {
@@ -34,7 +35,7 @@ router.post('/add', async (req, res) => {
                 mysqldb.query(orderStatusUpdateQuery), //udate order satus with total order profit and total got price
                 reduceStrock(orderItems),
             ]);
-            res.status(200).json({ status: true, response: nextOrderId });
+            return res.status(200).json({ status: true, response: nextOrderId });
         } catch (error) {
             console.log(error);
         }
