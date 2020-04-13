@@ -2,7 +2,6 @@ import React, { useState, Fragment, useEffect } from "react";
 import { Table, Nav } from "react-bootstrap";
 import SearchBox from "./itemSearchBox";
 import PrintBill from "./printBill";
-import Dashboard from "./dashboard";
 import { useSelector, useDispatch } from "react-redux";
 import { createOrder } from "../actions";
 import axios from "axios";
@@ -151,7 +150,7 @@ function ViewOrder(props) {
             <h6>Total Items: {order.itemsAmount}</h6>
           </div>
           <div className="col-md-4">
-            <h6>Total Amount: Rs.{order.totalPrice}</h6>
+            <h6>Total Amount: Rs.{parseFloat(order.totalPrice).toFixed(2)}</h6>
           </div>
           <div className="col-md-4"></div>
         </div>
@@ -200,8 +199,6 @@ function ViewOrder(props) {
           </Table>
         </div>
       </div>
-
-      <Dashboard />
     </Fragment>
   );
 }
