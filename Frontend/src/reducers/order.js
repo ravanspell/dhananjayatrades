@@ -1,16 +1,17 @@
 const order = {
-    orderNo: 0,
-    orderItems: [],
-    itemsAmount: 0,
-    totalPrice: 0,
-    totalGotPrice: 0
+    order: ''
 }
 const orderReducer = (state = order, action) => {
     switch (action.type) {
         case 'CREATE_ORDER':
-            return { ...state, orderNo: state.orderNo };
+            return { ...state, order: action.data };
         case 'REMOVE_ORDER':
-            return { order: '' }
+            return { order: '' };
+        case 'GET_ORDER':
+            return state;
+        default:
+            return state
+
     };
 };
 

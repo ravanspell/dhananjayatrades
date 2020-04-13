@@ -1,138 +1,180 @@
-import React, { Component, Fragment } from "react";
+import React, { useState, Fragment, useEffect } from "react";
 import PricingBox from "./priceItem";
 import axios from "axios";
-class SearchBox extends Component {
-  state = {
+function SearchBox(props) {
+  const [
+    {
+      suggestions,
+      showPricingBox,
+      currantItem,
+      textBoxValue,
+      cursor,
+      searchItems,
+    },
+    setLocalState,
+  ] = useState({
     cursor: 0,
     suggestions: [],
     showPricingBox: false,
     currantItem: {},
-    textBoxValue: ""
-  };
-  texts = {};
-  componentWillMount() {
-    axios.get("http://localhost:3800/api/items/search").then(resolve => {
-      this.texts = resolve;
+    textBoxValue: "",
+    searchItems: [],
+  });
+  const refrs = React.createRef();
+  useEffect(() => {
+    refrs.current.focus();
+    axios.get("http://localhost:3800/api/items/search").then((resolve) => {
+      setSearchItems(resolve.data);
     });
-  }
+  }, []);
 
-  refrs = React.createRef();
-  styles = {
+  const setSearchItems = (data) => {
+    setLocalState((currantState) => ({
+      ...currantState,
+      searchItems: data,
+    }));
+  };
+
+  const styles = {
     overflowY: "scroll",
     backgroundColor: "white",
     width: "100%",
     position: "absolute",
-
     fontSize: "10pt",
     listStyleType: "none",
-    padding: "2px"
+    padding: "2px",
+    active: {
+      backgroundColor: "#626189ed",
+      color: "white",
+    },
   };
 
-  dropDown = {
+  const showDropDown = {
+    display: "none",
+  };
+  const dropDown = {
     position: "relative",
-    display: "inline-block"
+    display: "inline-block",
   };
 
-  dropDownListItem = {};
-
-  searchItem = value => {
+  const searchItem = (value) => {
     let suggestions = [];
 
     if (value.length > 0) {
-      suggestions = this.texts.data.filter(item => item.value.includes(value));
+      suggestions = searchItems.filter((item) => item.value.includes(value));
     }
-    this.setState({ suggestions: suggestions, cursor: 0, textBoxValue: value });
+    setLocalState((currantState) => ({
+      ...currantState,
+      suggestions: suggestions,
+      cursor: 0,
+      textBoxValue: value,
+    }));
   };
 
-  clickMe = event => {
+  const clickMe = (event) => {
     alert(event);
   };
 
-  modalClose = () => {
-    this.setState({ showPricingBox: false });
+  const modalClose = () => {
+    setLocalState((currantSate) => ({ ...currantSate, showPricingBox: false }));
   };
   //CHANGE ITEM NAME
-  changeCurrantItemName = newName => {
-    let currantItem = this.state.currantItem;
-    currantItem.value = newName;
-    this.setState({ currantItem: currantItem });
+  const changeCurrantItemName = (newName) => {
+    let newCurrantItem = { ...currantItem };
+    newCurrantItem.value = newName;
+    setLocalState((currantSate) => ({
+      ...currantSate,
+      currantItem: newCurrantItem,
+    }));
   };
 
-  closeDropDown = () => {
-    this.setState({ suggestions: [] });
+  const closeDropDown = () => {
+    setLocalState((currantSate) => ({
+      ...currantSate,
+      suggestions: [],
+      currantItem: {},
+      textBoxValue: "",
+      cursor: 0,
+    }));
   };
-  handleKeyDown = e => {
-    const { cursor, suggestions } = this.state;
+  const handleKeyDown = (e) => {
     // arrow up/down button should select next/previous list element
     let suggestionsLength = suggestions.length;
     if (e.keyCode === 38) {
       e.preventDefault();
-      if (cursor < 1) this.setState({ cursor: suggestionsLength });
-      this.setState(prevState => ({
-        cursor: prevState.cursor - 1
+      if (cursor < 1)
+        setLocalState((currantSate) => ({
+          ...currantSate,
+          cursor: suggestionsLength,
+        })); //this.setState({ cursor: suggestionsLength });
+      setLocalState((currantSate) => ({
+        ...currantSate,
+        cursor: currantSate.cursor - 1,
       }));
     } else if (e.keyCode === 40) {
       e.preventDefault();
-      if (cursor > suggestionsLength - 2) this.setState({ cursor: -1 });
-      this.setState(prevState => ({
-        cursor: prevState.cursor + 1
+      if (cursor > suggestionsLength - 2)
+        setLocalState((currantSate) => ({ ...currantSate, cursor: -1 })); //this.setState({ cursor: -1 });
+      setLocalState((currantSate) => ({
+        ...currantSate,
+        cursor: currantSate.cursor + 1,
       }));
-    } else if (e.keyCode === 13 && this.state.suggestions.length > 0) {
-      this.setState({
+    } else if (e.keyCode === 13 && suggestionsLength > 0) {
+      setLocalState((currantSate) => ({
+        ...currantSate,
         textBoxValue: "",
         showPricingBox: true,
-        currantItem: Object.assign(
-          {},
-          this.state.suggestions[this.state.cursor]
-        ),
-        suggestions: []
-      });
+        currantItem: Object.assign({}, suggestions[cursor]),
+        suggestions: [],
+      }));
+    } else if (e.keyCode === 27) {
+      closeDropDown();
     }
   };
 
-  componentDidMount() {
-    this.refrs.current.focus();
-  }
-  render() {
-    return (
-      <Fragment>
-        <div style={this.dropDown}>
-          <input
-            className="form-control mr-sm-2"
-            placeholder="Search"
-            onKeyDown={this.handleKeyDown}
-            ref={this.refrs}
-            value={this.state.textBoxValue}
-            onChange={e => {
-              this.searchItem(e.target.value);
-            }}
-          />
-
-          <ul style={this.styles}>
-            {this.state.suggestions.map((item, i) => (
-              <li
-                onClick={event => {
-                  this.clickMe(item.id);
-                }}
-                key={item.id}
-                className={this.state.cursor === i ? "active" : null}
-              >
-                {item.value}
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        <PricingBox
-          show={this.state.showPricingBox}
-          onHide={this.modalClose}
-          rprice={this.state.currantItem}
-          changeItemName={this.changeCurrantItemName}
-          updateOrder={this.props.updateOrder}
+  // componentDidMount() {
+  //   this.;s
+  // }
+  //render() {
+  return (
+    <Fragment>
+      <div style={dropDown}>
+        <input
+          className="form-control mr-sm-2"
+          placeholder="Search"
+          onKeyDown={handleKeyDown}
+          ref={refrs}
+          value={textBoxValue}
+          onChange={(e) => {
+            searchItem(e.target.value);
+          }}
         />
-      </Fragment>
-    );
-  }
+
+        <ul style={suggestions.length > 0 ? styles : showDropDown}>
+          {suggestions.map((item, i) => (
+            <li
+              onClick={(event) => {
+                clickMe(item.id);
+              }}
+              key={item.id}
+              style={cursor === i ? styles.active : null}
+            >
+              {item.value}
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <PricingBox
+        show={showPricingBox}
+        onHide={modalClose}
+        rprice={currantItem}
+        changeItemName={changeCurrantItemName}
+        updateOrder={props.updateOrder}
+      />
+    </Fragment>
+  );
 }
+//}
 
 export default SearchBox;

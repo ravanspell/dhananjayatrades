@@ -1,113 +1,137 @@
-import React, { Component } from "react";
+import React, { useState, useEffect } from "react";
 import { Button, Modal, Form } from "react-bootstrap";
-class PricingBox extends Component {
-  state = {
+import { useDispatch } from "react-redux";
+import { createOrder } from "../actions";
+function PricingBox(props) {
+  // state = {
+  //   customPrice: 0,
+  //   priceType: "tPrice",
+  //   itemAmount: 0
+  // };
+  const [{ customPrice, priceType, itemAmount }, setLocalState] = useState({
     customPrice: 0,
     priceType: "tPrice",
-    itemAmount: 0
-  };
-  updateOrder = orderItem => {
-    this.props.updateOrder(orderItem);
-  };
-  handleSubmit = event => {
+    itemAmount: 0,
+  });
+
+  const [currantItem, setCurrantItemProperties] = useState(props);
+
+  useEffect(() => {
+    setCurrantItemProperties(props);
+  }, [props]);
+  // updateOrder = orderItem => {
+  //   this.props.updateOrder(orderItem);
+  // };
+  const dispatch = useDispatch();
+
+  const handleSubmit = (event) => {
     event.preventDefault();
     let order = JSON.parse(localStorage.getItem("order"));
-    const { rprice } = this.props;
+    const { rprice } = props;
     let newItem = {
       id: order.orderItems.length + 1,
       barcode: rprice.id,
       itemName: rprice.value,
-      customPrice: parseFloat(this.state.customPrice),
-      amount: this.state.itemAmount,
-      unitPrice: parseFloat(rprice[this.state.priceType]),
+      customPrice: parseFloat(customPrice),
+      amount: itemAmount,
+      unitPrice: parseFloat(rprice[priceType]),
       gotPrice: parseFloat(rprice.gotPrice),
       orderId: order.orderNo,
-      total: parseFloat(
-        (this.state.customPrice || rprice[this.state.priceType]) *
-          this.state.itemAmount
-      )
+      total: parseFloat((customPrice || rprice[priceType]) * itemAmount),
     };
     order.orderItems.push(newItem);
-    this.updateOrder(order);
-    localStorage.setItem("order", JSON.stringify(order));
-    this.setState({ customPrice: 0, customItemName: "" });
-    this.props.onHide();
+    props.updateOrder(order);
+    setLocalState((currantState) => ({
+      ...currantState,
+      customPrice: 0,
+      customItemName: "",
+    }));
+    props.onHide();
   };
 
-  changePriceGenure = event => {
-    this.setState({ priceType: event.target.value });
+  const changePriceGenure = (value) => {
+    setLocalState((currantState) => ({
+      ...currantState,
+      priceType: value,
+    }));
   };
 
-  changeCustomPrice = event => {
-    this.setState({ customPrice: event.target.value });
+  const changeCustomPrice = (value) => {
+    setLocalState((currantState) => ({
+      ...currantState,
+      customPrice: value,
+    }));
   };
 
-  changeItemAmount = event => {
-    this.setState({ itemAmount: event.target.value });
+  const changeItemAmount = (value) => {
+    setLocalState((currantState) => ({
+      ...currantState,
+      itemAmount: value,
+    }));
   };
 
-  render() {
-    return (
-      <Modal
-        {...this.props}
-        size="md"
-        aria-labelledby="contained-modal-title-vcenter"
-        centered
-      >
-        <Modal.Header>
-          <Modal.Title id="contained-modal-title-vcenter">
-            <h6>{this.props.rprice?.value}</h6>
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form onSubmit={this.handleSubmit}>
-            <Form.Group controlId="formBasicText">
-              <select onChange={this.changePriceGenure}>
-                <option value="tPrice">
-                  Ton Price Rs {this.props.rprice?.tPrice}
-                </option>
-                <option value="wPrice">
-                  Whole Price Rs {this.props.rprice?.wPrice}
-                </option>
-                <option value="rPrice">
-                  Retail Price Rs {this.props.rprice?.rPrice}
-                </option>
-              </select>
-            </Form.Group>
-            <Form.Group controlId="formBasicCustomItemName">
-              <Form.Control
-                type="text"
-                value={this.props.rprice?.value}
-                onChange={e => this.props.changeItemName(e.target.value)}
-              />
-            </Form.Group>
-            <Form.Group controlId="formBasicCustomValue">
-              <Form.Control
-                type="text"
-                placeholder="custom price"
-                onChange={this.changeCustomPrice}
-              />
-            </Form.Group>
-            <Form.Group controlId="formBasicAmount">
-              <Form.Control
-                type="text"
-                placeholder="amount"
-                onChange={this.changeItemAmount}
-              />
-            </Form.Group>
-            <div className="text-right">
-              <Button className="mr-2" onClick={this.props.onHide}>
-                Close
-              </Button>
-              <Button variant="primary" type="submit">
-                Submit
-              </Button>
-            </div>
-          </Form>
-        </Modal.Body>
-      </Modal>
-    );
-  }
+  //render() {
+  return (
+    <Modal
+      {...props}
+      size="md"
+      aria-labelledby="contained-modal-title-vcenter"
+      centered
+    >
+      <Modal.Header>
+        <Modal.Title id="contained-modal-title-vcenter">
+          <h6>{props.rprice?.value}</h6>
+        </Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <Form onSubmit={handleSubmit}>
+          <Form.Group controlId="formBasicText">
+            <select onChange={(e) => changePriceGenure(e.target.value)}>
+              <option value="tPrice">
+                Ton Price Rs {props.rprice?.tPrice}
+              </option>
+              <option value="wPrice">
+                Whole Price Rs {props.rprice?.wPrice}
+              </option>
+              <option value="rPrice">
+                Retail Price Rs {props.rprice?.rPrice}
+              </option>
+            </select>
+          </Form.Group>
+          <Form.Group controlId="formBasicCustomItemName">
+            <Form.Control
+              type="text"
+              value={props.rprice?.value}
+              onChange={(e) => props.changeItemName(e.target.value)}
+            />
+          </Form.Group>
+          <Form.Group controlId="formBasicCustomValue">
+            <Form.Control
+              type="text"
+              placeholder="custom price"
+              onChange={(e) => changeCustomPrice(e.target.value)}
+            />
+          </Form.Group>
+          <Form.Group controlId="formBasicAmount">
+            <Form.Control
+              type="text"
+              placeholder="amount"
+              onChange={(e) => changeItemAmount(e.target.value)}
+            />
+          </Form.Group>
+          <div className="text-right">
+            <Button className="mr-2" onClick={props.onHide}>
+              Close
+            </Button>
+            <Button variant="primary" type="submit">
+              Submit
+            </Button>
+          </div>
+        </Form>
+      </Modal.Body>
+    </Modal>
+  );
 }
+//}
 
 export default PricingBox;
