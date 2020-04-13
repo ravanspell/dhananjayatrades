@@ -1,27 +1,24 @@
-import React, { Component } from "react";
-import { Button, Modal } from "react-bootstrap";
-
-class PrintBill extends Component {
-  handleKeyDown = e => {
-    console.log(e.keyCode);
-  };
-  printx = () => {
+import React from "react";
+import { useSelector } from "react-redux";
+function PrintBill(props) {
+  let order = useSelector((state) => state.orderReducer.order);
+  const printx = () => {
     let str = "";
-    Object.keys(this.props.order.orderItems || {}).forEach(
-      item =>
+    Object.keys(order.orderItems || {}).forEach(
+      (item) =>
         (str =
           str +
-          `<tr key=${this.props.order?.orderItems[item].barcode}>
-          <td rowspan="1">${this.props.order.orderItems[item].itemName}</td>
+          `<tr key=${order?.orderItems[item].barcode}>
+          <td rowspan="1">${order.orderItems[item].itemName}</td>
           <td>
-            ${
-              parseFloat(this.props?.order.orderItems[item].customPrice > 0
-                ? this.props?.order.orderItems[item].customPrice
-                : this.props?.order.orderItems[item].unitPrice).toFixed(2)
-            }
+            ${parseFloat(
+              order.orderItems[item].customPrice > 0
+                ? order.orderItems[item].customPrice
+                : order.orderItems[item].unitPrice
+            ).toFixed(2)}
           </td>
-          <td>${this.props?.order.orderItems[item].amount}</td>
-          <td>${parseFloat(this.props?.order.orderItems[item].total).toFixed(2)}</td>
+          <td>${order.orderItems[item].amount}</td>
+          <td>${parseFloat(order.orderItems[item].total).toFixed(2)}</td>
         </tr>`)
     );
     var mywindow = window.open("", "PRINT", "height=800,width=600");
@@ -54,7 +51,7 @@ class PrintBill extends Component {
         <thead>
           <tr>
             <th colSpan="3"> Dhananjaya Trade Center</th>
-            <th> Order ${this.props.order?.orderNo}</th>
+            <th> Order ${order?.orderNo}</th>
           </tr>
           <tr>
             <th colSpan="4">
@@ -73,12 +70,12 @@ class PrintBill extends Component {
         <tbody>
             ${str}
             <tr>
-            <td>${this.props?.order.itemsAmount} items</td>
+            <td>${order.itemsAmount} items</td>
             <td colSpan="2">
               <b> Total Cost </b>
             </td>
             <td>
-              <b>${this.props?.order.totalPrice}</b>
+              <b>${order.totalPrice.toFixed(2)}</b>
             </td>
           </tr>
           <tr>
@@ -87,7 +84,7 @@ class PrintBill extends Component {
               <b> Cach </b>
             </td>
             <td>
-              <b>${this.props.paidamount}</b>
+              <b>${props.paidamount}</b>
             </td>
           </tr>
           <tr>
@@ -97,7 +94,7 @@ class PrintBill extends Component {
             </td>
             <td>
               <b>
-                ${this.props.paidamount - this.props?.order.totalPrice}
+                ${(props.paidamount - order.totalPrice).toFixed(2)}
               </b>
             </td>
           </tr>
@@ -119,15 +116,14 @@ class PrintBill extends Component {
     //mywindow.close();
     return true;
   };
-  render() {
-    return (
-      <button onClick={this.printx} type="button" className="btn btn-dark mr-3">
-        <i className="fa fa-print">
-          <span className="ml-1">Print Bill</span>
-        </i>
-      </button>
-    );
-  }
+
+  return (
+    <button onClick={printx} type="button" className="btn btn-dark mr-3">
+      <i className="fa fa-print">
+        <span className="ml-1">Print Bill</span>
+      </i>
+    </button>
+  );
 }
 
 export default PrintBill;

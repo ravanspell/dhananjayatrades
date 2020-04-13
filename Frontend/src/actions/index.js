@@ -9,9 +9,15 @@ export const removeItem = () => {
     };
 };
 
-export const createOrder = (order)=>{
+export const createOrder = (order) => {
     return {
         type: 'CREATE_ORDER',
         data: order
+    }
+}
+
+export const getOrder = () => {
+    return {
+        type: 'GET_ORDER'
     }
 }

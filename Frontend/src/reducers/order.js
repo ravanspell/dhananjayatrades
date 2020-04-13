@@ -6,7 +6,9 @@ const orderReducer = (state = order, action) => {
         case 'CREATE_ORDER':
             return { ...state, order: action.data };
         case 'REMOVE_ORDER':
-            return { order: '' }
+            return { order: '' };
+        case 'GET_ORDER':
+            return state;
         default:
             return state
 
