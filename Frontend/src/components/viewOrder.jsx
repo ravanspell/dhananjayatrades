@@ -2,6 +2,7 @@ import React, { useState, Fragment, useEffect } from "react";
 import { Table, Nav } from "react-bootstrap";
 import SearchBox from "./itemSearchBox";
 import PrintBill from "./printBill";
+import CancleOrder from "./cancleOrder";
 import { useSelector, useDispatch } from "react-redux";
 import { createOrder } from "../actions";
 import axios from "axios";
@@ -125,11 +126,7 @@ function ViewOrder(props) {
                   </span>
                 </i>
               </button>
-              <button type="button" className="btn btn-dark">
-                <i className="fa fa-close">
-                  <span className="ml-1">Cancle Order</span>
-                </i>
-              </button>
+              <CancleOrder />
             </div>
 
             <div className="col-md-2">
