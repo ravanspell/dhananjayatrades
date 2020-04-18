@@ -20,7 +20,7 @@ function ViewOrder(props) {
       console.log(order);
       if (order == null) {
         axios
-          .post("http://localhost:3800/api/orders/add", { date: currantDate() })
+          .post("http://localhost:3800/api/orders/add")
           .then((resolve) => {
             const { data } = resolve;
             initOrderData(data);

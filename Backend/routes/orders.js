@@ -7,17 +7,17 @@ let mysqldb = require('../mysqldb');
 router.post('/add', async (req, res) => {
     console.log(JSON.stringify(req.body));
     if (!req.body.hasOwnProperty('orderNo')) {
-        const newOrderId = await createNewOrderId(req.body.date);
+        const newOrderId = await createNewOrderId();
         res.status(200).json({ status: true, response: newOrderId });
     } else {
         const { orderItems, orderNo, totalPrice, totalGotPrice, date } = req.body;
         try {
-
             const orderStatusUpdateQuery = `UPDATE status 
                                             SET ORDER_ID = "${orderNo}",
                                                 got_price_total= ${totalGotPrice},
                                                 total= ${totalPrice},
-                                                profit=${totalPrice - totalGotPrice} 
+                                                profit=${totalPrice - totalGotPrice}, 
+                                                date="${date}"
                                             WHERE order_id="${orderNo}"`;
 
             let insertNewOrderItemsQuery = `INSERT INTO Sale (barcode, order_id, order_name, unit_price, qty, total) 
@@ -33,7 +33,7 @@ router.post('/add', async (req, res) => {
                 ]
             });
             const [nextOrderId] = await Promise.all([
-                createNewOrderId(date),
+                createNewOrderId(),
                 mysqldb.query(insertNewOrderItemsQuery, insertAllNewOrderItemsQuery),
                 mysqldb.query(orderStatusUpdateQuery), //udate order satus with total order profit and total got price
                 reduceStrock(orderItems),
@@ -69,15 +69,15 @@ const getItem = async (barcode) => {
     }
 }
 
-const createNewOrderId = async (date) => {
+const createNewOrderId = async () => {
     let orderId = 0;
     while (!Boolean(orderId)) {
         let orderid = Math.floor(Math.random() * 99999);
         let query = `SELECT * FROM Sale WHERE order_id ="${orderid}"`;
         let orders = await mysqldb.query(query);
         if (orders.length < 1) {
-            const statusTableQuery = `INSERT INTO status (order_id, date,got_price_total,total,profit) 
-                                      VALUES ("${orderid}","${date}",0,0,0)`;
+            const statusTableQuery = `INSERT INTO status (order_id,got_price_total,total,profit) 
+                                      VALUES ("${orderid}",0,0,0)`;
             let orderStatus = await mysqldb.query(statusTableQuery);
             console.log(orderStatus);
             orderId = orderid
