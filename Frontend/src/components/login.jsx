@@ -15,7 +15,7 @@ function Login(props) {
         console.log(res);
         if (res.data.status) {
           console.log("oprated");
-          props.history.push("/page/order");
+          props.history.push("/page/dashboard");
         }
       });
   };
