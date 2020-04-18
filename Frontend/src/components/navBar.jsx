@@ -17,7 +17,7 @@ function Navigation() {
       <Navbar.Collapse id="responsive-navbar-nav">
         <Nav className="mr-auto">
           <Nav.Link>
-            <Link style={linkStyles} to="/">
+            <Link style={linkStyles} to="/page/dashboard">
               <i className="fa fa-area-chart">
                 <span className="ml-1">Dashboard</span>
               </i>
@@ -31,7 +31,7 @@ function Navigation() {
             </Link>
           </Nav.Link>
           <Nav.Link>
-            <Link style={linkStyles} to="/order">
+            <Link style={linkStyles} to="/page/order">
               <i className="fa fa-shopping-cart">
                 <span className="ml-1">Order</span>
               </i>
