@@ -20,6 +20,7 @@ class App extends Component {
                 <Route path="/login" exact component={Login} />
                 <Route path="/page/dashboard" exact component={Dashboard} />
                 <Route path="/page/order" exact component={ViewOrder} />
+                <Route path="*" exact component={Login} />
               </div>
             </main>
           </Switch>
