@@ -35,6 +35,20 @@ function SearchBox(props) {
     }));
   };
 
+  const chooseItem = (itemId) => {
+    if (suggestions.length > 0) {
+      const [clickedItem] = suggestions.filter(
+        (listItem) => listItem.id === itemId
+      );
+      setLocalState((currantSate) => ({
+        ...currantSate,
+        textBoxValue: "",
+        showPricingBox: true,
+        currantItem: Object.assign({}, clickedItem),
+        suggestions: [],
+      }));
+    }
+  };
   const styles = {
     overflowY: "scroll",
     backgroundColor: "white",
@@ -71,10 +85,6 @@ function SearchBox(props) {
     }));
   };
 
-  const clickMe = (event) => {
-    alert(event);
-  };
-
   const modalClose = () => {
     setLocalState((currantSate) => ({ ...currantSate, showPricingBox: false }));
   };
@@ -106,7 +116,7 @@ function SearchBox(props) {
         setLocalState((currantSate) => ({
           ...currantSate,
           cursor: suggestionsLength,
-        })); //this.setState({ cursor: suggestionsLength });
+        }));
       setLocalState((currantSate) => ({
         ...currantSate,
         cursor: currantSate.cursor - 1,
@@ -114,7 +124,7 @@ function SearchBox(props) {
     } else if (e.keyCode === 40) {
       e.preventDefault();
       if (cursor > suggestionsLength - 2)
-        setLocalState((currantSate) => ({ ...currantSate, cursor: -1 })); //this.setState({ cursor: -1 });
+        setLocalState((currantSate) => ({ ...currantSate, cursor: -1 }));
       setLocalState((currantSate) => ({
         ...currantSate,
         cursor: currantSate.cursor + 1,
@@ -132,10 +142,6 @@ function SearchBox(props) {
     }
   };
 
-  // componentDidMount() {
-  //   this.;s
-  // }
-  //render() {
   return (
     <Fragment>
       <div style={dropDown}>
@@ -154,7 +160,7 @@ function SearchBox(props) {
           {suggestions.map((item, i) => (
             <li
               onClick={(event) => {
-                clickMe(item.id);
+                chooseItem(item.id);
               }}
               key={item.id}
               style={cursor === i ? styles.active : null}
@@ -175,6 +181,5 @@ function SearchBox(props) {
     </Fragment>
   );
 }
-//}
 
 export default SearchBox;
