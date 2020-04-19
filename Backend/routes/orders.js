@@ -1,5 +1,5 @@
 const router = require('express').Router();
-let mysqldb = require('../mysqldb');
+const mysqldb = require('../mysqldb');
 
 /**
  * Add new order or finish and intiate new order 

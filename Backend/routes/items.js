@@ -21,6 +21,22 @@ router.route('/search').get(async (req, res) => {
   }
 });
 
+router.post('/save', async (req, res) => {
+  try {
+    const { barcode, itemName, amount, tonPrice, wholePrice, retailPrice, company, gotPrice } = req.body;
+    const query = `SELECT barcode FROM items WHERE barcode =${barcode}`;
+    const item = await mysqldb.query(query);
+    if (item.length > 0) {
+      return res.status(400).json({ status: false, message: "Barcode alredy in use" });
+    }
+    const itemSaveQuery = `INSERT INTO items (barcode,name,stock,t,w,r,company,got_price) 
+                           VALUES(${barcode},"${itemName}",${amount},${tonPrice},${wholePrice},${retailPrice},"${company}",${gotPrice})`;
+    await mysqldb.query(itemSaveQuery);
+    return res.status(201).json({ status: true, message: "Item has been saved" });
+  } catch (error) {
+    res.status(500).json({ status: false, message: error.message });
+  }
+});
 // router.route('/add').post(async (req, res) => {
 
 //   for (const itemd of items) {
