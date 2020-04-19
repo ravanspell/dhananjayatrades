@@ -38,11 +38,13 @@ function Navigation() {
             </Link>
           </Nav.Link>
           <Nav.Link>
-            <i className="fa fa-save">
-              <span className="ml-1">Save Item</span>
-            </i>
+            <Link style={linkStyles} to="/save/item">
+              <i className="fa fa-save">
+                <span className="ml-1">Save Item</span>
+              </i>
+            </Link>
           </Nav.Link>
-          <Nav.Link href="#features">
+          <Nav.Link>
             <i className="fa fa-share">
               <span className="ml-1">Returns</span>
             </i>
