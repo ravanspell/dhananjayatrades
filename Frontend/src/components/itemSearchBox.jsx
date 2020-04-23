@@ -51,7 +51,7 @@ function SearchBox(props) {
   };
   const styles = {
     overflowY: "scroll",
-    backgroundColor: "white",
+    backgroundColor: "#f8f9fa",
     width: "100%",
     position: "absolute",
     fontSize: "10pt",
@@ -146,7 +146,7 @@ function SearchBox(props) {
     <Fragment>
       <div style={dropDown}>
         <input
-          className="form-control mr-sm-2"
+          className="form-control bg-dark-white dmr-sm-2"
           placeholder="Search"
           onKeyDown={handleKeyDown}
           ref={refrs}
@@ -173,9 +173,10 @@ function SearchBox(props) {
 
       <PricingBox
         show={showPricingBox}
+        isedit={"false"}
         onHide={modalClose}
         rprice={currantItem}
-        changeItemName={changeCurrantItemName}
+        // changeItemName={changeCurrantItemName}
         updateOrder={props.updateOrder}
       />
     </Fragment>

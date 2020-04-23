@@ -2,12 +2,30 @@ import React, { useState, Fragment, useEffect } from "react";
 import { Table, Nav } from "react-bootstrap";
 import SearchBox from "./itemSearchBox";
 import PrintBill from "./printBill";
+import PricingBox from "./priceItem";
 import CancleOrder from "./cancleOrder";
 import { useSelector, useDispatch } from "react-redux";
 import { createOrder } from "../actions";
 import axios from "axios";
 
 function ViewOrder(props) {
+  const buttonStyles = {
+    edit: {
+      backgroundColor: "#1d9baecc",
+      border: "none",
+      width: "30px",
+      borderRadius: "2px",
+      color: "#e9ecef",
+    },
+    delete: {
+      backgroundColor: "#903b3b",
+      marginLeft: "3px",
+      border: "none",
+      width: "30px",
+      borderRadius: "2px",
+      color: "#e9ecef",
+    },
+  };
   const dispatch = useDispatch();
 
   /**
@@ -35,8 +53,13 @@ function ViewOrder(props) {
     }
   }, []);
 
-  const [{ paidAmount }, setPaidAmount] = useState({
+  const [
+    { paidAmount, showEditPricingBox, editItem },
+    setPaidAmount,
+  ] = useState({
     paidAmount: 0,
+    showEditPricingBox: false,
+    editItem: {},
   });
 
   const setTotalPaidAmount = (value) => {
@@ -106,9 +129,25 @@ function ViewOrder(props) {
     updateCounts(currantOrder);
   };
 
+  const modalClose = () => {
+    setPaidAmount((currantSate) => ({
+      ...currantSate,
+      showEditPricingBox: false,
+    }));
+  };
+
+  const editOrderItem = (itemId) => {
+    const foundItem = order.orderItems.find((item) => item.id == itemId);
+    setPaidAmount((currantSate) => ({
+      ...currantSate,
+      showEditPricingBox: true,
+      editItem: foundItem,
+    }));
+  };
+
   return (
     <Fragment>
-      <div className="nav-scroller bg-white box-shadow">
+      <div className="nav-scroller bg-dark-white box-shadow">
         <Nav className="mr-auto p-3 d-flex">
           <div className="row">
             <div className="col-md-2 align-middle">
@@ -131,7 +170,7 @@ function ViewOrder(props) {
 
             <div className="col-md-2">
               <input
-                className="form-control mr-sm-1"
+                className="form-control bg-dark-white mr-sm-1"
                 placeholder="amount"
                 onChange={(e) => {
                   setTotalPaidAmount(e.target.value);
@@ -141,7 +180,7 @@ function ViewOrder(props) {
           </div>
         </Nav>
       </div>
-      <div className="my-3 p-3 bg-white rounded box-shadow">
+      <div className="my-3 p-3 bg-dark-white rounded box-shadow">
         <div className="row border-bottom border-gray pb-2 mb-0">
           <div className="col-md-4">
             <h6>Total Items: {order.itemsAmount}</h6>
@@ -175,14 +214,16 @@ function ViewOrder(props) {
                   <td>{order.orderItems[item].total}</td>
                   <td className="text-center">
                     <button
+                      style={buttonStyles.edit}
                       onClick={(e) => {
-                        deleteOrderItem(order.orderItems[item].id);
+                        editOrderItem(order.orderItems[item].id);
                       }}
                     >
                       <i className="fa fa-edit mr-2"></i>
                     </button>
 
                     <button
+                      style={buttonStyles.delete}
                       onClick={(e) => {
                         deleteOrderItem(order.orderItems[item].id);
                       }}
@@ -196,6 +237,14 @@ function ViewOrder(props) {
           </Table>
         </div>
       </div>
+      <PricingBox
+        show={showEditPricingBox}
+        isedit={"true"}
+        onHide={modalClose}
+        rprice={editItem}
+        // changeItemName={changeCurrantItemName}
+        updateOrder={updateCounts}
+      />
     </Fragment>
   );
 }
