@@ -61,6 +61,7 @@ function PricingBox(props) {
       ...currantState,
       customPrice: 0,
       customItemName: "",
+      priceType: "tPrice",
     }));
     props.onHide();
   };
