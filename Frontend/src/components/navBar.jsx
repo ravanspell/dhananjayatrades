@@ -1,48 +1,36 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import React, { Component } from "react";
-import Navbar from "react-bootstrap/Navbar";
-import Nav from "react-bootstrap/Nav";
+import React from "react";
+import { Navbar, Nav } from "react-bootstrap";
 import NavDropdown from "react-bootstrap/NavDropdown";
 import { Link } from "react-router-dom";
 // import logo from "../logo.png";
 
 function Navigation() {
-  const linkStyles = {
-    color: "rgba(255,255,255,.5)",
-  };
   return (
     <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
       <Navbar.Brand href="#home">Dhananjaya Trades</Navbar.Brand>
       <Navbar.Toggle aria-controls="responsive-navbar-nav" />
       <Navbar.Collapse id="responsive-navbar-nav">
         <Nav className="mr-auto">
-          <Nav.Link>
-            <Link style={linkStyles} to="/">
-              <i className="fa fa-area-chart">
-                <span className="ml-1">Dashboard</span>
-              </i>
-            </Link>
+          <Nav.Link as={Link} to="/">
+            <i className="fa fa-area-chart">
+              <span className="ml-1">Dashboard</span>
+            </i>
           </Nav.Link>
-          <Nav.Link>
-            <Link style={linkStyles} to="/">
-              <i className="fa fa-edit">
-                <span className="ml-1">All Stocks</span>
-              </i>
-            </Link>
+          <Nav.Link as={Link} to="/">
+            <i className="fa fa-edit">
+              <span className="ml-1">All Stocks</span>
+            </i>
           </Nav.Link>
-          <Nav.Link>
-            <Link style={linkStyles} to="/order">
-              <i className="fa fa-shopping-cart">
-                <span className="ml-1">Order</span>
-              </i>
-            </Link>
+          <Nav.Link as={Link} to="/order">
+            <i className="fa fa-shopping-cart">
+              <span className="ml-1">Order</span>
+            </i>
           </Nav.Link>
-          <Nav.Link>
-            <Link style={linkStyles} to="/save/item">
-              <i className="fa fa-save">
-                <span className="ml-1">Save Item</span>
-              </i>
-            </Link>
+          <Nav.Link as={Link} to="/save/item">
+            <i className="fa fa-save">
+              <span className="ml-1">Save Item</span>
+            </i>
           </Nav.Link>
           <Nav.Link>
             <i className="fa fa-share">

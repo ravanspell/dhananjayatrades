@@ -88,15 +88,6 @@ function SearchBox(props) {
   const modalClose = () => {
     setLocalState((currantSate) => ({ ...currantSate, showPricingBox: false }));
   };
-  //CHANGE ITEM NAME
-  const changeCurrantItemName = (newName) => {
-    let newCurrantItem = { ...currantItem };
-    newCurrantItem.value = newName;
-    setLocalState((currantSate) => ({
-      ...currantSate,
-      currantItem: newCurrantItem,
-    }));
-  };
 
   const closeDropDown = () => {
     setLocalState((currantSate) => ({
@@ -177,7 +168,7 @@ function SearchBox(props) {
         onHide={modalClose}
         rprice={currantItem}
         // changeItemName={changeCurrantItemName}
-        updateOrder={props.updateOrder}
+        updateorder={props.updateorder}
       />
     </Fragment>
   );

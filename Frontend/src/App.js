@@ -14,11 +14,13 @@ class App extends Component {
         <Router>
           <Navigation />
           <Switch>
-            <main className="container">
-              <Route path="/" exact component={Dashboard} />
-              <Route path="/order" exact component={ViewOrder} />
-              <Route path="/save/item" exact component={NewItemSave} />
-            </main>
+            <Fragment>
+              <main className="container">
+                <Route path="/" exact component={Dashboard} />
+                <Route path="/order" exact component={ViewOrder} />
+                <Route path="/save/item" exact component={NewItemSave} />
+              </main>
+            </Fragment>
           </Switch>
         </Router>
       </Fragment >

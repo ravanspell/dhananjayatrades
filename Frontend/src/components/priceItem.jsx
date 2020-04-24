@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Button, Modal, Form } from "react-bootstrap";
 import { uuid } from "uuidv4";
-import { useDispatch } from "react-redux";
-import { createOrder } from "../actions";
+
 function PricingBox(props) {
   const [
     { customPrice, priceType, itemAmount, item },
@@ -56,7 +55,7 @@ function PricingBox(props) {
       newItem["barcode"] = item.id;
       order.orderItems.push(newItem);
     }
-    props.updateOrder(order);
+    props.updateorder(order);
     setLocalState((currantState) => ({
       ...currantState,
       customPrice: 0,
@@ -89,29 +88,32 @@ function PricingBox(props) {
 
   return (
     <Modal
-      {...props}
+      show={props.show}
+      onHide={props.onHide}
       size="md"
       aria-labelledby="contained-modal-title-vcenter"
       centered
     >
       <Modal.Header>
         <Modal.Title id="contained-modal-title-vcenter">
-          <h6>{item.value || item.itemName}</h6>
+          <h6>{item.value || item.itemName || ""}</h6>
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Form onSubmit={handleSubmit}>
           <Form.Group controlId="formBasicText">
             <select onChange={(e) => changePriceGenure(e.target.value)}>
-              <option value="tPrice">Ton Price Rs {item.tPrice}</option>
-              <option value="wPrice">Whole Price Rs {item.wPrice}</option>
-              <option value="rPrice">Retail Price Rs {item.rPrice}</option>
+              <option value="tPrice">Ton Price Rs {item.tPrice || ""}</option>
+              <option value="wPrice">Whole Price Rs {item.wPrice || ""}</option>
+              <option value="rPrice">
+                Retail Price Rs {item.rPrice || ""}
+              </option>
             </select>
           </Form.Group>
           <Form.Group controlId="formBasicCustomItemName">
             <Form.Control
               type="text"
-              value={item.value || item.itemName}
+              value={item.value || item.itemName || ""}
               onChange={(e) => changeCurrantItemName(e.target.value)}
             />
           </Form.Group>

@@ -110,6 +110,7 @@ function ViewOrder(props) {
   };
 
   const finishOrder = () => {
+    console.log("finish order clicked");
     order["date"] = currantDate();
     axios
       .post("http://localhost:3800/api/orders/add", order)
@@ -154,7 +155,7 @@ function ViewOrder(props) {
               <h6>Order No: {order.orderNo} </h6>
             </div>
             <div className="col-md-3">
-              <SearchBox updateOrder={updateCounts} />
+              <SearchBox updateorder={updateCounts} />
             </div>
             <div className="col-md-5">
               <PrintBill order={order} paidamount={paidAmount} />
@@ -243,7 +244,7 @@ function ViewOrder(props) {
         onHide={modalClose}
         rprice={editItem}
         // changeItemName={changeCurrantItemName}
-        updateOrder={updateCounts}
+        updateorder={updateCounts}
       />
     </Fragment>
   );
