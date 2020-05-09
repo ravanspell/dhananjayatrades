@@ -158,7 +158,11 @@ function ViewOrder(props) {
               <SearchBox updateorder={updateCounts} />
             </div>
             <div className="col-md-5">
-              <PrintBill order={order} paidamount={paidAmount} />
+              <PrintBill
+                order={order}
+                date={currantDate}
+                paidamount={paidAmount}
+              />
               <button type="button" className="btn btn-dark mr-3">
                 <i className="fa fa-check">
                   <span onClick={finishOrder} className="ml-1">
