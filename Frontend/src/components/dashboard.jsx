@@ -5,6 +5,7 @@ class Dashboard extends Component {
   state = {
     profitDashboardData: {},
   };
+  // http://dhananjayatrades.com/
   componentDidMount() {
     axios.get("http://localhost:3800/api/dashboard/profit").then((resolve) => {
       console.log(resolve);

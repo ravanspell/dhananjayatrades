@@ -56,7 +56,7 @@ function PrintBill(props) {
           <tr>
             <th colSpan="4">
               193/A, Diyawala, Kirindiwela
-              <br /> TP-033.2267558 Date- ${props.date()}
+              <br /> TP:076-3916919 Date:${props.date()}
             </th>
           </tr>
 

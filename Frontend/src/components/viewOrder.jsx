@@ -31,6 +31,7 @@ function ViewOrder(props) {
   /**
    * Initilize the order
    * save order data structure in browser store to offline usage.
+   * http://dhananjayatrades.com/
    */
   let order = useSelector((state) => state.orderReducer.order);
   useEffect(() => {
@@ -110,6 +111,7 @@ function ViewOrder(props) {
   };
 
   const finishOrder = () => {
+    //http://dhananjayatrades.com/
     console.log("finish order clicked");
     order["date"] = currantDate();
     axios
