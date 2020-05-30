@@ -1,64 +1,33 @@
 import React, { Component, Fragment } from "react";
-import { Line } from "react-chartjs";
+import { Line } from "react-chartjs-2";
 import axios from "axios";
 class Dashboard extends Component {
   state = {
     profitDashboardData: {},
+    lastMonthTotalProfit: 0,
+    thisMonthTotalProfit: 0,
   };
   // http://dhananjayatrades.com/
   componentDidMount() {
-    axios.get("http://localhost:3800/api/dashboard/profit").then((resolve) => {
-      console.log(resolve);
-      this.setState({ profitDashboardData: resolve.data.response });
-    });
+    axios
+      .get("http://dhananjayatrades.com/api/dashboard/profit")
+      .then((resolve) => {
+        console.log(resolve);
+        this.setState({
+          profitDashboardData: resolve.data.response,
+          lastMonthTotalProfit: this.calculateTotal(
+            resolve.data.response.lastMonth
+          ),
+          thisMonthTotalProfit: this.calculateTotal(
+            resolve.data.response.thisMonth
+          ),
+        });
+      });
   }
+  calculateTotal = (profit) => {
+    return profit.reduce((value, total) => value + total);
+  };
   render() {
-    const chartOptions = {
-      ///Boolean - Whether grid lines are shown across the chart
-      // scaleShowGridLines: true,
-
-      //String - Colour of the grid lines
-      scaleGridLineColor: "rgba(0,0,0,.05)",
-
-      //Number - Width of the grid lines
-      // scaleGridLineWidth: 1,
-
-      //Boolean - Whether to show horizontal lines (except X axis)
-      scaleShowHorizontalLines: true,
-
-      //Boolean - Whether to show vertical lines (except Y axis)
-      scaleShowVerticalLines: true,
-
-      //Boolean - Whether the line is curved between points
-      bezierCurve: true,
-
-      //Number - Tension of the bezier curve between points
-      bezierCurveTension: 0.4,
-
-      //Boolean - Whether to show a dot for each point
-      pointDot: true,
-
-      //Number - Radius of each point dot in pixels
-      pointDotRadius: 4,
-
-      //Number - Pixel width of point dot stroke
-      pointDotStrokeWidth: 1,
-
-      //Number - amount extra to add to the radius to cater for hit detection outside the drawn point
-      //pointHitDetectionRadius: 30,
-
-      //Boolean - Whether to show a stroke for datasets
-      //datasetStroke: true,
-
-      //Number - Pixel width of dataset stroke
-      //datasetStrokeWidth: 2,
-
-      //Boolean - Whether to horizontally center the label and point dot inside the grid
-      offsetGridLines: false,
-
-      responsive: true,
-      maintainAspectRatio: true,
-    };
     const chartData = {
       labels: [
         "1",
@@ -96,44 +65,41 @@ class Dashboard extends Component {
       datasets: [
         {
           label: "This Month",
-          fillColor: "rgba(220,220,220,0.2)",
-          strokeColor: "rgba(220,220,220,1)",
-          pointColor: "rgba(220,220,220,1)",
-          pointStrokeColor: "#fff",
-          pointHighlightFill: "#fff",
-          pointHighlightStroke: "rgba(220,220,220,1)",
+          fill: false,
+          borderColor: "#5da7e8",
+          pointBackgroundColor: "#2b76b8",
           data: this.state.profitDashboardData.thisMonth,
         },
         {
           label: "Last Month",
-          fillColor: "rgba(151,187,205,0.2)",
-          strokeColor: "rgba(151,187,205,1)",
-          pointColor: "rgba(151,187,205,1)",
-          pointStrokeColor: "#fff",
-          pointHighlightFill: "#fff",
-          pointHighlightStroke: "rgba(151,187,205,1)",
+          fill: false,
+          borderColor: "#ed3b5f",
+          pointBackgroundColor: "#c42343",
           data: this.state.profitDashboardData.lastMonth,
         },
       ],
     };
-
     return (
       <Fragment>
         <div className="row mt-10">
           <div className="col-md-6 col-sm-12">
             <div className="nav-scroller bg-white box-shadow p-2 mt-2">
-              <h6>Last Month Total Profit: 34454</h6>
+              <h6>
+                Last Month Total Profit: {this.state.lastMonthTotalProfit}
+              </h6>
             </div>
           </div>
           <div className="col-md-6 col-sm-12">
             <div className="nav-scroller bg-white box-shadow p-2 mt-2">
-              <h6>Last Month Total Profit: 34454</h6>
+              <h6>
+                This Month Total Profit: {this.state.thisMonthTotalProfit}
+              </h6>
             </div>
           </div>
         </div>
 
         <div className="nav-scroller bg-white box-shadow mt-2">
-          <Line data={chartData} options={chartOptions} />
+          <Line data={chartData} />
         </div>
       </Fragment>
     );

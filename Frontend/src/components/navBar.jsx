@@ -17,7 +17,7 @@ function Navigation() {
               <span className="ml-1">Dashboard</span>
             </i>
           </Nav.Link>
-          <Nav.Link as={Link} to="/">
+          <Nav.Link as={Link} to="/stock/all">
             <i className="fa fa-edit">
               <span className="ml-1">All Stocks</span>
             </i>
