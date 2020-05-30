@@ -20,7 +20,7 @@ router.route('/search').get(async (req, res) => {
     res.status(400).json({ status: false, error: error.message });
   }
 });
-
+//save stock
 router.post('/save', async (req, res) => {
   try {
     const { barcode, itemName, amount, tonPrice, wholePrice, retailPrice, company, gotPrice } = req.body;
@@ -37,26 +37,47 @@ router.post('/save', async (req, res) => {
     res.status(500).json({ status: false, message: error.message });
   }
 });
-// router.route('/add').post(async (req, res) => {
+//get all stock data 
+router.route('/all').get(async (req, res) => {
+  //! should change table name after development
+  const stockQuery = 'SELECT * FROM items ORDER BY barcode ASC';
+  const pageItems = await mysqldb.query(stockQuery);
+  return res.status(201).json({ status: true, data: pageItems });
+});
 
-//   for (const itemd of items) {
-//     console.log(itemd._id);
-//     let item = new Items(
-//       {
-//         _id: `${itemd._id}`,
-//         name: itemd.name,
-//         t: itemd.t,
-//         w: itemd.w,
-//         r: itemd.r,
-//         stock: itemd.stock,
-//         company: itemd.company,
-//         gotPrice: itemd.gotPrice
-//       }
-//     )
-//     console.log(await item.save(items))
-//   }
-// });
 
+router.route('/delete').delete(async (req, res) => {
+  //! should change table name after development
+  try {
+    const { item_id } = req.body;
+    const stockRemoveQuery = `DELETE  FROM items WHERE barcode =${item_id}`;
+    const status = await mysqldb.query(stockRemoveQuery);
+    return res.status(201).json({ status: true, message: 'Item has been deleted' });
+  } catch (error) {
+    return res.status(400).json({ status: false, message: error });
+  }
+});
+
+//Edit stock item
+router.route('/update').put(async (req, res) => {
+  //! should change table name after development
+  try {
+    const { barcode, item_data } = req.body;
+
+    const editStockItemQuery = `UPDATE items SET name='${item_data.itemName}', 
+                                              got_price=${item_data.gotPrice}, 
+                                              t=${item_data.tonPrice}, 
+                                              w=${item_data.wholePrice}, 
+                                              r=${item_data.retailPrice}, 
+                                              stock=${item_data.amount}, 
+                                              company='${item_data.company}' 
+                              WHERE barcode =${barcode}`;
+    const status = await mysqldb.query(editStockItemQuery);
+    return res.status(201).json({ status: true, message: 'Item has been updated' });
+  } catch (error) {
+    return res.status(400).json({ status: false, message: error });
+  }
+});
 // router.route('/empty/stockes').get(async (req, res) => {
 //   try {
 //     let outOfStockItems = await Items.find({ stock: { $lt: 1 } });
