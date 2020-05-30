@@ -1,5 +1,6 @@
 const router = require('express').Router();
 const mysqldb = require('../mysqldb');
+const auth = require('../middleware/auth');
 
 /**
  * Add new order or finish and intiate new order 
@@ -38,7 +39,7 @@ router.post('/add', async (req, res) => {
                 mysqldb.query(orderStatusUpdateQuery), //udate order satus with total order profit and total got price
                 reduceStrock(orderItems),
             ]);
-            res.status(200).json({ status: true, response: nextOrderId });
+            return res.status(200).json({ status: true, response: nextOrderId });
         } catch (error) {
             console.log(error);
         }
