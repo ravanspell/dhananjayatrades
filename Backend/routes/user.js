@@ -15,12 +15,12 @@ router.get('/t', async (req, res) => {
 
 router.post('/add', async (req, res) => {
     try {
-        const { user_name, password } = req.body;
+        const { username, password } = req.body;
         const salt = await bcrypt.genSalt()
         const hashedPassword = await bcrypt.hash(password, salt);
         // const query = `INSER INTO users 
         //                COLUNS() 
-        //                VALUES('${user_name}','${hashedPassword}')`;
+        //                VALUES('${username}','${hashedPassword}')`;
         // await mysqldb.query(query);
         res.json({ status: false, message: hashedPassword });
     } catch (error) {
@@ -29,13 +29,12 @@ router.post('/add', async (req, res) => {
 });
 
 router.post('/login', async (req, res) => {
-    const { user_name, password } = req.body;
-    const [user] = await mysqldb.query(`SELECT Name,Password FROM user WHERE Name ='${user_name}'`);
+    const { username, password } = req.body;
+    const [user] = await mysqldb.query(`SELECT Name,Password FROM user WHERE Name ='${username}'`);
     if (!user) {
         return res.status(400).json({ status: false, message: 'Sorry you do not have an account' });
     }
     const is_authnticted = await bcrypt.compare(password, user.Password);
-    console.log(is_authnticted);
     if (!is_authnticted) {
         return res.status(400).json({ status: false, message: 'Your user name or password incorrect' });
     }
