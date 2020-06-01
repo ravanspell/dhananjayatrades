@@ -21,3 +21,10 @@ export const getOrder = () => {
         type: 'GET_ORDER'
     }
 }
+
+export const login = () => {
+    return {
+        type: 'USER_LOGIN'
+    }
+}
+
