@@ -4,7 +4,7 @@ const auth = require('../middleware/auth');
 
 router.route('/search').get(auth, async (req, res) => {
   try {
-    const query = "SELECT name,t,w,r,got_price,barcode FROM Items;"
+    const query = "SELECT name,t,w,r,got_price,barcode FROM items;"
     let items = await mysqldb.query(query);
     let newItems = items.map(searchItem => {
       return {

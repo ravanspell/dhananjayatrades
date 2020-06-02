@@ -20,7 +20,7 @@ router.post('/add', auth, async (req, res) => {
                                                 date="${date}"
                                             WHERE order_id="${orderNo}"`;
 
-            let insertNewOrderItemsQuery = `INSERT INTO Sale (barcode, order_id, order_name, unit_price, qty, total) 
+            let insertNewOrderItemsQuery = `INSERT INTO sale (barcode, order_id, order_name, unit_price, qty, total) 
                                             VALUES ?`;
             const insertAllNewOrderItemsQuery = orderItems.map(item => {
                 return [
@@ -51,7 +51,7 @@ const removeOrderData = async (orderId) => {
 const reduceStrock = async (newOrder) => {
     try {
         await Promise.all(newOrder.map(orderItem => {
-            let updateAmountQuery = `UPDATE Items SET stock = stock - ${orderItem.amount} WHERE barcode ='${orderItem.barcode}'`;
+            let updateAmountQuery = `UPDATE items SET stock = stock - ${orderItem.amount} WHERE barcode ='${orderItem.barcode}'`;
             return mysqldb.query(updateAmountQuery);
         }));
     } catch (error) {
@@ -72,7 +72,7 @@ const createNewOrderId = async () => {
     let orderId = 0;
     while (!Boolean(orderId)) {
         let orderid = Math.floor(Math.random() * 99999);
-        let query = `SELECT * FROM Sale WHERE order_id ="${orderid}"`;
+        let query = `SELECT * FROM sale WHERE order_id ="${orderid}"`;
         let orders = await mysqldb.query(query);
         if (orders.length < 1) {
             const statusTableQuery = `INSERT INTO status (order_id,got_price_total,total,profit) 
