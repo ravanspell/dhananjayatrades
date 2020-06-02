@@ -1,11 +1,16 @@
 const userState = {
     authToken: null,
-    user: {}
+    user: ""
 }
 
-export const userAuthReducer = (state = userState, action) => {
-    switch (action) {
+const userAuthReducer = (state = userState, action) => {
+    switch (action.type) {
         case 'USER_LOGIN':
-            return { ...state, user: action.data }; //!not compleat
+            return { ...state, authToken: action.data };
+        case 'VERIFY_USER':
+            return { ...state, user: action.data }
+        default:
+            return state
     }
 }
+export default userAuthReducer;

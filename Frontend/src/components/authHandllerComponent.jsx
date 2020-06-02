@@ -1,26 +1,15 @@
 import React, { Fragment, useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { createOrder } from "../actions";
+import { useSelector } from "react-redux";
+import { useHistory } from "react-router-dom";
+
 import axios from "axios";
 
-function CancleOrder(props) {
-  const dispatch = useDispatch();
-  const orderNo = useSelector(
-    (state) => state.userAuthReducer.userState.authToken
-  );
-
+function AuthHandller(props) {
+  const history = useHistory();
+  const authToken = useSelector((state) => state.userAuthReducer.authToken);
   useEffect(() => {
-    if (!orderNo) props.history.push("/login");
+    if (!authToken) history.push("/login");
   }, []);
-  return (
-    <Fragment>
-      <button type="button" onClick={CancleOrder} className="btn btn-dark">
-        <i className="fa fa-close">
-          <span className="ml-1">Cancle Order</span>
-        </i>
-      </button>
-    </Fragment>
-  );
+  return <Fragment>{props.children}</Fragment>;
 }
-
-export default CancleOrder;
+export default AuthHandller;

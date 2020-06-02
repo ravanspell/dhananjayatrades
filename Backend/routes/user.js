@@ -2,6 +2,7 @@ const router = require('express').Router();
 const jwt = require('jsonwebtoken');
 let mysqldb = require('../mysqldb');
 const bcrypt = require('bcrypt');
+const auth = require('../middleware/auth');
 
 router.get('/t', async (req, res) => {
     let query = "SELECT * FROM User ORDER BY id ASC";
@@ -15,14 +16,13 @@ router.get('/t', async (req, res) => {
 
 router.post('/add', async (req, res) => {
     try {
-        const { username, password } = req.body;
+        const { nic, username, password } = req.body;
         const salt = await bcrypt.genSalt()
         const hashedPassword = await bcrypt.hash(password, salt);
-        // const query = `INSER INTO users 
-        //                COLUNS() 
-        //                VALUES('${username}','${hashedPassword}')`;
-        // await mysqldb.query(query);
-        res.json({ status: false, message: hashedPassword });
+        const query = `INSERT INTO user (id,name,password)
+                       VALUES(${nic},'${username}','${hashedPassword}')`;
+        await mysqldb.query(query);
+        res.json({ status: false, message: "User has been saved" });
     } catch (error) {
         res.status(400).json({ status: false, error: error.message });
     }
@@ -40,6 +40,10 @@ router.post('/login', async (req, res) => {
     }
     const accessToken = jwt.sign({ user: user.Name }, process.env.SECRET_KEY);
     //return res.header('auth-token', accessToken).send(accessToken);
-    return res.status(200).json({ status: false, token: accessToken });
+    return res.status(200).json({ status: true, username: user.Name, token: accessToken });
+});
+
+router.route('/currant').get(auth, async (req, res) => {
+    return res.status(200).json({ status: true, user: req.user.user });
 });
 module.exports = router;

@@ -1,7 +1,8 @@
 const router = require('express').Router();
 let mysqldb = require('../mysqldb');
+const auth = require('../middleware/auth');
 
-router.route('/search').get(async (req, res) => {
+router.route('/search').get(auth, async (req, res) => {
   try {
     const query = "SELECT name,t,w,r,got_price,barcode FROM Items;"
     let items = await mysqldb.query(query);
@@ -21,7 +22,7 @@ router.route('/search').get(async (req, res) => {
   }
 });
 //save stock
-router.post('/save', async (req, res) => {
+router.post('/save', auth, async (req, res) => {
   try {
     const { barcode, itemName, amount, tonPrice, wholePrice, retailPrice, company, gotPrice } = req.body;
     const query = `SELECT barcode FROM items WHERE barcode =${barcode}`;
@@ -38,7 +39,8 @@ router.post('/save', async (req, res) => {
   }
 });
 //get all stock data 
-router.route('/all').get(async (req, res) => {
+router.route('/all').get(auth, async (req, res) => {
+  console.log(req.user);
   //! should change table name after development
   const stockQuery = 'SELECT * FROM items ORDER BY barcode ASC';
   const pageItems = await mysqldb.query(stockQuery);
@@ -46,7 +48,7 @@ router.route('/all').get(async (req, res) => {
 });
 
 
-router.route('/delete').delete(async (req, res) => {
+router.route('/delete', auth).delete(async (req, res) => {
   //! should change table name after development
   try {
     const { item_id } = req.body;
@@ -59,7 +61,7 @@ router.route('/delete').delete(async (req, res) => {
 });
 
 //Edit stock item
-router.route('/update').put(async (req, res) => {
+router.route('/update').put(auth, async (req, res) => {
   //! should change table name after development
   try {
     const { barcode, item_data } = req.body;

@@ -1,11 +1,10 @@
 const router = require('express').Router();
 const mysqldb = require('../mysqldb');
 const auth = require('../middleware/auth');
-
 /**
  * Add new order or finish and intiate new order 
  */
-router.post('/add', async (req, res) => {
+router.post('/add', auth, async (req, res) => {
     console.log(JSON.stringify(req.body));
     if (!req.body.hasOwnProperty('orderNo')) {
         const newOrderId = await createNewOrderId();
@@ -33,13 +32,12 @@ router.post('/add', async (req, res) => {
                     item.total
                 ]
             });
-            const [nextOrderId] = await Promise.all([
-                createNewOrderId(),
+            await Promise.all([
                 mysqldb.query(insertNewOrderItemsQuery, insertAllNewOrderItemsQuery),
                 mysqldb.query(orderStatusUpdateQuery), //udate order satus with total order profit and total got price
                 reduceStrock(orderItems),
             ]);
-            return res.status(200).json({ status: true, response: nextOrderId });
+            return res.status(200).json({ status: true });
         } catch (error) {
             console.log(error);
         }

@@ -5,7 +5,8 @@ import ViewOrder from './components/viewOrder';
 import Dashboard from "./components/dashboard";
 import NewItemSave from "./components/newItemSave";
 import ViewAllStock from "./components/viewAllStock";
-
+import AuthHandller from "./components/authHandllerComponent";
+import Login from "./components/login";
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 
 class App extends Component {
@@ -13,14 +14,17 @@ class App extends Component {
     return (
       <Fragment>
         <Router>
-          <Navigation />
           <Switch>
+            <Route path="/login" exact component={Login} />
             <Fragment>
+              <Navigation />
               <main className="container">
-                <Route path="/" exact component={Dashboard} />
-                <Route path="/order" exact component={ViewOrder} />
-                <Route path="/save/item" exact component={NewItemSave} />
-                <Route path="/stock/all" exact component={ViewAllStock} />
+                <AuthHandller>
+                  <Route path="/" exact component={Dashboard} />
+                  <Route path="/order" exact component={ViewOrder} />
+                  <Route path="/save/item" exact component={NewItemSave} />
+                  <Route path="/stock/all" exact component={ViewAllStock} />
+                </AuthHandller>
               </main>
             </Fragment>
           </Switch>

@@ -114,13 +114,15 @@ function ViewOrder(props) {
     //http://dhananjayatrades.com/
     console.log("finish order clicked");
     order["date"] = currantDate();
+    axios.post("http://localhost:3800/api/orders/add").then((resolve) => {
+      const { data } = resolve;
+      localStorage.clear();
+      initOrderData(data);
+    });
     axios
       .post("http://localhost:3800/api/orders/add", order)
       .then((resolve) => {
         console.log(resolve);
-        const { data } = resolve;
-        localStorage.clear();
-        initOrderData(data);
       });
   };
 

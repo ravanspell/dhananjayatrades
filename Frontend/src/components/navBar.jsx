@@ -1,11 +1,13 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React from "react";
 import { Navbar, Nav } from "react-bootstrap";
-import NavDropdown from "react-bootstrap/NavDropdown";
+import { useSelector } from "react-redux";
+//import NavDropdown from "react-bootstrap/NavDropdown";
 import { Link } from "react-router-dom";
 // import logo from "../logo.png";
 
 function Navigation() {
+  const userName = useSelector((state) => state.userAuthReducer.user);
   return (
     <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
       <Navbar.Brand href="#home">Dhananjaya Trades</Navbar.Brand>
@@ -37,17 +39,9 @@ function Navigation() {
               <span className="ml-1">Returns</span>
             </i>
           </Nav.Link>
-          <NavDropdown title="Dropdown" id="collasible-nav-dropdown">
-            <NavDropdown.Item href="#action/3.1">Action</NavDropdown.Item>
-            <NavDropdown.Item href="#action/3.2">
-              Another action
-            </NavDropdown.Item>
-            <NavDropdown.Item href="#action/3.3">Something</NavDropdown.Item>
-            <NavDropdown.Divider />
-            <NavDropdown.Item href="#action/3.4">
-              Separated link
-            </NavDropdown.Item>
-          </NavDropdown>
+        </Nav>
+        <Nav>
+          <Nav.Link href="#">{userName}</Nav.Link>
         </Nav>
       </Navbar.Collapse>
     </Navbar>
