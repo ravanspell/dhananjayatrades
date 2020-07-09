@@ -16,10 +16,10 @@ function ViewAllStock(props) {
     editItemIndex: null,
     editDataSet: {},
   });
-
+  // http://localhost:3800/
   useEffect(() => {
     axios
-      .get("http://localhost:3800/api/items/all")
+      .get("http://dhananjayatrades.com/api/items/all")
       .then((resolve) => {
         const { data: resolveData } = resolve;
         setStock((currantState) => ({
@@ -99,7 +99,7 @@ function ViewAllStock(props) {
 
   const removeStockItem = (itemId) => {
     axios
-      .delete("http://localhost:3800/api/items/delete", {
+      .delete("http://dhananjayatrades.com/api/items/delete", {
         data: { item_id: itemId },
       })
       .then((responseData) => {

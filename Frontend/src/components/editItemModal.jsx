@@ -77,7 +77,7 @@ function EditStockItem(props) {
       gotPrice: value,
     }));
   };
-  //http://dhananjayatrades.com/
+  //http://localhost:3800/
   const saveNewItem = (event) => {
     event.preventDefault();
     let editedData = {
@@ -94,7 +94,7 @@ function EditStockItem(props) {
     editedAllData[props.edititemindex] = editedData;
     props.updatedata(editedAllData);
     axios
-      .put("http://localhost:3800/api/items/update", {
+      .put("http://dhananjayatrades.com/api/items/update", {
         barcode: props.editid,
         item_data: item,
       })
@@ -133,7 +133,7 @@ function EditStockItem(props) {
       <Modal.Body>
         <Form onSubmit={saveNewItem}>
           <Form.Group>
-            <Form.Label>Item Name</Form.Label>
+            <Form.Label style={{ color: "black" }}>Item Name</Form.Label>
             <Form.Control
               type="text"
               placeholder="Item Name"
@@ -142,7 +142,7 @@ function EditStockItem(props) {
             />
           </Form.Group>
           <Form.Group>
-            <Form.Label>Company</Form.Label>
+            <Form.Label style={{ color: "black" }}>Company</Form.Label>
             <Form.Control
               type="text"
               placeholder="Company"
@@ -151,7 +151,7 @@ function EditStockItem(props) {
             />
           </Form.Group>
           <Form.Group>
-            <Form.Label>Stock Amount</Form.Label>
+            <Form.Label style={{ color: "black" }}>Stock Amount</Form.Label>
             <Form.Control
               type="text"
               placeholder="Amount"
@@ -160,7 +160,7 @@ function EditStockItem(props) {
             />
           </Form.Group>
           <Form.Group>
-            <Form.Label>Ton Price</Form.Label>
+            <Form.Label style={{ color: "black" }}>Ton Price</Form.Label>
             <Form.Control
               type="text"
               placeholder="Ton Price"
@@ -169,7 +169,7 @@ function EditStockItem(props) {
             />
           </Form.Group>
           <Form.Group>
-            <Form.Label>Retail Price</Form.Label>
+            <Form.Label style={{ color: "black" }}>Retail Price</Form.Label>
             <Form.Control
               type="text"
               placeholder="Retail Price"
@@ -178,7 +178,7 @@ function EditStockItem(props) {
             />
           </Form.Group>
           <Form.Group>
-            <Form.Label>Whole Price</Form.Label>
+            <Form.Label style={{ color: "black" }}>Whole Price</Form.Label>
             <Form.Control
               type="text"
               placeholder="Whole Price"
@@ -187,7 +187,7 @@ function EditStockItem(props) {
             />
           </Form.Group>
           <Form.Group>
-            <Form.Label>Got Price</Form.Label>
+            <Form.Label style={{ color: "black" }}>Got Price</Form.Label>
             <Form.Control
               type="text"
               placeholder="Got Price"

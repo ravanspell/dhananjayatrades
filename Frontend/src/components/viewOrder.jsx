@@ -1,9 +1,10 @@
 import React, { useState, Fragment, useEffect } from "react";
-import { Table, Nav } from "react-bootstrap";
+import { Table, Nav, Form } from "react-bootstrap";
 import SearchBox from "./itemSearchBox";
 import PrintBill from "./printBill";
 import PricingBox from "./priceItem";
 import CancleOrder from "./cancleOrder";
+import FinishOrder from "./finishOrder";
 import { useSelector, useDispatch } from "react-redux";
 import { createOrder } from "../actions";
 import axios from "axios";
@@ -32,24 +33,42 @@ function ViewOrder(props) {
    * Initilize the order
    * save order data structure in browser store to offline usage.
    * http://dhananjayatrades.com/
+   * http://localhost:3800/
    */
   let order = useSelector((state) => state.orderReducer.order);
   useEffect(() => {
+    let finishedOrders = null;
     if (order === "") {
       order = JSON.parse(localStorage.getItem("order"));
-      console.log(order);
+      finishedOrders = JSON.parse(localStorage.getItem("finishOrders"));
+
+      if (finishedOrders == null) {
+        localStorage.setItem("finishOrders", "{}");
+      }
       if (order == null) {
-        axios
-          .post("http://localhost:3800/api/orders/add")
-          .then((resolve) => {
-            const { data } = resolve;
-            initOrderData(data);
-          })
-          .catch((error) => {
-            console.log(error);
-          });
+        const newOrderNumber = pickOrderNumber();
+        console.log(newOrderNumber);
+        initOrderData(newOrderNumber);
       } else {
         updateCounts(order);
+      }
+    }
+
+    if (finishedOrders !== null) {
+      const toDay = currantDate();
+      const toDayOrders = finishedOrders[toDay]
+        ? `{"${toDay}":${JSON.stringify(finishedOrders[toDay])}}`
+        : "{}";
+      delete finishedOrders[toDay];
+      if (Object.keys(finishedOrders).length > 0) {
+        axios
+          .post("http://dhananjayatrades.com/api/orders/add", finishedOrders)
+          .then((resolve) => {
+            console.log(resolve.data);
+            if (resolve.data.status) {
+              localStorage.setItem("finishOrders", toDayOrders);
+            }
+          });
       }
     }
   }, []);
@@ -67,22 +86,15 @@ function ViewOrder(props) {
     setPaidAmount((currantState) => ({ ...currantState, paidAmount: value }));
   };
 
-  const currantDate = () => {
-    const dateObj = new Date();
-    return `${dateObj.getFullYear()}-${
-      dateObj.getMonth() + 1
-    }-${dateObj.getDate()}`;
-  };
-
-  const initOrderData = (data) => {
+  const initOrderData = (newOrderNumber) => {
     localStorage.setItem(
       "order",
-      `{"orderNo":${data.response}, "orderItems": [], "itemsAmount": 0, "totalPrice": 0, "totalGotPrice": 0}`
+      `{"orderNo": "${newOrderNumber}", "orderItems": [], "itemsAmount": 0, "totalPrice": 0, "totalGotPrice": 0}`
     );
     dispatch(
       createOrder({
-        orderNo: data.response || data.orderNo,
-        orderItems: data.orderItems || {},
+        orderNo: newOrderNumber, //data.response || data.orderNo,
+        orderItems: {}, //data.orderItems ||
         itemsAmount: 0,
         totalPrice: 0,
       })
@@ -109,23 +121,32 @@ function ViewOrder(props) {
     dispatch(createOrder(order));
     // return order
   };
-
-  const finishOrder = () => {
-    //http://dhananjayatrades.com/
-    console.log("finish order clicked");
-    order["date"] = currantDate();
-    axios.post("http://localhost:3800/api/orders/add").then((resolve) => {
-      const { data } = resolve;
-      localStorage.clear();
-      initOrderData(data);
-    });
-    axios
-      .post("http://localhost:3800/api/orders/add", order)
-      .then((resolve) => {
-        console.log(resolve);
-      });
+  const currantDate = () => {
+    const dateObj = new Date();
+    const date = dateObj.getDate();
+    const month = dateObj.getMonth() + 1;
+    const year = dateObj.getFullYear();
+    return `${year}-${month}-${date}`;
   };
 
+  const pickOrderNumber = () => {
+    const toDay = currantDate();
+    const finishedOrders = JSON.parse(localStorage.getItem("finishOrders"));
+    let orderId = 0;
+    while (!Boolean(orderId)) {
+      let orderid = Math.floor(Math.random() * 99999);
+      orderid = `${toDay}-${orderid}`;
+      let orders = [];
+      if (finishedOrders[toDay] != undefined)
+        orders = finishedOrders[toDay].filter(
+          (singleOrder) => singleOrder.orderNo === orderid
+        );
+      if (orders.length < 1) {
+        orderId = orderid;
+        return orderId;
+      }
+    }
+  };
   const deleteOrderItem = (orderId) => {
     let currantOrder = { ...order };
     currantOrder.orderItems = currantOrder.orderItems.filter(
@@ -156,7 +177,7 @@ function ViewOrder(props) {
         <Nav className="mr-auto p-3 d-flex">
           <div className="row">
             <div className="col-md-2 align-middle">
-              <h6>Order No: {order.orderNo} </h6>
+              <h6>{order.orderNo} </h6>
             </div>
             <div className="col-md-3">
               <SearchBox updateorder={updateCounts} />
@@ -167,13 +188,11 @@ function ViewOrder(props) {
                 date={currantDate}
                 paidamount={paidAmount}
               />
-              <button type="button" className="btn btn-dark mr-3">
-                <i className="fa fa-check">
-                  <span onClick={finishOrder} className="ml-1">
-                    Finish Order
-                  </span>
-                </i>
-              </button>
+              <FinishOrder
+                currantDate={currantDate}
+                initOrderData={initOrderData}
+                pickOrderNumber={pickOrderNumber}
+              />
               <CancleOrder />
             </div>
 
@@ -203,6 +222,7 @@ function ViewOrder(props) {
           <Table striped bordered hover className="text-center" variant="dark">
             <thead>
               <tr>
+                <th>-</th>
                 <th>Name</th>
                 <th>Unit Price</th>
                 <th>Amount</th>
@@ -213,6 +233,9 @@ function ViewOrder(props) {
             <tbody>
               {Object.keys(order.orderItems || {}).map((item, i) => (
                 <tr key={i}>
+                  <td>
+                    <Form.Check type="checkbox" />
+                  </td>
                   <td>{order.orderItems[item].itemName}</td>
                   <td>
                     {order.orderItems[item].customPrice > 0

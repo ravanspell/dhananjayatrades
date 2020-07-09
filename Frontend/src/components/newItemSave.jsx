@@ -65,18 +65,20 @@ function NewItemSave() {
       wholePrice: value,
     }));
   };
-  //http://dhananjayatrades.com/
+  //http://dhananjayatrades.com/ http://localhost:3800/
   const saveNewItem = (event) => {
     event.preventDefault();
-    axios.post("http://localhost:3800/api/items/save", newItem).then((res) => {
-      console.log(res);
-      if (res.data.status) {
-        alert(res.data.message);
-      } else {
-        alert(res.data.message);
-      }
-      console.log(res);
-    });
+    axios
+      .post("http://dhananjayatrades.com/api/items/save", newItem)
+      .then((res) => {
+        console.log(res);
+        if (res.data.status) {
+          alert(res.data.message);
+        } else {
+          alert(res.data.message);
+        }
+        console.log(res);
+      });
   };
 
   return (

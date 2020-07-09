@@ -5,43 +5,39 @@ const auth = require('../middleware/auth');
  * Add new order or finish and intiate new order 
  */
 router.post('/add', auth, async (req, res) => {
-    console.log(JSON.stringify(req.body));
-    if (!req.body.hasOwnProperty('orderNo')) {
-        const newOrderId = await createNewOrderId();
-        res.status(200).json({ status: true, response: newOrderId });
-    } else {
-        const { orderItems, orderNo, totalPrice, totalGotPrice, date } = req.body;
-        try {
-            const orderStatusUpdateQuery = `UPDATE status 
-                                            SET ORDER_ID = "${orderNo}",
-                                                got_price_total= ${totalGotPrice},
-                                                total= ${totalPrice},
-                                                profit=${totalPrice - totalGotPrice}, 
-                                                date="${date}"
-                                            WHERE order_id="${orderNo}"`;
 
-            let insertNewOrderItemsQuery = `INSERT INTO sale (barcode, order_id, order_name, unit_price, qty, total) 
+    const orders = req.body;
+    for (let date in orders) {
+        for (let order of orders[date]) {
+            const { orderItems, orderNo, totalPrice, totalGotPrice, date } = order;
+            console.log(orderNo);
+            try {
+                const orderStatusUpdateQuery = `INSERT INTO status (order_id,date,got_price_total,total,profit) 
+                                                VALUES ("${orderNo}","${date}",${totalGotPrice},${totalPrice},${totalPrice - totalGotPrice})`;
+
+                let insertNewOrderItemsQuery = `INSERT INTO sale (barcode, order_id, order_name, unit_price, qty, total) 
                                             VALUES ?`;
-            const insertAllNewOrderItemsQuery = orderItems.map(item => {
-                return [
-                    item.barcode,
-                    `${orderNo}`,
-                    `${item.itemName}`,
-                    item.unitPrice,
-                    item.amount,
-                    item.total
-                ]
-            });
-            await Promise.all([
-                mysqldb.query(insertNewOrderItemsQuery, insertAllNewOrderItemsQuery),
-                mysqldb.query(orderStatusUpdateQuery), //udate order satus with total order profit and total got price
-                reduceStrock(orderItems),
-            ]);
-            return res.status(200).json({ status: true });
-        } catch (error) {
-            console.log(error);
+                const insertAllNewOrderItemsQuery = orderItems.map(item => {
+                    return [
+                        item.barcode,
+                        `${orderNo}`,
+                        `${item.itemName}`,
+                        item.unitPrice,
+                        item.amount,
+                        item.total
+                    ]
+                });
+                await mysqldb.query(orderStatusUpdateQuery); //udate order satus with total order profit and total got price
+                await Promise.all([
+                    mysqldb.query(insertNewOrderItemsQuery, insertAllNewOrderItemsQuery),
+                    reduceStrock(orderItems),
+                ]);
+            } catch (error) {
+                console.log(error);
+            }
         }
     }
+    return res.status(200).json({ status: true });
 });
 
 const removeOrderData = async (orderId) => {
@@ -68,22 +64,6 @@ const getItem = async (barcode) => {
     }
 }
 
-const createNewOrderId = async () => {
-    let orderId = 0;
-    while (!Boolean(orderId)) {
-        let orderid = Math.floor(Math.random() * 99999);
-        let query = `SELECT * FROM sale WHERE order_id ="${orderid}"`;
-        let orders = await mysqldb.query(query);
-        if (orders.length < 1) {
-            const statusTableQuery = `INSERT INTO status (order_id,got_price_total,total,profit) 
-                                      VALUES ("${orderid}",0,0,0)`;
-            let orderStatus = await mysqldb.query(statusTableQuery);
-            console.log(orderStatus);
-            orderId = orderid
-            return orderId
-        }
-    }
-}
 // router.get('/:orderId', async (req, res) => {
 //     try {
 //         let orderId = req.params.orderId;
