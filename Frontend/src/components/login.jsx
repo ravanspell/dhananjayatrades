@@ -26,11 +26,14 @@ function Login(props) {
       password,
     }));
   };
-
+  //http://dhananjayatrades.com/  http://localhost:3800/
   const loginForm = (event) => {
     event.preventDefault();
     axios
-      .post("http://localhost:3800/api/user/login", { username, password })
+      .post("http://dhananjayatrades.com/api/user/login", {
+        username,
+        password,
+      })
       .then((response) => {
         if (response.data.status) {
           axios.interceptors.request.use((config) => {

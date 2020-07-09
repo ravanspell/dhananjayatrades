@@ -20,13 +20,15 @@ function SearchBox(props) {
     textBoxValue: "",
     searchItems: [],
   });
-  //http://dhananjayatrades.com/
+  //http://dhananjayatrades.com/ http://localhost:3800/
   const refrs = React.createRef();
   useEffect(() => {
     refrs.current.focus();
-    axios.get("http://localhost:3800/api/items/search").then((resolve) => {
-      setSearchItems(resolve.data);
-    });
+    axios
+      .get("http://dhananjayatrades.com/api/items/search")
+      .then((resolve) => {
+        setSearchItems(resolve.data);
+      });
   }, []);
 
   const setSearchItems = (data) => {

@@ -63,12 +63,12 @@ function Dashboard(props) {
       },
     ],
   };
-  // http://dhananjayatrades.com/
+  // http://localhost:3800/
   useEffect(() => {
     const abortController = new AbortController();
     const signal = abortController.signal;
     axios
-      .get("http://localhost:3800/api/dashboard/profit", { signal })
+      .get("http://dhananjayatrades.com/api/dashboard/profit", { signal })
       .then((resolve) => {
         console.log(resolve);
         setGraphData((currantState) => ({
