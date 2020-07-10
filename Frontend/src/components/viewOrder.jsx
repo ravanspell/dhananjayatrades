@@ -176,13 +176,13 @@ function ViewOrder(props) {
       <div className="nav-scroller bg-dark-white box-shadow">
         <Nav className="mr-auto p-3 d-flex">
           <div className="row">
-            <div className="col-md-2 align-middle">
+            <div className="col-md-3 align-middle">
               <h6>{order.orderNo} </h6>
             </div>
             <div className="col-md-3">
               <SearchBox updateorder={updateCounts} />
             </div>
-            <div className="col-md-5">
+            <div className="col-md-4">
               <PrintBill
                 order={order}
                 date={currantDate}
@@ -193,7 +193,6 @@ function ViewOrder(props) {
                 initOrderData={initOrderData}
                 pickOrderNumber={pickOrderNumber}
               />
-              <CancleOrder />
             </div>
 
             <div className="col-md-2">
