@@ -14,7 +14,7 @@ function Navigation() {
       <Navbar.Toggle aria-controls="responsive-navbar-nav" />
       <Navbar.Collapse id="responsive-navbar-nav">
         <Nav className="mr-auto">
-          <Nav.Link as={Link} to="/">
+          <Nav.Link as={Link} to="/dashboard">
             <i className="fa fa-area-chart">
               <span className="ml-1">Dashboard</span>
             </i>

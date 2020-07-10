@@ -176,96 +176,126 @@ function ViewOrder(props) {
       <div className="nav-scroller bg-dark-white box-shadow">
         <Nav className="mr-auto p-3 d-flex">
           <div className="row">
-            <div className="col-md-3 align-middle">
+            <div className="col-md-6 align-middle">
               <h6>{order.orderNo} </h6>
             </div>
-            <div className="col-md-3">
+            <div className="col-md-6">
               <SearchBox updateorder={updateCounts} />
-            </div>
-            <div className="col-md-4">
-              <PrintBill
-                order={order}
-                date={currantDate}
-                paidamount={paidAmount}
-              />
-              <FinishOrder
-                currantDate={currantDate}
-                initOrderData={initOrderData}
-                pickOrderNumber={pickOrderNumber}
-              />
-            </div>
-
-            <div className="col-md-2">
-              <input
-                className="form-control bg-dark-white mr-sm-1"
-                placeholder="amount"
-                onChange={(e) => {
-                  setTotalPaidAmount(e.target.value);
-                }}
-              />
             </div>
           </div>
         </Nav>
       </div>
-      <div className="my-3 p-3 bg-dark-white rounded box-shadow">
-        <div className="row border-bottom border-gray pb-2 mb-0">
-          <div className="col-md-4">
-            <h6>Total Items: {order.itemsAmount}</h6>
-          </div>
-          <div className="col-md-4">
-            <h6>Total Amount: Rs.{parseFloat(order.totalPrice).toFixed(2)}</h6>
-          </div>
-          <div className="col-md-4"></div>
-        </div>
-        <div className="media text-muted pt-3">
-          <Table striped bordered hover className="text-center" variant="dark">
-            <thead>
-              <tr>
-                <th>-</th>
-                <th>Name</th>
-                <th>Unit Price</th>
-                <th>Amount</th>
-                <th>Total</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {Object.keys(order.orderItems || {}).map((item, i) => (
-                <tr key={i}>
-                  <td>
-                    <Form.Check type="checkbox" />
-                  </td>
-                  <td>{order.orderItems[item].itemName}</td>
-                  <td>
-                    {order.orderItems[item].customPrice > 0
-                      ? order.orderItems[item].customPrice
-                      : order.orderItems[item].unitPrice}
-                  </td>
-                  <td>{order.orderItems[item].amount}</td>
-                  <td>{order.orderItems[item].total}</td>
-                  <td className="text-center">
-                    <button
-                      style={buttonStyles.edit}
-                      onClick={(e) => {
-                        editOrderItem(order.orderItems[item].id);
-                      }}
-                    >
-                      <i className="fa fa-edit mr-2"></i>
-                    </button>
 
-                    <button
-                      style={buttonStyles.delete}
-                      onClick={(e) => {
-                        deleteOrderItem(order.orderItems[item].id);
-                      }}
-                    >
-                      <i className="fa fa-trash"></i>
-                    </button>
-                  </td>
+      <div class="d-flex align-content-start bd-highlight">
+        <div className="my-3 flex-grow-1 p-3 bg-dark-white rounded box-shadow">
+          <div className="media text-muted pt-3">
+            <Table
+              striped
+              bordered
+              hover
+              size="md"
+              className="text-center"
+              variant="dark"
+            >
+              <thead>
+                <tr>
+                  <th>-</th>
+                  <th>Name</th>
+                  <th>Unit Price</th>
+                  <th>Amount</th>
+                  <th>Total</th>
+                  <th>Action</th>
                 </tr>
-              ))}
+              </thead>
+              <tbody>
+                {Object.keys(order.orderItems || {}).map((item, i) => (
+                  <tr key={i}>
+                    <td>
+                      <Form.Check type="checkbox" />
+                    </td>
+                    <td>{order.orderItems[item].itemName}</td>
+                    <td>
+                      {order.orderItems[item].customPrice > 0
+                        ? order.orderItems[item].customPrice
+                        : order.orderItems[item].unitPrice}
+                    </td>
+                    <td>{order.orderItems[item].amount}</td>
+                    <td>{order.orderItems[item].total}</td>
+                    <td className="text-center">
+                      <button
+                        style={buttonStyles.edit}
+                        onClick={(e) => {
+                          editOrderItem(order.orderItems[item].id);
+                        }}
+                      >
+                        <i className="fa fa-edit mr-2"></i>
+                      </button>
+
+                      <button
+                        style={buttonStyles.delete}
+                        onClick={(e) => {
+                          deleteOrderItem(order.orderItems[item].id);
+                        }}
+                      >
+                        <i className="fa fa-trash"></i>
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+          </div>
+        </div>
+        <div className="my-3 h-25 ml-2 p-3 bg-dark-white rounded box-shadow">
+          <Table className="text-left">
+            <tbody>
+              <tr>
+                <td>
+                  <h6>Total Items</h6>
+                </td>
+                <td>
+                  <h5>{order.itemsAmount}</h5>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <h6>Sub total</h6>
+                </td>
+                <td>
+                  <h5>Rs.{parseFloat(order.totalPrice).toFixed(2)}</h5>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <h5>TOTAL</h5>
+                </td>
+                <td>
+                  <h5>Rs.{parseFloat(order.totalPrice).toFixed(2)}</h5>
+                </td>
+              </tr>
             </tbody>
           </Table>
+          <div className="d-flex flex-row">
+            <PrintBill
+              order={order}
+              date={currantDate}
+              paidamount={paidAmount}
+            />
+            <input
+              className="form-control bg-dark-white mr-sm-1"
+              placeholder="amount"
+              onChange={(e) => {
+                setTotalPaidAmount(e.target.value);
+              }}
+            />
+          </div>
+          <div className="d-flex flex-row mt-2">
+            <FinishOrder
+              currantDate={currantDate}
+              initOrderData={initOrderData}
+              pickOrderNumber={pickOrderNumber}
+            />
+          </div>
         </div>
       </div>
       <PricingBox

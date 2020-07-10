@@ -8,7 +8,7 @@ function AuthHandller(props) {
   const history = useHistory();
   const authToken = useSelector((state) => state.userAuthReducer.authToken);
   useEffect(() => {
-    if (!authToken) history.push("/login");
+    if (!authToken) history.push("/order");
   }, []);
   return <Fragment>{props.children}</Fragment>;
 }

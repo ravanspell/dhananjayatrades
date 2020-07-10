@@ -81,3 +81,37 @@
     display: none;
   }
 }
+
+.finish-order-btn {
+  display: block;
+  width: 100%;
+  border: none;
+  background-color: #4caf50;
+  color: white;
+  padding: 14px 28px;
+  font-size: 16px;
+  cursor: pointer;
+  text-align: center;
+}
+
+.finish-order-btn:hover {
+  background-color: #79d37d;
+  color: black;
+}
+
+.print-btn {
+  display: block;
+  width: 100%;
+  border: none;
+  background-color: #6798e9;
+  color: white;
+  padding: 14px 28px;
+  font-size: 16px;
+  cursor: pointer;
+  text-align: center;
+}
+
+.print-btn:hover {
+  background-color: #77a1e7;
+  color: black;
+}

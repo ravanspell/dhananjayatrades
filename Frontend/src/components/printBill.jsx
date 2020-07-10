@@ -118,10 +118,8 @@ function PrintBill(props) {
   };
 
   return (
-    <button onClick={printx} type="button" className="btn btn-dark mr-3">
-      <i className="fa fa-print">
-        <span className="ml-1">Print Bill</span>
-      </i>
+    <button onClick={printx} type="button" className="btn btn-primary mr-3">
+      <i className="fa fa-print"></i>
     </button>
   );
 }

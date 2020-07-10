@@ -42,7 +42,7 @@ function Login(props) {
           });
           dispatch(login(response.data.token));
           dispatch(verifyUser(response.data.username));
-          history.push("/");
+          history.push("/order");
         }
       })
       .catch((error) => {

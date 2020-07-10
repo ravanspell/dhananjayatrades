@@ -19,7 +19,7 @@ function FinishOrder(props) {
 
   return (
     <Fragment>
-      <button type="button" onClick={finishOrder} className="btn btn-dark mr-3">
+      <button type="button" onClick={finishOrder} className="finish-order-btn">
         <i className="fa fa-check">
           <span className="ml-1">Finish Order</span>
         </i>

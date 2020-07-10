@@ -55,11 +55,13 @@ function SearchBox(props) {
   const styles = {
     overflowY: "scroll",
     backgroundColor: "#f8f9fa",
+    maxHeight: "300px",
     width: "100%",
     position: "absolute",
     fontSize: "10pt",
     listStyleType: "none",
     padding: "2px",
+    zIndex: 1,
     active: {
       backgroundColor: "#626189ed",
       color: "white",
