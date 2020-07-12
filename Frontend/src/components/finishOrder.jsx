@@ -4,17 +4,19 @@ import { useSelector } from "react-redux";
 function FinishOrder(props) {
   let order = useSelector((state) => state.orderReducer.order);
   const finishOrder = () => {
-    const toDay = props.currantDate();
-    let finishedOrders = JSON.parse(localStorage.getItem("finishOrders"));
-    if (!finishedOrders.hasOwnProperty(toDay)) {
-      finishedOrders[toDay] = [];
+    if (order.orderItems.length > 0) {
+      const toDay = props.currantDate();
+      let finishedOrders = JSON.parse(localStorage.getItem("finishOrders"));
+      if (!finishedOrders.hasOwnProperty(toDay)) {
+        finishedOrders[toDay] = [];
+      }
+      order["date"] = toDay;
+      finishedOrders[toDay].push(order);
+      localStorage.setItem("finishOrders", JSON.stringify(finishedOrders));
+      localStorage.removeItem("order");
+      const newOrderNumber = props.pickOrderNumber();
+      props.initOrderData(newOrderNumber);
     }
-    order["date"] = toDay;
-    finishedOrders[toDay].push(order);
-    localStorage.setItem("finishOrders", JSON.stringify(finishedOrders));
-    localStorage.removeItem("order");
-    const newOrderNumber = props.pickOrderNumber();
-    props.initOrderData(newOrderNumber);
   };
 
   return (
