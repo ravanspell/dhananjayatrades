@@ -8,9 +8,12 @@ router.post('/add', auth, async (req, res) => {
 
     const orders = req.body;
     for (let date in orders) {
+        console.log("save data of", date);
         for (let order of orders[date]) {
             const { orderItems, orderNo, totalPrice, totalGotPrice, date } = order;
             console.log(orderNo);
+            console.log(JSON.stringify(orderItems));
+            console.log('<-------------------------------->');
             try {
                 const orderStatusUpdateQuery = `INSERT INTO status (order_id,date,got_price_total,total,profit) 
                                                 VALUES ("${orderNo}","${date}",${totalGotPrice},${totalPrice},${totalPrice - totalGotPrice})`;

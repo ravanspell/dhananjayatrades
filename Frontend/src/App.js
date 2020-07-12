@@ -15,12 +15,12 @@ class App extends Component {
       <Fragment>
         <Router>
           <Switch>
-            <Route path="/login" exact component={Login} />
+            <Route path="/" exact component={Login} />
             <Fragment>
               <Navigation />
               <main className="container">
                 <AuthHandller>
-                  <Route path="/" exact component={Dashboard} />
+                  <Route path="/dashboard" exact component={Dashboard} />
                   <Route path="/order" exact component={ViewOrder} />
                   <Route path="/save/item" exact component={NewItemSave} />
                   <Route path="/stock/all" exact component={ViewAllStock} />
