@@ -62,7 +62,7 @@ function ViewOrder(props) {
       delete finishedOrders[toDay];
       if (Object.keys(finishedOrders).length > 0) {
         axios
-          .post("http://dhananjayatrades.com/api/orders/add", finishedOrders)
+          .post("http://localhost:3800/api/orders/add", finishedOrders)
           .then((resolve) => {
             console.log(resolve.data);
             if (resolve.data.status) {
@@ -247,9 +247,9 @@ function ViewOrder(props) {
           </div>
         </div>
         <div className="my-3 h-25 ml-2 p-3 bg-dark-white rounded box-shadow">
-          <Table className="text-left">
+          <Table borderless style={{ color: "#f3f2f2" }} className="text-left">
             <tbody>
-              <tr>
+              <tr className="border-bottom border-secondary">
                 <td>
                   <h6>Total Items</h6>
                 </td>
@@ -257,7 +257,7 @@ function ViewOrder(props) {
                   <h5>{order.itemsAmount}</h5>
                 </td>
               </tr>
-              <tr>
+              <tr className="border-bottom border-secondary">
                 <td>
                   <h6>Sub total</h6>
                 </td>
@@ -276,19 +276,22 @@ function ViewOrder(props) {
             </tbody>
           </Table>
           <div className="d-flex flex-row">
-            <PrintBill
-              order={order}
-              date={currantDate}
-              paidamount={paidAmount}
-            />
             <input
-              className="form-control bg-dark-white mr-sm-1"
+              className="form-control bg-dark-white"
               placeholder="amount"
               onChange={(e) => {
                 setTotalPaidAmount(e.target.value);
               }}
             />
           </div>
+          <div className="d-flex flex-row mt-2">
+            <PrintBill
+              order={order}
+              date={currantDate}
+              paidamount={paidAmount}
+            />
+          </div>
+
           <div className="d-flex flex-row mt-2">
             <FinishOrder
               currantDate={currantDate}

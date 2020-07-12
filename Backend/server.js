@@ -8,7 +8,8 @@ const port = process.env.PORT;
 const app = Express();
 //Middlewares
 app.use(cors());
-app.use(Express.json());
+app.use(Express.json({ limit: '50mb' }));
+app.use(Express.urlencoded({ limit: '50mb', extended: true }));
 //mysql connect
 const db = mysql.createConnection({
     host: process.env.DEV_HOST,//process.env.DB_HOST,
