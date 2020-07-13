@@ -94,7 +94,7 @@ function ViewOrder(props) {
     dispatch(
       createOrder({
         orderNo: newOrderNumber, //data.response || data.orderNo,
-        orderItems: {}, //data.orderItems ||
+        orderItems: [], //data.orderItems ||
         itemsAmount: 0,
         totalPrice: 0,
       })
