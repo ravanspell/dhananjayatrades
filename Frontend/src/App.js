@@ -6,6 +6,7 @@ import Dashboard from "./components/dashboard";
 import NewItemSave from "./components/newItemSave";
 import ViewAllStock from "./components/viewAllStock";
 import AuthHandller from "./components/authHandllerComponent";
+import BarcodeGenarator from "./components/barcodeGenarator";
 import Login from "./components/login";
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 
@@ -24,6 +25,7 @@ class App extends Component {
                   <Route path="/order" exact component={ViewOrder} />
                   <Route path="/save/item" exact component={NewItemSave} />
                   <Route path="/stock/all" exact component={ViewAllStock} />
+                  <Route path="/barcode" exact component={BarcodeGenarator} />
                 </AuthHandller>
               </main>
             </Fragment>

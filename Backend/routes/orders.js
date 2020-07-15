@@ -9,6 +9,7 @@ router.post('/add', auth, async (req, res) => {
     const orders = req.body;
     for (let date in orders) {
         console.log("save data of", date);
+        console.log(orders[date].length, "orders");
         for (let order of orders[date]) {
             const { orderItems, orderNo, totalPrice, totalGotPrice, date } = order;
             console.log(orderNo);
