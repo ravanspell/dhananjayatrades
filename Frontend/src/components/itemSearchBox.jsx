@@ -1,6 +1,10 @@
 import React, { useState, Fragment, useEffect } from "react";
 import PricingBox from "./priceItem";
+import { Input } from "antd";
+
 import axios from "axios";
+
+const { Search } = Input;
 function SearchBox(props) {
   const [
     {
@@ -24,11 +28,9 @@ function SearchBox(props) {
   const refrs = React.createRef();
   useEffect(() => {
     refrs.current.focus();
-    axios
-      .get("http://dhananjayatrades.com/api/items/search")
-      .then((resolve) => {
-        setSearchItems(resolve.data);
-      });
+    axios.get("http://localhost:3800/api/items/search").then((resolve) => {
+      setSearchItems(resolve.data);
+    });
   }, []);
 
   const setSearchItems = (data) => {
@@ -137,18 +139,23 @@ function SearchBox(props) {
     }
   };
 
+  const onSelect = (value) => {
+    console.log("onSelect", value);
+  };
+
   return (
     <Fragment>
       <div style={dropDown}>
-        <input
-          className="form-control bg-dark-white dmr-sm-2"
-          placeholder="Search"
+        <Search
+          placeholder="search"
+          onSearch={(value) => console.log(value)}
+          style={{ width: 350 }}
           onKeyDown={handleKeyDown}
-          ref={refrs}
           value={textBoxValue}
           onChange={(e) => {
             searchItem(e.target.value);
           }}
+          ref={refrs}
         />
 
         <ul style={suggestions.length > 0 ? styles : showDropDown}>

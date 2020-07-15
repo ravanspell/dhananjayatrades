@@ -1,15 +1,17 @@
 import React, { useState, Fragment, useEffect } from "react";
-import { Table, Nav, Form } from "react-bootstrap";
+import { Table, Space, Input } from "antd";
 import SearchBox from "./itemSearchBox";
 import PrintBill from "./printBill";
 import PricingBox from "./priceItem";
-import CancleOrder from "./cancleOrder";
+//import CancleOrder from "./cancleOrder";
 import FinishOrder from "./finishOrder";
 import { useSelector, useDispatch } from "react-redux";
 import { createOrder } from "../actions";
 import axios from "axios";
+import { Card } from "antd";
 
 function ViewOrder(props) {
+  const [checkStrictly, setCheckStrictly] = useState(false);
   const buttonStyles = {
     edit: {
       backgroundColor: "#1d9baecc",
@@ -38,6 +40,7 @@ function ViewOrder(props) {
   let order = useSelector((state) => state.orderReducer.order);
   useEffect(() => {
     let finishedOrders = null;
+
     if (order === "") {
       order = JSON.parse(localStorage.getItem("order"));
       finishedOrders = JSON.parse(localStorage.getItem("finishOrders"));
@@ -52,6 +55,7 @@ function ViewOrder(props) {
       } else {
         updateCounts(order);
       }
+      console.log(order.orderItems);
     }
 
     if (finishedOrders !== null) {
@@ -170,133 +174,140 @@ function ViewOrder(props) {
       editItem: foundItem,
     }));
   };
+  const rowSelection = {
+    onChange: (selectedRowKeys, selectedRows) => {
+      console.log(
+        `selectedRowKeys: ${selectedRowKeys}`,
+        "selectedRows: ",
+        selectedRows
+      );
+    },
+  };
 
   return (
     <Fragment>
-      <div className="nav-scroller bg-dark-white box-shadow">
-        <Nav className="d-flex flex-row p-3 p-3">
+      <Card>
+        <div className="d-flex flex-row">
           <div className="mr-1">
             <h6>{order.orderNo} </h6>
           </div>
           <div className="ml-1">
             <SearchBox updateorder={updateCounts} />
           </div>
-        </Nav>
-      </div>
+        </div>
+      </Card>
 
-      <div className="d-flex align-content-start bd-highlight">
-        <div className="my-3 flex-grow-1 p-3 bg-dark-white rounded box-shadow">
-          <div className="media text-muted pt-3">
+      <div className="row mt-2">
+        <div className="col-md-8 pr-0">
+          <Card>
             <Table
-              striped
-              bordered
-              hover
-              size="md"
-              className="text-center"
-              variant="dark"
-            >
-              <thead>
-                <tr>
-                  <th>-</th>
-                  <th>Name</th>
-                  <th>Unit Price</th>
-                  <th>Amount</th>
-                  <th>Total</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {Object.keys(order.orderItems || {}).map((item, i) => (
-                  <tr key={i}>
-                    <td>
-                      <Form.Check type="checkbox" />
-                    </td>
-                    <td>{order.orderItems[item].itemName}</td>
-                    <td>
-                      {order.orderItems[item].customPrice > 0
-                        ? order.orderItems[item].customPrice
-                        : order.orderItems[item].unitPrice}
-                    </td>
-                    <td>{order.orderItems[item].amount}</td>
-                    <td>{order.orderItems[item].total}</td>
-                    <td className="text-center">
+              dataSource={order.orderItems}
+              rowSelection={{ ...rowSelection }}
+              responsive
+              pagination={false}
+              columns={[
+                {
+                  title: "Name",
+                  dataIndex: "itemName",
+                  key: "itemName",
+                },
+                {
+                  title: "Unit Price",
+                  dataIndex: "unitPrice",
+                  key: "unitPrice",
+                },
+                {
+                  title: "Amount",
+                  dataIndex: "amount",
+                  key: "amount",
+                },
+                {
+                  title: "Total",
+                  dataIndex: "total",
+                  key: "total",
+                },
+                {
+                  title: "Action",
+                  key: "action",
+                  render: (text, record) => (
+                    <Space size="middle">
                       <button
                         style={buttonStyles.edit}
                         onClick={(e) => {
-                          editOrderItem(order.orderItems[item].id);
+                          editOrderItem(record.id);
                         }}
                       >
                         <i className="fa fa-edit mr-2"></i>
                       </button>
-
                       <button
                         style={buttonStyles.delete}
                         onClick={(e) => {
-                          deleteOrderItem(order.orderItems[item].id);
+                          deleteOrderItem(record.id);
                         }}
                       >
                         <i className="fa fa-trash"></i>
                       </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </Table>
-          </div>
+                    </Space>
+                  ),
+                },
+              ]}
+            />
+          </Card>
         </div>
-        <div className="my-3 h-25 ml-2 p-3 bg-dark-white rounded box-shadow">
-          <Table borderless style={{ color: "#f3f2f2" }} className="text-left">
-            <tbody>
-              <tr className="border-bottom border-secondary">
-                <td>
-                  <h6>Total Items</h6>
-                </td>
-                <td>
-                  <h5>{order.itemsAmount}</h5>
-                </td>
-              </tr>
-              <tr className="border-bottom border-secondary">
-                <td>
-                  <h6>Sub total</h6>
-                </td>
-                <td>
-                  <h5>Rs.{parseFloat(order.totalPrice).toFixed(2)}</h5>
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  <h5>TOTAL</h5>
-                </td>
-                <td>
-                  <h5>Rs.{parseFloat(order.totalPrice).toFixed(2)}</h5>
-                </td>
-              </tr>
-            </tbody>
-          </Table>
-          <div className="d-flex flex-row">
-            <input
-              className="form-control bg-dark-white"
-              placeholder="amount"
-              onChange={(e) => {
-                setTotalPaidAmount(e.target.value);
-              }}
-            />
-          </div>
-          <div className="d-flex flex-row mt-2">
-            <PrintBill
-              order={order}
-              date={currantDate}
-              paidamount={paidAmount}
-            />
-          </div>
+        <div className="col-md-4">
+          <Card>
+            <table style={{ color: "#f3f2f2" }} className="text-left">
+              <tbody>
+                <tr className="border-bottom border-secondary">
+                  <td>
+                    <h6>Total Items</h6>
+                  </td>
+                  <td>
+                    <h5>{order.itemsAmount}</h5>
+                  </td>
+                </tr>
+                <tr className="border-bottom border-secondary">
+                  <td>
+                    <h6>Sub total</h6>
+                  </td>
+                  <td>
+                    <h5>Rs.{parseFloat(order.totalPrice).toFixed(2)}</h5>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <h5>TOTAL</h5>
+                  </td>
+                  <td>
+                    <h5>Rs.{parseFloat(order.totalPrice).toFixed(2)}</h5>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <div className="d-flex flex-row">
+              <Input
+                placeholder="amount"
+                onChange={(e) => {
+                  setTotalPaidAmount(e.target.value);
+                }}
+              />
+            </div>
+            <div className="d-flex flex-row mt-2">
+              <PrintBill
+                order={order}
+                date={currantDate}
+                paidamount={paidAmount}
+              />
+            </div>
 
-          <div className="d-flex flex-row mt-2">
-            <FinishOrder
-              currantDate={currantDate}
-              initOrderData={initOrderData}
-              pickOrderNumber={pickOrderNumber}
-            />
-          </div>
+            <div className="d-flex flex-row mt-2">
+              <FinishOrder
+                currantDate={currantDate}
+                initOrderData={initOrderData}
+                pickOrderNumber={pickOrderNumber}
+              />
+            </div>
+          </Card>
         </div>
       </div>
       <PricingBox

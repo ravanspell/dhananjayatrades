@@ -35,7 +35,10 @@ function PricingBox(props) {
       itemName: item.value || item.itemName,
       customPrice: parseFloat(customPrice),
       amount: itemAmount,
-      unitPrice: parseFloat(item[priceType]),
+      unitPrice:
+        parseFloat(customPrice) < 1
+          ? parseFloat(item[priceType])
+          : parseFloat(customPrice),
       gotPrice: parseFloat(item.gotPrice),
       tPrice: parseFloat(item.tPrice),
       rPrice: parseFloat(item.rPrice),

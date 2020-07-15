@@ -4,9 +4,11 @@
   "homepage": "http://dhananjayatrades.com",
   "private": true,
   "dependencies": {
+    "@ant-design/dark-theme": "^2.0.2",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.4.0",
     "@testing-library/user-event": "^7.1.2",
+    "antd": "^4.4.2",
     "axios": "^0.19.1",
     "bootstrap": "^4.4.1",
     "chart.js": "^2.9.3",
@@ -46,5 +48,6 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  }
+  },
+  "devDependencies": {}
 }

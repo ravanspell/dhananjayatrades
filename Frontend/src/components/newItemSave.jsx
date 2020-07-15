@@ -1,155 +1,179 @@
-import React, { useState, Fragment } from "react";
-import { Button, Form } from "react-bootstrap";
+import React, { Fragment } from "react";
+import { Row, Col, Input, Form, Button, message, Card } from "antd";
 import axios from "axios";
+
+const layout = {
+  labelCol: { span: 8 },
+  wrapperCol: { span: 16 },
+};
+
+const tailLayout = {
+  wrapperCol: { offset: 8, span: 16 },
+};
+
 function NewItemSave() {
-  const [newItem, setNewItem] = useState({
-    barcode: null,
-    itemName: null,
-    company: null,
-    amount: 0,
-    tonPrice: 0,
-    retailPrice: 0,
-    wholePrice: 0,
-    gotPrice: 0,
-  });
-
-  const setbarcode = (value) => {
-    setNewItem((currantState) => ({
-      ...currantState,
-      barcode: value,
-    }));
-  };
-
-  const setItemName = (value) => {
-    setNewItem((currantState) => ({
-      ...currantState,
-      itemName: value,
-    }));
-  };
-  const setCompany = (value) => {
-    setNewItem((currantState) => ({
-      ...currantState,
-      company: value,
-    }));
-  };
-  const setAmount = (value) => {
-    setNewItem((currantState) => ({
-      ...currantState,
-      amount: value,
-    }));
-  };
-  const setTonPrice = (value) => {
-    setNewItem((currantState) => ({
-      ...currantState,
-      tonPrice: value,
-    }));
-  };
-
-  const setRetailPrice = (value) => {
-    setNewItem((currantState) => ({
-      ...currantState,
-      retailPrice: value,
-    }));
-  };
-
-  const setWholePrice = (value) => {
-    setNewItem((currantState) => ({
-      ...currantState,
-      wholePrice: value,
-    }));
-  };
-
-  const setGotPrice = (value) => {
-    setNewItem((currantState) => ({
-      ...currantState,
-      wholePrice: value,
-    }));
-  };
   //http://dhananjayatrades.com/ http://localhost:3800/
-  const saveNewItem = (event) => {
-    event.preventDefault();
-    axios
-      .post("http://dhananjayatrades.com/api/items/save", newItem)
-      .then((res) => {
-        console.log(res);
-        if (res.data.status) {
-          alert(res.data.message);
-        } else {
-          alert(res.data.message);
-        }
-        console.log(res);
-      });
+  const saveNewItem = async (newItem) => {
+    try {
+      const res = await axios.post(
+        "http://dhananjayatrades.com/api/items/save",
+        newItem
+      );
+      if (res.data.status) {
+        message.success(res.data.message);
+      } else {
+        message.error(res.data.message);
+      }
+    } catch (error) {
+      console.log(error);
+      message.error(error.message);
+    }
   };
 
   return (
     <Fragment>
-      <div className="nav-scroller bg-white box-shadow mt-3">
-        <div className="p-5">
-          <Form onSubmit={saveNewItem}>
-            <Form.Group controlId="formBasicText">
-              <Form.Control
-                type="text"
-                placeholder="Barcode"
-                onChange={(e) => setbarcode(e.target.value)}
-              />
-            </Form.Group>
-            <Form.Group controlId="formBasicCustomItemName">
-              <Form.Control
-                type="text"
-                placeholder="Item Name"
-                onChange={(e) => setItemName(e.target.value)}
-              />
-            </Form.Group>
-            <Form.Group controlId="formBasicCustomValue">
-              <Form.Control
-                type="text"
-                placeholder="Company"
-                onChange={(e) => setCompany(e.target.value)}
-              />
-            </Form.Group>
-            <Form.Group controlId="formBasicAmount">
-              <Form.Control
-                type="text"
-                placeholder="Amount"
-                onChange={(e) => setAmount(e.target.value)}
-              />
-            </Form.Group>
-            <Form.Group controlId="formBasicAmount">
-              <Form.Control
-                type="text"
-                placeholder="Ton Price"
-                onChange={(e) => setTonPrice(e.target.value)}
-              />
-            </Form.Group>
-            <Form.Group controlId="formBasicAmount">
-              <Form.Control
-                type="text"
-                placeholder="Retail Price"
-                onChange={(e) => setRetailPrice(e.target.value)}
-              />
-            </Form.Group>
-            <Form.Group controlId="formBasicAmount">
-              <Form.Control
-                type="text"
-                placeholder="Whole Price"
-                onChange={(e) => setWholePrice(e.target.value)}
-              />
-            </Form.Group>
-            <Form.Group controlId="formBasicAmount">
-              <Form.Control
-                type="text"
-                placeholder="Got Price"
-                onChange={(e) => setGotPrice(e.target.value)}
-              />
-            </Form.Group>
-            <div className="text-right">
-              <Button variant="primary" type="submit">
-                Save
-              </Button>
-            </div>
-          </Form>
-        </div>
-      </div>
+      <Card>
+        <Row gutter={[40, 0]}>
+          <Col span={18}>
+            <Form {...layout} onFinish={saveNewItem}>
+              <Form.Item
+                name="barcode"
+                label="Barcode"
+                rules={[
+                  {
+                    required: true,
+                    message: "Barcode required!",
+                  },
+                  {
+                    pattern: /^[0-9]*$/,
+                    message: "Numbers are only allowed",
+                  },
+                ]}
+              >
+                <Input />
+              </Form.Item>
+
+              <Form.Item
+                name="itemName"
+                label="Item Name"
+                rules={[
+                  {
+                    required: true,
+                    message: "Item name required!",
+                  },
+                ]}
+              >
+                <Input />
+              </Form.Item>
+
+              <Form.Item
+                name="company"
+                label="Company Name"
+                rules={[
+                  {
+                    required: true,
+                    message: "Company name required!",
+                  },
+                  {
+                    type: "string",
+                    message: "Company name invalid",
+                  },
+                ]}
+              >
+                <Input />
+              </Form.Item>
+              <Form.Item
+                name="amount"
+                label="Stock Amount"
+                rules={[
+                  {
+                    required: true,
+                    message: "Stock amount required!",
+                  },
+                  {
+                    pattern: /^(?=.)([+-]?([0-9]*)(\.([0-9]+))?)$/,
+                    message: "Numbers are only allowed",
+                  },
+                ]}
+              >
+                <Input />
+              </Form.Item>
+              <Form.Item
+                name="tonPrice"
+                label="Ton Price"
+                rules={[
+                  {
+                    required: true,
+                    message: "Ton Price required!",
+                  },
+                  {
+                    pattern: /^(?=.)([+-]?([0-9]*)(\.([0-9]+))?)$/,
+                    message: "Numbers are only allowed",
+                  },
+                ]}
+              >
+                <Input />
+              </Form.Item>
+
+              <Form.Item
+                name="retailPrice"
+                label="Retail Price"
+                rules={[
+                  {
+                    required: true,
+                    message: "Retail price required!",
+                  },
+                  {
+                    pattern: /^(?=.)([+-]?([0-9]*)(\.([0-9]+))?)$/,
+                    message: "Numbers are only allowed",
+                  },
+                ]}
+              >
+                <Input />
+              </Form.Item>
+
+              <Form.Item
+                name="wholePrice"
+                label="Whole Price"
+                rules={[
+                  {
+                    required: true,
+                    message: "Whole price required!",
+                  },
+                  {
+                    pattern: /^(?=.)([+-]?([0-9]*)(\.([0-9]+))?)$/,
+                    message: "Numbers are only allowed",
+                  },
+                ]}
+              >
+                <Input />
+              </Form.Item>
+
+              <Form.Item
+                name="gotPrice"
+                label="Got Price"
+                rules={[
+                  {
+                    required: true,
+                    message: "Got price required!",
+                  },
+                  {
+                    pattern: /^(?=.)([+-]?([0-9]*)(\.([0-9]+))?)$/,
+                    message: "Numbers are only allowed",
+                  },
+                ]}
+              >
+                <Input />
+              </Form.Item>
+              <Form.Item {...tailLayout}>
+                <Button type="primary" htmlType="submit">
+                  Save
+                </Button>
+              </Form.Item>
+            </Form>
+          </Col>
+        </Row>
+      </Card>
     </Fragment>
   );
 }

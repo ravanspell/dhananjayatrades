@@ -1,8 +1,8 @@
 const router = require('express').Router();
 let mysqldb = require('../mysqldb');
 const auth = require('../middleware/auth');
-
-router.route('/search').get(auth, async (req, res) => {
+//!auth
+router.route('/search').get(async (req, res) => {
   try {
     console.log(req.user);
     const query = `SELECT name,t,w,r,got_price,barcode FROM items;`;
