@@ -4,7 +4,8 @@ const auth = require('../middleware/auth');
 
 router.route('/search').get(auth, async (req, res) => {
   try {
-    const query = "SELECT name,t,w,r,got_price,barcode FROM items;"
+    console.log(req.user);
+    const query = `SELECT name,t,w,r,got_price,barcode FROM items;`;
     let items = await mysqldb.query(query);
     let newItems = items.map(searchItem => {
       return {
@@ -39,12 +40,18 @@ router.post('/save', auth, async (req, res) => {
   }
 });
 //get all stock data 
-router.route('/all').get(auth, async (req, res) => {
-  console.log(req.user);
+router.route('/all/:page/:limit').get(auth, async (req, res) => {
+  const { page, limit } = req.params;
+  const offset = (page - 1) * limit;
   //! should change table name after development
-  const stockQuery = 'SELECT * FROM items ORDER BY barcode ASC';
-  const pageItems = await mysqldb.query(stockQuery);
-  return res.status(201).json({ status: true, data: pageItems });
+  const stockQuery = `SELECT * FROM items ORDER BY barcode ASC LIMIT ${limit} OFFSET ${offset}`;
+  const dataCountQuery = `SELECT COUNT(*) AS count FROM items`;
+
+  const [pageItems, allCount] = await Promise.all([
+    mysqldb.query(stockQuery),
+    mysqldb.query(dataCountQuery),
+  ])
+  return res.status(201).json({ status: true, data: pageItems, count: allCount[0].count });
 });
 
 

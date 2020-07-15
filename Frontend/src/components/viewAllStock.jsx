@@ -7,7 +7,14 @@ import axios from "axios";
 
 function ViewAllStock(props) {
   const [
-    { data, showItemEditModal, editId, editDataSet, editItemIndex },
+    {
+      data,
+      showItemEditModal,
+      editId,
+      editDataSet,
+      editItemIndex,
+      allRowCount,
+    },
     setStock,
   ] = useState({
     data: [],
@@ -15,21 +22,29 @@ function ViewAllStock(props) {
     editId: null,
     editItemIndex: null,
     editDataSet: {},
+    allRowCount: 0,
   });
+
+  const [loading, setLoading] = useState(false);
+  const [perPage, setPerPage] = useState(7);
+
   // http://localhost:3800/
   useEffect(() => {
+    setLoading(true);
     axios
-      .get("http://dhananjayatrades.com/api/items/all")
+      .get(`http://localhost:3800/api/items/all/1/${perPage}`)
       .then((resolve) => {
         const { data: resolveData } = resolve;
         setStock((currantState) => ({
           ...currantState,
           data: resolveData.data,
+          allRowCount: resolveData.count,
         }));
       })
       .catch((error) => {
         console.log(error);
       });
+    setLoading(false);
   }, []);
   const columns = [
     {
@@ -141,6 +156,43 @@ function ViewAllStock(props) {
       data: newItemSet,
     }));
   };
+
+  const handlePageChange = (page) => {
+    setLoading(true);
+    axios
+      .get(`http://localhost:3800/api/items/all/${page}/${perPage}`)
+      .then((resolve) => {
+        const { data: resolveData } = resolve;
+        setStock((currantState) => ({
+          ...currantState,
+          data: resolveData.data,
+          allRowCount: resolveData.count,
+        }));
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+    setLoading(false);
+  };
+
+  const handlePerRowsChange = (newPerPage, page) => {
+    setLoading(true);
+    setPerPage(newPerPage);
+    axios
+      .get(`http://localhost:3800/api/items/all/${page}/${perPage}`)
+      .then((resolve) => {
+        const { data: resolveData } = resolve;
+        setStock((currantState) => ({
+          ...currantState,
+          data: resolveData.data,
+          allRowCount: resolveData.count,
+        }));
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+    setLoading(false);
+  };
   return (
     <Fragment>
       <DataTableExtensions {...tableData}>
@@ -149,8 +201,12 @@ function ViewAllStock(props) {
           pagination={true}
           columns={columns}
           data={data}
-          paginationPerPage={7}
+          paginationPerPage={perPage}
           paginationServer={true}
+          paginationTotalRows={allRowCount}
+          onChangePage={handlePageChange}
+          progressPending={loading}
+          onChangeRowsPerPage={handlePerRowsChange}
           // striped={true}
           theme={"dark"}
           button={true}
