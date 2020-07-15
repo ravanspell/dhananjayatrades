@@ -39,6 +39,11 @@ function Navigation() {
               <span className="ml-1">Returns</span>
             </i>
           </Nav.Link>
+          <Nav.Link as={Link} to="/barcode">
+            <i className="fa fa-barcode">
+              <span className="ml-1">Barcode Gen</span>
+            </i>
+          </Nav.Link>
         </Nav>
         <Nav>
           <Nav.Link href="#">{userName}</Nav.Link>

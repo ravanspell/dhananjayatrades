@@ -62,7 +62,7 @@ function ViewOrder(props) {
       delete finishedOrders[toDay];
       if (Object.keys(finishedOrders).length > 0) {
         axios
-          .post("http://dhananjayatrades.com/api/orders/add", finishedOrders)
+          .post("http://localhost:3800/api/orders/add", finishedOrders)
           .then((resolve) => {
             console.log(resolve.data);
             if (resolve.data.status) {
@@ -174,19 +174,17 @@ function ViewOrder(props) {
   return (
     <Fragment>
       <div className="nav-scroller bg-dark-white box-shadow">
-        <Nav className="mr-auto p-3 d-flex">
-          <div className="row">
-            <div className="col-md-6 align-middle">
-              <h6>{order.orderNo} </h6>
-            </div>
-            <div className="col-md-6">
-              <SearchBox updateorder={updateCounts} />
-            </div>
+        <Nav className="d-flex flex-row p-3 p-3">
+          <div className="mr-1">
+            <h6>{order.orderNo} </h6>
+          </div>
+          <div className="ml-1">
+            <SearchBox updateorder={updateCounts} />
           </div>
         </Nav>
       </div>
 
-      <div class="d-flex align-content-start bd-highlight">
+      <div className="d-flex align-content-start bd-highlight">
         <div className="my-3 flex-grow-1 p-3 bg-dark-white rounded box-shadow">
           <div className="media text-muted pt-3">
             <Table

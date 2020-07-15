@@ -50,8 +50,10 @@ function PrintBill(props) {
         <table id="records_table" border="1">
         <thead>
           <tr>
-            <th colSpan="3"> Dhananjaya Trade Center</th>
-            <th> Order ${order?.orderNo}</th>
+            <th colSpan="4"> Dhananjaya Trade Center</th>
+          </tr>
+          <tr>
+            <th colSpan="4"> ${order?.orderNo}</th>
           </tr>
           <tr>
             <th colSpan="4">

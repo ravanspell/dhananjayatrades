@@ -150,6 +150,7 @@ function ViewAllStock(props) {
           columns={columns}
           data={data}
           paginationPerPage={7}
+          paginationServer={true}
           // striped={true}
           theme={"dark"}
           button={true}
