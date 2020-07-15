@@ -1,7 +1,7 @@
 import React, { useState, Fragment, useEffect } from "react";
 import DataTable from "react-data-table-component";
 import DataTableExtensions from "react-data-table-component-extensions";
-import { useSelector, useDispatch } from "react-redux";
+//import { useSelector, useDispatch } from "react-redux";
 import EditStockItem from "./editItemModal";
 import axios from "axios";
 
@@ -32,7 +32,7 @@ function ViewAllStock(props) {
   useEffect(() => {
     setLoading(true);
     axios
-      .get(`http://localhost:3800/api/items/all/1/${perPage}`)
+      .get(`http://dhananjayatrades.com/api/items/all/1/${perPage}`)
       .then((resolve) => {
         const { data: resolveData } = resolve;
         setStock((currantState) => ({
@@ -160,7 +160,7 @@ function ViewAllStock(props) {
   const handlePageChange = (page) => {
     setLoading(true);
     axios
-      .get(`http://localhost:3800/api/items/all/${page}/${perPage}`)
+      .get(`http://dhananjayatrades.com/api/items/all/${page}/${perPage}`)
       .then((resolve) => {
         const { data: resolveData } = resolve;
         setStock((currantState) => ({
@@ -179,7 +179,7 @@ function ViewAllStock(props) {
     setLoading(true);
     setPerPage(newPerPage);
     axios
-      .get(`http://localhost:3800/api/items/all/${page}/${perPage}`)
+      .get(`http://dhananjayatrades.com/api/items/all/${page}/${perPage}`)
       .then((resolve) => {
         const { data: resolveData } = resolve;
         setStock((currantState) => ({
