@@ -1,38 +1,22 @@
 import React, { useState, Fragment, useEffect } from "react";
 import DataTable from "react-data-table-component";
 import DataTableExtensions from "react-data-table-component-extensions";
+import { Table, Space, Popconfirm } from "antd";
+import { SearchOutlined } from "@ant-design/icons";
 //import { useSelector, useDispatch } from "react-redux";
 import EditStockItem from "./editItemModal";
 import axios from "axios";
 
 function ViewAllStock(props) {
-  const [
-    {
-      data,
-      showItemEditModal,
-      editId,
-      editDataSet,
-      editItemIndex,
-      allRowCount,
-    },
-    setStock,
-  ] = useState({
+  const [{ data, allRowCount }, setStock] = useState({
     data: [],
-    showItemEditModal: false,
-    editId: null,
-    editItemIndex: null,
-    editDataSet: {},
     allRowCount: 0,
   });
-
-  const [loading, setLoading] = useState(false);
   const [perPage, setPerPage] = useState(7);
-
-  // http://localhost:3800/
+  // http://localhost:3800/ http://dhananjayatrades.com/
   useEffect(() => {
-    setLoading(true);
     axios
-      .get(`http://dhananjayatrades.com/api/items/all/1/${perPage}`)
+      .get(`http://localhost:3800/api/items/all/1/7`)
       .then((resolve) => {
         const { data: resolveData } = resolve;
         setStock((currantState) => ({
@@ -44,77 +28,88 @@ function ViewAllStock(props) {
       .catch((error) => {
         console.log(error);
       });
-    setLoading(false);
   }, []);
   const columns = [
     {
-      name: "barcode",
-      selector: "barcode",
+      key: "1",
+      title: "barcode",
+      dataIndex: "barcode",
       sortable: true,
     },
     {
-      name: "name",
-      selector: "name",
+      key: "2",
+      title: "name",
+      dataIndex: "name",
       sortable: true,
     },
     {
-      name: "Got Price",
-      selector: "got_price",
+      key: "3",
+      title: "Got Price",
+      dataIndex: "got_price",
       sortable: true,
     },
     {
-      name: "Ton Price",
-      selector: "t",
+      key: "4",
+      title: "Ton Price",
+      dataIndex: "t",
       sortable: true,
     },
     {
-      name: "Whole Price",
-      selector: "w",
+      key: "5",
+      title: "Whole Price",
+      dataIndex: "w",
       sortable: true,
     },
     {
-      name: "Retail Price",
-      selector: "r",
+      key: "6",
+      title: "Retail Price",
+      dataIndex: "r",
       sortable: true,
     },
     {
-      name: "Stock",
-      selector: "stock",
+      key: "7",
+      title: "Stock",
+      dataIndex: "stock",
       sortable: true,
     },
     {
-      name: "Company",
-      selector: "company",
+      key: "8",
+      title: "Company",
+      dataIndex: "company",
       sortable: true,
     },
+
     {
-      cell: (row) => (
-        <Fragment>
+      key: "9",
+      title: "Action",
+      key: "action",
+      render: (text, record) => (
+        <Space size="middle">
           <button
-            className="btn btn-info btn-sm mr-1"
             title="Edit item info"
-            onClick={() => handleAction(row.barcode)}
+            onClick={() => handleAction(record.barcode)}
           >
             <i className="fa fa-edit"></i>
           </button>
-          <button
-            className="btn btn-danger btn-sm"
-            title="Delete item"
-            onClick={() => removeStockItem(row.barcode)}
+
+          <Popconfirm
+            title="Remove this item ?"
+            onConfirm={(e) => removeStockItem(record.barcode)}
+            okText="Yes"
+            cancelText="No"
           >
-            <i className="fa fa-trash"></i>
-          </button>
-        </Fragment>
+            <button>
+              <i className="fa fa-trash"></i>
+            </button>
+          </Popconfirm>
+        </Space>
       ),
-      ignoreRowClick: true,
-      allowOverflow: true,
-      button: true,
     },
   ];
 
   const removeStockItem = (itemId) => {
     axios
-      .delete("http://dhananjayatrades.com/api/items/delete", {
+      .delete("http://localhost:3800/api/items/delete", {
         data: { item_id: itemId },
       })
       .then((responseData) => {
@@ -157,10 +152,9 @@ function ViewAllStock(props) {
     }));
   };
 
-  const handlePageChange = (page) => {
-    setLoading(true);
+  const handlePageChange = (currantPage, pageSize) => {
     axios
-      .get(`http://dhananjayatrades.com/api/items/all/${page}/${perPage}`)
+      .get(`http://localhost:3800/api/items/all/${currantPage}/${pageSize}`)
       .then((resolve) => {
         const { data: resolveData } = resolve;
         setStock((currantState) => ({
@@ -172,14 +166,12 @@ function ViewAllStock(props) {
       .catch((error) => {
         console.log(error);
       });
-    setLoading(false);
   };
 
-  const handlePerRowsChange = (newPerPage, page) => {
-    setLoading(true);
-    setPerPage(newPerPage);
+  const handlePerRowsChange = (currantPage, pageSize) => {
+    setPerPage(pageSize);
     axios
-      .get(`http://dhananjayatrades.com/api/items/all/${page}/${perPage}`)
+      .get(`http://localhost:3800/api/items/all/${currantPage}/${pageSize}`)
       .then((resolve) => {
         const { data: resolveData } = resolve;
         setStock((currantState) => ({
@@ -191,36 +183,18 @@ function ViewAllStock(props) {
       .catch((error) => {
         console.log(error);
       });
-    setLoading(false);
   };
   return (
     <Fragment>
-      <DataTableExtensions {...tableData}>
-        <DataTable
-          title="All Stock"
-          pagination={true}
-          columns={columns}
-          data={data}
-          paginationPerPage={perPage}
-          paginationServer={true}
-          paginationTotalRows={allRowCount}
-          onChangePage={handlePageChange}
-          progressPending={loading}
-          onChangeRowsPerPage={handlePerRowsChange}
-          // striped={true}
-          theme={"dark"}
-          button={true}
-        />
-      </DataTableExtensions>
-      <EditStockItem
-        show={showItemEditModal}
-        editid={editId}
-        editdata={editDataSet}
-        progressPending={true}
-        edititemindex={editItemIndex}
-        data={data}
-        updatedata={updateItemsData}
-        onHide={modalClose}
+      <Table
+        columns={columns}
+        dataSource={data}
+        pagination={{
+          pageSize: perPage,
+          total: allRowCount,
+          onChange: handlePageChange,
+          onShowSizeChange: handlePerRowsChange,
+        }}
       />
     </Fragment>
   );

@@ -5,7 +5,7 @@ import App from './App';
 import * as serviceWorker from './serviceWorker';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'font-awesome/css/font-awesome.min.css';
-import 'antd/dist/antd.css';
+import 'antd/dist/antd.dark.css';
 import { createStore } from 'redux';
 import { Provider } from 'react-redux';
 import allReducers from './reducers';

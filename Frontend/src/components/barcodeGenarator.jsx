@@ -1,43 +1,49 @@
 import React, { useRef, useState, Fragment } from "react";
 import { useSelector } from "react-redux";
-import { Form, Button } from "react-bootstrap";
 import ReactToPrint from "react-to-print";
 import ComponentToPrint from "./barcodeGen";
+import { Card, Input, Form, Button } from "antd";
 
+const { TextArea } = Input;
 function BarcodeGenarator(props) {
   let order = useSelector((state) => state.orderReducer.order);
   const componentRef = useRef();
 
-  const [barcodes, setBarcodeNumber] = useState("");
   const [Allbarcodes, setAllBarcodeNumbers] = useState([]);
 
-  const generate = (e) => {
-    e.preventDefault();
-    if (barcodes !== "") {
-      const barcodeNumbers = barcodes.split(",");
-      setAllBarcodeNumbers(barcodeNumbers);
-    }
+  const generate = (data) => {
+    const barcodeNumbers = data.barcodeString.split(",");
+    setAllBarcodeNumbers(barcodeNumbers);
   };
 
   return (
     <Fragment>
-      <div className="my-3 flex-grow-1 p-3 bg-dark-white rounded box-shadow">
-        <Form onSubmit={generate}>
-          <Form.Group controlId="exampleForm.ControlTextarea1">
-            <Form.Label>Add item numbers Ex: 234234,234234</Form.Label>
-            <Form.Control
-              onChange={(e) => setBarcodeNumber(e.target.value)}
-              as="textarea"
-              rows="5"
-            />
-          </Form.Group>
-          <Button variant="primary" type="submit">
-            Genarate
-          </Button>
+      <Card>
+        <Form onFinish={generate}>
+          <Form.Item
+            name="barcodeString"
+            rules={[
+              {
+                required: true,
+                message: "Bacodes required!",
+              },
+              {
+                pattern: /^[0-9,]*$/,
+                message: "Numbers and commas are only allowed",
+              },
+            ]}
+          >
+            <TextArea rows={5} />
+          </Form.Item>
+          <Form.Item>
+            <Button type="primary" htmlType="submit">
+              Genarate
+            </Button>
+          </Form.Item>
         </Form>
-      </div>
+      </Card>
 
-      <div className="my-3 flex-grow-1 flex-nowrap p-3 bg-dark-white rounded box-shadow">
+      <Card style={{ marginTop: "10px" }}>
         <div className="flex-grow-1">
           <ReactToPrint
             trigger={() => (
@@ -49,7 +55,7 @@ function BarcodeGenarator(props) {
           />
         </div>
         <ComponentToPrint Allbarcodes={Allbarcodes} ref={componentRef} />
-      </div>
+      </Card>
     </Fragment>
   );
 }

@@ -1,5 +1,5 @@
 import React, { useState, Fragment, useEffect } from "react";
-import { Table, Space, Input } from "antd";
+import { Table, Space, Input, Popconfirm } from "antd";
 import SearchBox from "./itemSearchBox";
 import PrintBill from "./printBill";
 import PricingBox from "./priceItem";
@@ -239,14 +239,17 @@ function ViewOrder(props) {
                       >
                         <i className="fa fa-edit mr-2"></i>
                       </button>
-                      <button
-                        style={buttonStyles.delete}
-                        onClick={(e) => {
-                          deleteOrderItem(record.id);
-                        }}
+
+                      <Popconfirm
+                        title="Remove this item ?"
+                        onConfirm={(e) => deleteOrderItem(record.id)}
+                        okText="Yes"
+                        cancelText="No"
                       >
-                        <i className="fa fa-trash"></i>
-                      </button>
+                        <button style={buttonStyles.delete}>
+                          <i className="fa fa-trash"></i>
+                        </button>
+                      </Popconfirm>
                     </Space>
                   ),
                 },

@@ -10,7 +10,8 @@ import BarcodeGenarator from "./components/barcodeGenarator";
 import Login from "./components/login";
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 
-import { Layout } from 'antd';
+import { Layout, Button, Select } from 'antd';
+
 import SideNav from "./components/layout/sidebar";
 
 const { Header, Content, Footer, Sider } = Layout;
@@ -25,10 +26,12 @@ const style = {
   textAlign: 'center',
   fontSize: 14,
 };
-class App extends Component {
-  render() {
-    return (
-      <Router>
+
+const App = () => {
+  return (
+    <Router>
+      <Switch>
+        <Route path="/" exact component={Login} />
         <Layout>
           <Sider
             breakpoint="lg"
@@ -50,22 +53,25 @@ class App extends Component {
           <Layout>
             <Header className="site-layout-sub-header-background" style={{ padding: 0 }} />
             <Content style={{ margin: '24px 16px 0' }}>
-              <Switch>
-                <Route path="/" exact component={Dashboard} />
+              <AuthHandller>
+                <Route path="/dashboard" exact component={Dashboard} />
                 <Route path="/order" exact component={ViewOrder} />
                 <Route path="/save/item" exact component={NewItemSave} />
                 <Route path="/stock/all" exact component={ViewAllStock} />
                 <Route path="/barcode" exact component={BarcodeGenarator} />
-              </Switch>
+              </AuthHandller>
+
             </Content>
-            <Footer style={{ textAlign: 'center' }}>Ant Design ©2018 Created by Ant UED</Footer>
+            <Footer style={{ textAlign: 'center' }}>
+
+
+            </Footer>
           </Layout>
 
         </Layout >
-      </Router>
-
-    );
-  }
+      </Switch>
+    </Router>
+  );
 }
 
 export default App;

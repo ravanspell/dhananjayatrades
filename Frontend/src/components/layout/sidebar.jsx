@@ -5,6 +5,8 @@ import {
   ShoppingCartOutlined,
   BarcodeOutlined,
   UploadOutlined,
+  StockOutlined,
+  BarChartOutlined,
 } from "@ant-design/icons";
 
 function SideNav() {
@@ -18,9 +20,20 @@ function SideNav() {
   const handleFileClick = () => {
     history.push("/save/item");
   };
+  const handleStockClick = () => {
+    history.push("/stock/all");
+  };
+
+  const handleDashboardClick = () => {
+    history.push("/dashboard");
+  };
   return (
     <div>
       <Menu theme="dark" mode="inline" defaultSelectedKeys={["1"]}>
+        <Menu.Item key="0" onClick={handleDashboardClick}>
+          <BarChartOutlined />
+          <span> Dashboard</span>
+        </Menu.Item>
         <Menu.Item key="1" onClick={handleOrderClick}>
           <ShoppingCartOutlined />
           <span> Order</span>
@@ -32,6 +45,10 @@ function SideNav() {
         <Menu.Item key="3" onClick={handleFileClick}>
           <UploadOutlined />
           <span> Files</span>
+        </Menu.Item>
+        <Menu.Item key="4" onClick={handleStockClick}>
+          <StockOutlined />
+          <span> Stocks</span>
         </Menu.Item>
       </Menu>
     </div>

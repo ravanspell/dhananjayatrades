@@ -33,7 +33,7 @@ function NewItemSave() {
   return (
     <Fragment>
       <Card>
-        <Row gutter={[40, 0]}>
+        <Row gutter={[8, 0]}>
           <Col span={18}>
             <Form {...layout} onFinish={saveNewItem}>
               <Form.Item
