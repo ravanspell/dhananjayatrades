@@ -15,7 +15,7 @@ function Login(props) {
   const loginForm = (userData) => {
     setLoading(true);
     axios
-      .post("http://localhost:3800/api/user/login", userData)
+      .post("http://dhananjayatrades.com/api/user/login", userData)
       .then((response) => {
         if (response.data.status) {
           axios.interceptors.request.use((config) => {

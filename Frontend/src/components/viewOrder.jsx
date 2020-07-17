@@ -55,7 +55,6 @@ function ViewOrder(props) {
       } else {
         updateCounts(order);
       }
-      console.log(order.orderItems);
     }
 
     if (finishedOrders !== null) {
@@ -66,7 +65,7 @@ function ViewOrder(props) {
       delete finishedOrders[toDay];
       if (Object.keys(finishedOrders).length > 0) {
         axios
-          .post("http://localhost:3800/api/orders/add", finishedOrders)
+          .post("http://dhananjayatrades.com/api/orders/add", finishedOrders)
           .then((resolve) => {
             console.log(resolve.data);
             if (resolve.data.status) {
