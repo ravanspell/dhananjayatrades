@@ -1,6 +1,6 @@
 import React, { Fragment } from "react";
 import { Row, Col, Input, Form, Button, message, Card } from "antd";
-import axios from "axios";
+import { saveItem } from "../services/http";
 
 const layout = {
   labelCol: { span: 8 },
@@ -12,13 +12,9 @@ const tailLayout = {
 };
 
 function NewItemSave() {
-  //http://dhananjayatrades.com/ http://localhost:3800/
   const saveNewItem = async (newItem) => {
     try {
-      const res = await axios.post(
-        "http://dhananjayatrades.com/api/items/save",
-        newItem
-      );
+      const res = await saveItem(newItem);
       if (res.data.status) {
         message.success(res.data.message);
       } else {

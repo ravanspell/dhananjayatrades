@@ -12,7 +12,7 @@ import {
 function SideNav() {
   const history = useHistory();
   const handleOrderClick = () => {
-    history.push("/order");
+    history.push("/");
   };
   const handleBrcodeGenClick = () => {
     history.push("/barcode");
@@ -44,7 +44,7 @@ function SideNav() {
         </Menu.Item>
         <Menu.Item key="3" onClick={handleFileClick}>
           <UploadOutlined />
-          <span> Files</span>
+          <span> New Item</span>
         </Menu.Item>
         <Menu.Item key="4" onClick={handleStockClick}>
           <StockOutlined />

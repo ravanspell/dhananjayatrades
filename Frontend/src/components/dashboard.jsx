@@ -9,7 +9,7 @@ function Dashboard(props) {
     { profitDashboardData, lastMonthTotalProfit, thisMonthTotalProfit },
     setGraphData,
   ] = useState({
-    profitDashboardData: { thisMonth: [], thisMonth: [] },
+    profitDashboardData: { thisMonth: [], lastMonth: [] },
     lastMonthTotalProfit: 0,
     thisMonthTotalProfit: 0,
   });
@@ -65,12 +65,11 @@ function Dashboard(props) {
       },
     ],
   };
-  // http://localhost:3800/ http://dhananjayatrades.com/
   useEffect(() => {
     const abortController = new AbortController();
     const signal = abortController.signal;
     axios
-      .get("http://localhost:3800/api/dashboard/profit", { signal })
+      .get("http://dhananjayatrades.com/api/dashboard/profit", { signal })
       .then((resolve) => {
         console.log(resolve);
         setGraphData((currantState) => ({

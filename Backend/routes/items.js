@@ -71,16 +71,16 @@ router.route('/delete', auth).delete(async (req, res) => {
 router.route('/update').put(auth, async (req, res) => {
   //! should change table name after development
   try {
-    const { barcode, item_data } = req.body;
+    const { item_data } = req.body;
 
-    const editStockItemQuery = `UPDATE items SET name='${item_data.itemName}', 
-                                              got_price=${item_data.gotPrice}, 
-                                              t=${item_data.tonPrice}, 
-                                              w=${item_data.wholePrice}, 
-                                              r=${item_data.retailPrice}, 
-                                              stock=${item_data.amount}, 
+    const editStockItemQuery = `UPDATE items SET name='${item_data.name}', 
+                                              got_price=${item_data.got_price}, 
+                                              t=${item_data.t}, 
+                                              w=${item_data.w}, 
+                                              r=${item_data.r}, 
+                                              stock=${item_data.stock}, 
                                               company='${item_data.company}' 
-                              WHERE barcode =${barcode}`;
+                              WHERE barcode =${item_data.barcode}`;
     const status = await mysqldb.query(editStockItemQuery);
     return res.status(201).json({ status: true, message: 'Item has been updated' });
   } catch (error) {

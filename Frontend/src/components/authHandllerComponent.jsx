@@ -1,15 +1,27 @@
-import React, { Fragment, useEffect } from "react";
+import React from "react";
 import { useSelector } from "react-redux";
-import { useHistory } from "react-router-dom";
-
-import axios from "axios";
+import { Route, Redirect } from "react-router-dom";
 
 function AuthHandller(props) {
-  const history = useHistory();
+  const { component: Component, ...restProps } = props;
   const authToken = useSelector((state) => state.userAuthReducer.authToken);
-  useEffect(() => {
-    if (!authToken) history.push("/");
-  }, []);
-  return <Fragment>{props.children}</Fragment>;
+
+  return (
+    <Route
+      {...restProps}
+      render={(routeRenderProps) =>
+        authToken ? (
+          <Component {...routeRenderProps} />
+        ) : (
+          <Redirect
+            to={{
+              pathname: "/login",
+              state: { from: routeRenderProps.location },
+            }}
+          />
+        )
+      }
+    />
+  );
 }
 export default AuthHandller;

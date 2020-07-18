@@ -3,13 +3,15 @@ import { Row, Col, Modal, Button, Form, Input, Select } from "antd";
 import { uuid } from "uuidv4";
 
 function PricingBox(props) {
-  const [form] = Form.useForm();
+  // const [form] = Form.useForm();
+  console.log(props.rprice);
   const [{ priceType, item }, setLocalState] = useState({
     priceType: "tPrice",
     item: props.rprice,
   });
 
   useEffect(() => {
+    // form.resetFields();
     setLocalState((currantState) => ({
       ...currantState,
       item: props.rprice,
@@ -25,16 +27,14 @@ function PricingBox(props) {
     }));
   };
   const handleSubmit = (data) => {
-    console.log(data);
     let order = JSON.parse(localStorage.getItem("order"));
     let newItem = {
-      itemName: data.customItemname || item.value,
+      itemName: data.customItemname || item.itemName,
       customPrice: parseFloat(data.customPrice) || 0,
       amount: data.itemAmount,
-      unitPrice:
-        parseFloat(data.customPrice || 0) < 1
-          ? parseFloat(item[data.priceType || priceType])
-          : parseFloat(data.customPrice),
+      unitPrice: parseFloat(
+        data.customPrice || item[data.priceType || priceType]
+      ),
       gotPrice: parseFloat(item.gotPrice),
       tPrice: parseFloat(item.tPrice),
       rPrice: parseFloat(item.rPrice),
@@ -64,7 +64,7 @@ function PricingBox(props) {
       customItemName: "",
       priceType: "tPrice",
     }));
-    form.resetFields();
+    // form.resetFields();
     props.onHide();
   };
 
@@ -73,15 +73,23 @@ function PricingBox(props) {
       title={item.value || item.itemName || ""}
       visible={props.show}
       closable={false}
+      destroyOnClose={true}
       onOk={props.onHide}
       onCancel={props.onHide}
       footer={null}
     >
       <Row gutter={[40, 0]}>
         <Col span={24}>
-          <Form form={form} onFinish={handleSubmit}>
+          <Form
+            // form={form}
+            onFinish={handleSubmit}
+            initialValues={{
+              priceType: "tPrice",
+              customItemname: item.value || props.rprice.itemName || "",
+            }}
+          >
             <Form.Item name="priceType">
-              <Select defaultValue="tPrice">
+              <Select>
                 <Select.Option value="tPrice">
                   Ton Price Rs {item.tPrice || ""}
                 </Select.Option>
@@ -94,16 +102,13 @@ function PricingBox(props) {
               </Select>
             </Form.Item>
             <Form.Item name="customItemname">
-              <Input
-                defaultValue={item.value || item.itemName || ""}
-                onChange={(e) => changeCurrantItemName(e.target.value)}
-              />
+              <Input onChange={(e) => changeCurrantItemName(e.target.value)} />
             </Form.Item>
             <Form.Item
               name="customPrice"
               rules={[
                 {
-                  pattern: /^[0-9]*$/,
+                  pattern: /^[0-9-]*$/,
                   message: "Numbers are only allowed",
                 },
               ]}

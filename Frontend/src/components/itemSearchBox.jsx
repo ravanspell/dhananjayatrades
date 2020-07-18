@@ -1,8 +1,7 @@
 import React, { useState, Fragment, useEffect } from "react";
 import PricingBox from "./priceItem";
 import { Input } from "antd";
-
-import axios from "axios";
+import { loadSearchItems } from "../services/http";
 
 const { Search } = Input;
 function SearchBox(props) {
@@ -24,11 +23,11 @@ function SearchBox(props) {
     textBoxValue: "",
     searchItems: [],
   });
-  //http://dhananjayatrades.com/ http://localhost:3800/
+
   const refrs = React.createRef();
   useEffect(() => {
     refrs.current.focus();
-    axios.get("http://localhost:3800/api/items/search").then((resolve) => {
+    loadSearchItems().then((resolve) => {
       setSearchItems(resolve.data);
     });
   }, []);

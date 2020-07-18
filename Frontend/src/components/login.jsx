@@ -6,16 +6,15 @@ import { login, verifyUser } from "../actions";
 import axios from "axios";
 import { Row, Form, Input, Button, Checkbox, message, Card } from "antd";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
-
+import { sendLogin } from "../services/http";
 function Login(props) {
   const dispatch = useDispatch();
   const history = useHistory();
   const [loading, setLoading] = useState(false);
-  //http://dhananjayatrades.com/  http://localhost:3800/
+
   const loginForm = (userData) => {
     setLoading(true);
-    axios
-      .post("http://dhananjayatrades.com/api/user/login", userData)
+    sendLogin(userData)
       .then((response) => {
         if (response.data.status) {
           axios.interceptors.request.use((config) => {
@@ -25,7 +24,7 @@ function Login(props) {
           dispatch(login(response.data.token));
           dispatch(verifyUser(response.data.username));
           setLoading(false);
-          history.push("/order");
+          history.push("/");
         } else {
           setLoading(false);
           message.error(response.data.message);

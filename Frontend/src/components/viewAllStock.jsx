@@ -1,22 +1,46 @@
 import React, { useState, Fragment, useEffect } from "react";
-import DataTable from "react-data-table-component";
-import DataTableExtensions from "react-data-table-component-extensions";
 import { Table, Space, Popconfirm } from "antd";
-import { SearchOutlined } from "@ant-design/icons";
 //import { useSelector, useDispatch } from "react-redux";
 import EditStockItem from "./editItemModal";
 import axios from "axios";
+import { getItemData } from "../services/http";
 
 function ViewAllStock(props) {
-  const [{ data, allRowCount }, setStock] = useState({
+  const buttonStyles = {
+    edit: {
+      backgroundColor: "#1d9baecc",
+      border: "none",
+      width: "30px",
+      borderRadius: "2px",
+      color: "#e9ecef",
+    },
+    delete: {
+      backgroundColor: "#903b3b",
+      marginLeft: "3px",
+      border: "none",
+      width: "30px",
+      borderRadius: "2px",
+      color: "#e9ecef",
+    },
+  };
+
+  const [
+    { data, allRowCount, showItemEditModal, editDataSet, editItemIndex },
+    setStock,
+  ] = useState({
     data: [],
     allRowCount: 0,
+    editItemIndex: null,
+    editDataSet: {},
+    editId: null,
+    showItemEditModal: false,
   });
   const [perPage, setPerPage] = useState(7);
-  // http://localhost:3800/ http://dhananjayatrades.com/
+  const [loading, setLoading] = useState(false);
+
   useEffect(() => {
-    axios
-      .get(`http://localhost:3800/api/items/all/1/7`)
+    setLoading(true);
+    getItemData(1, 7)
       .then((resolve) => {
         const { data: resolveData } = resolve;
         setStock((currantState) => ({
@@ -24,8 +48,10 @@ function ViewAllStock(props) {
           data: resolveData.data,
           allRowCount: resolveData.count,
         }));
+        setLoading(false);
       })
       .catch((error) => {
+        setLoading(false);
         console.log(error);
       });
   }, []);
@@ -86,6 +112,7 @@ function ViewAllStock(props) {
       render: (text, record) => (
         <Space size="middle">
           <button
+            style={buttonStyles.edit}
             title="Edit item info"
             onClick={() => handleAction(record.barcode)}
           >
@@ -98,7 +125,7 @@ function ViewAllStock(props) {
             okText="Yes"
             cancelText="No"
           >
-            <button>
+            <button style={buttonStyles.delete}>
               <i className="fa fa-trash"></i>
             </button>
           </Popconfirm>
@@ -108,16 +135,19 @@ function ViewAllStock(props) {
   ];
 
   const removeStockItem = (itemId) => {
+    setLoading(true);
     axios
-      .delete("http://localhost:3800/api/items/delete", {
+      .delete("http://dhananjayatrades.com/api/items/delete", {
         data: { item_id: itemId },
       })
       .then((responseData) => {
+        setLoading(false);
         if (responseData.data.status) {
           const newItemSet = data.filter((item) => item.barcode != itemId);
           updateItemsData(newItemSet);
         }
       });
+    setLoading(false);
   };
 
   const handleAction = (value) => {
@@ -153,10 +183,11 @@ function ViewAllStock(props) {
   };
 
   const handlePageChange = (currantPage, pageSize) => {
-    axios
-      .get(`http://localhost:3800/api/items/all/${currantPage}/${pageSize}`)
+    setLoading(true);
+    getItemData(currantPage, pageSize)
       .then((resolve) => {
         const { data: resolveData } = resolve;
+        setLoading(false);
         setStock((currantState) => ({
           ...currantState,
           data: resolveData.data,
@@ -164,16 +195,18 @@ function ViewAllStock(props) {
         }));
       })
       .catch((error) => {
+        setLoading(false);
         console.log(error);
       });
   };
 
   const handlePerRowsChange = (currantPage, pageSize) => {
+    setLoading(true);
     setPerPage(pageSize);
-    axios
-      .get(`http://localhost:3800/api/items/all/${currantPage}/${pageSize}`)
+    getItemData(currantPage, pageSize)
       .then((resolve) => {
         const { data: resolveData } = resolve;
+        setLoading(false);
         setStock((currantState) => ({
           ...currantState,
           data: resolveData.data,
@@ -181,6 +214,7 @@ function ViewAllStock(props) {
         }));
       })
       .catch((error) => {
+        setLoading(false);
         console.log(error);
       });
   };
@@ -189,12 +223,22 @@ function ViewAllStock(props) {
       <Table
         columns={columns}
         dataSource={data}
+        loading={loading}
+        rowKey="barcode"
         pagination={{
           pageSize: perPage,
           total: allRowCount,
           onChange: handlePageChange,
           onShowSizeChange: handlePerRowsChange,
         }}
+      />
+      <EditStockItem
+        show={showItemEditModal}
+        editdata={editDataSet}
+        onHide={modalClose}
+        data={data}
+        updatedata={updateItemsData}
+        edititemindex={editItemIndex}
       />
     </Fragment>
   );

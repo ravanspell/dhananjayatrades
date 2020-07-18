@@ -7,11 +7,10 @@ import PricingBox from "./priceItem";
 import FinishOrder from "./finishOrder";
 import { useSelector, useDispatch } from "react-redux";
 import { createOrder } from "../actions";
-import axios from "axios";
+import { addOrder } from "../services/http";
 import { Card } from "antd";
 
 function ViewOrder(props) {
-  const [checkStrictly, setCheckStrictly] = useState(false);
   const buttonStyles = {
     edit: {
       backgroundColor: "#1d9baecc",
@@ -34,8 +33,6 @@ function ViewOrder(props) {
   /**
    * Initilize the order
    * save order data structure in browser store to offline usage.
-   * http://dhananjayatrades.com/
-   * http://localhost:3800/
    */
   let order = useSelector((state) => state.orderReducer.order);
   useEffect(() => {
@@ -64,14 +61,12 @@ function ViewOrder(props) {
         : "{}";
       delete finishedOrders[toDay];
       if (Object.keys(finishedOrders).length > 0) {
-        axios
-          .post("http://dhananjayatrades.com/api/orders/add", finishedOrders)
-          .then((resolve) => {
-            console.log(resolve.data);
-            if (resolve.data.status) {
-              localStorage.setItem("finishOrders", toDayOrders);
-            }
-          });
+        addOrder(finishedOrders).then((resolve) => {
+          console.log(resolve.data);
+          if (resolve.data.status) {
+            localStorage.setItem("finishOrders", toDayOrders);
+          }
+        });
       }
     }
   }, []);
@@ -109,11 +104,7 @@ function ViewOrder(props) {
     let itemsAmount = 0;
     let totalGotPrice = 0;
     (order.orderItems || []).forEach((item) => {
-      if (item.customPrice > 0) {
-        totalPrice = totalPrice + item.customPrice * item.amount;
-      } else {
-        totalPrice = totalPrice + item.unitPrice * item.amount;
-      }
+      totalPrice = totalPrice + item.unitPrice * item.amount;
       itemsAmount = itemsAmount + 1;
       totalGotPrice = totalGotPrice + item.gotPrice * item.amount;
     });
@@ -173,15 +164,6 @@ function ViewOrder(props) {
       editItem: foundItem,
     }));
   };
-  const rowSelection = {
-    onChange: (selectedRowKeys, selectedRows) => {
-      console.log(
-        `selectedRowKeys: ${selectedRowKeys}`,
-        "selectedRows: ",
-        selectedRows
-      );
-    },
-  };
 
   return (
     <Fragment>
@@ -201,7 +183,10 @@ function ViewOrder(props) {
           <Card>
             <Table
               dataSource={order.orderItems}
-              rowSelection={{ ...rowSelection }}
+              rowKey="id"
+              rowSelection={{
+                type: "checkbox",
+              }}
               responsive
               pagination={false}
               columns={[
