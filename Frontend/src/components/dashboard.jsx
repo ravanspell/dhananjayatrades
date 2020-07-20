@@ -1,13 +1,15 @@
 import React, { Fragment, useEffect, useState } from "react";
 import { Line } from "react-chartjs-2";
 import axios from "axios";
+import { Card, Statistic } from "antd";
+import { ArrowUpOutlined, ArrowDownOutlined } from "@ant-design/icons";
 
 function Dashboard(props) {
   const [
     { profitDashboardData, lastMonthTotalProfit, thisMonthTotalProfit },
     setGraphData,
   ] = useState({
-    profitDashboardData: { thisMonth: [], thisMonth: [] },
+    profitDashboardData: { thisMonth: [], lastMonth: [] },
     lastMonthTotalProfit: 0,
     thisMonthTotalProfit: 0,
   });
@@ -63,7 +65,6 @@ function Dashboard(props) {
       },
     ],
   };
-  // http://localhost:3800/
   useEffect(() => {
     const abortController = new AbortController();
     const signal = abortController.signal;
@@ -90,21 +91,53 @@ function Dashboard(props) {
   return (
     <Fragment>
       <div className="row mt-10">
-        <div className="col-md-6 col-sm-12">
-          <div className="nav-scroller bg-white box-shadow p-2 mt-2">
-            <h6>Last Month Total Profit: {lastMonthTotalProfit}</h6>
-          </div>
+        <div className="col-md-6 col-sm-12 mb-2">
+          <Card>
+            <Statistic
+              title="Last Month Total Profit (Rs)"
+              value={lastMonthTotalProfit}
+              precision={2}
+              valueStyle={
+                lastMonthTotalProfit < 0
+                  ? { color: "#cf1322" }
+                  : { color: "#3f8600" }
+              }
+              prefix={
+                lastMonthTotalProfit < 0 ? (
+                  <ArrowDownOutlined />
+                ) : (
+                  <ArrowUpOutlined />
+                )
+              }
+            />
+          </Card>
         </div>
-        <div className="col-md-6 col-sm-12">
-          <div className="nav-scroller bg-white box-shadow p-2 mt-2">
-            <h6>This Month Total Profit: {thisMonthTotalProfit}</h6>
-          </div>
+        <div className="col-md-6 col-sm-12 mb-2">
+          <Card>
+            <Statistic
+              title="This Month Total Profit (Rs)"
+              value={thisMonthTotalProfit}
+              precision={2}
+              valueStyle={
+                thisMonthTotalProfit < 0
+                  ? { color: "#cf1322" }
+                  : { color: "#3f8600" }
+              }
+              prefix={
+                thisMonthTotalProfit < 0 ? (
+                  <ArrowDownOutlined />
+                ) : (
+                  <ArrowUpOutlined />
+                )
+              }
+            />
+          </Card>
         </div>
       </div>
 
-      <div className="nav-scroller bg-white box-shadow mt-2">
+      <Card>
         <Line data={chartData} />
-      </div>
+      </Card>
     </Fragment>
   );
 }

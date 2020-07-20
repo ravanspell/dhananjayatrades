@@ -1,13 +1,14 @@
 import React, { useState, Fragment, useEffect } from "react";
-import { Table, Nav, Form } from "react-bootstrap";
+import { Table, Space, Input, Popconfirm } from "antd";
 import SearchBox from "./itemSearchBox";
 import PrintBill from "./printBill";
 import PricingBox from "./priceItem";
-import CancleOrder from "./cancleOrder";
+//import CancleOrder from "./cancleOrder";
 import FinishOrder from "./finishOrder";
 import { useSelector, useDispatch } from "react-redux";
 import { createOrder } from "../actions";
-import axios from "axios";
+import { addOrder } from "../services/http";
+import { Card } from "antd";
 
 function ViewOrder(props) {
   const buttonStyles = {
@@ -32,12 +33,11 @@ function ViewOrder(props) {
   /**
    * Initilize the order
    * save order data structure in browser store to offline usage.
-   * http://dhananjayatrades.com/
-   * http://localhost:3800/
    */
   let order = useSelector((state) => state.orderReducer.order);
   useEffect(() => {
     let finishedOrders = null;
+
     if (order === "") {
       order = JSON.parse(localStorage.getItem("order"));
       finishedOrders = JSON.parse(localStorage.getItem("finishOrders"));
@@ -61,14 +61,12 @@ function ViewOrder(props) {
         : "{}";
       delete finishedOrders[toDay];
       if (Object.keys(finishedOrders).length > 0) {
-        axios
-          .post("http://localhost:3800/api/orders/add", finishedOrders)
-          .then((resolve) => {
-            console.log(resolve.data);
-            if (resolve.data.status) {
-              localStorage.setItem("finishOrders", toDayOrders);
-            }
-          });
+        addOrder(finishedOrders).then((resolve) => {
+          console.log(resolve.data);
+          if (resolve.data.status) {
+            localStorage.setItem("finishOrders", toDayOrders);
+          }
+        });
       }
     }
   }, []);
@@ -106,11 +104,7 @@ function ViewOrder(props) {
     let itemsAmount = 0;
     let totalGotPrice = 0;
     (order.orderItems || []).forEach((item) => {
-      if (item.customPrice > 0) {
-        totalPrice = totalPrice + item.customPrice * item.amount;
-      } else {
-        totalPrice = totalPrice + item.unitPrice * item.amount;
-      }
+      totalPrice = totalPrice + item.unitPrice * item.amount;
       itemsAmount = itemsAmount + 1;
       totalGotPrice = totalGotPrice + item.gotPrice * item.amount;
     });
@@ -173,130 +167,130 @@ function ViewOrder(props) {
 
   return (
     <Fragment>
-      <div className="nav-scroller bg-dark-white box-shadow">
-        <Nav className="d-flex flex-row p-3 p-3">
+      <Card>
+        <div className="d-flex flex-row">
           <div className="mr-1">
             <h6>{order.orderNo} </h6>
           </div>
           <div className="ml-1">
             <SearchBox updateorder={updateCounts} />
           </div>
-        </Nav>
-      </div>
+        </div>
+      </Card>
 
-      <div className="d-flex align-content-start bd-highlight">
-        <div className="my-3 flex-grow-1 p-3 bg-dark-white rounded box-shadow">
-          <div className="media text-muted pt-3">
+      <div className="row mt-2">
+        <div className="col-md-8 pr-0">
+          <Card>
             <Table
-              striped
-              bordered
-              hover
-              size="md"
-              className="text-center"
-              variant="dark"
-            >
-              <thead>
-                <tr>
-                  <th>-</th>
-                  <th>Name</th>
-                  <th>Unit Price</th>
-                  <th>Amount</th>
-                  <th>Total</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {Object.keys(order.orderItems || {}).map((item, i) => (
-                  <tr key={i}>
-                    <td>
-                      <Form.Check type="checkbox" />
-                    </td>
-                    <td>{order.orderItems[item].itemName}</td>
-                    <td>
-                      {order.orderItems[item].customPrice > 0
-                        ? order.orderItems[item].customPrice
-                        : order.orderItems[item].unitPrice}
-                    </td>
-                    <td>{order.orderItems[item].amount}</td>
-                    <td>{order.orderItems[item].total}</td>
-                    <td className="text-center">
+              dataSource={order.orderItems}
+              rowKey="id"
+              rowSelection={{
+                type: "checkbox",
+              }}
+              responsive
+              pagination={false}
+              columns={[
+                {
+                  title: "Name",
+                  dataIndex: "itemName",
+                  key: "itemName",
+                },
+                {
+                  title: "Unit Price",
+                  dataIndex: "unitPrice",
+                  key: "unitPrice",
+                },
+                {
+                  title: "Amount",
+                  dataIndex: "amount",
+                  key: "amount",
+                },
+                {
+                  title: "Total",
+                  dataIndex: "total",
+                  key: "total",
+                },
+                {
+                  title: "Action",
+                  key: "action",
+                  render: (text, record) => (
+                    <Space size="middle">
                       <button
                         style={buttonStyles.edit}
                         onClick={(e) => {
-                          editOrderItem(order.orderItems[item].id);
+                          editOrderItem(record.id);
                         }}
                       >
                         <i className="fa fa-edit mr-2"></i>
                       </button>
 
-                      <button
-                        style={buttonStyles.delete}
-                        onClick={(e) => {
-                          deleteOrderItem(order.orderItems[item].id);
-                        }}
+                      <Popconfirm
+                        title="Remove this item ?"
+                        onConfirm={(e) => deleteOrderItem(record.id)}
+                        okText="Yes"
+                        cancelText="No"
                       >
-                        <i className="fa fa-trash"></i>
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </Table>
-          </div>
+                        <button style={buttonStyles.delete}>
+                          <i className="fa fa-trash"></i>
+                        </button>
+                      </Popconfirm>
+                    </Space>
+                  ),
+                },
+              ]}
+            />
+          </Card>
         </div>
-        <div className="my-3 h-25 ml-2 p-3 bg-dark-white rounded box-shadow">
-          <Table borderless style={{ color: "#f3f2f2" }} className="text-left">
-            <tbody>
-              <tr className="border-bottom border-secondary">
-                <td>
-                  <h6>Total Items</h6>
-                </td>
-                <td>
-                  <h5>{order.itemsAmount}</h5>
-                </td>
-              </tr>
-              <tr className="border-bottom border-secondary">
-                <td>
-                  <h6>Sub total</h6>
-                </td>
-                <td>
-                  <h5>Rs.{parseFloat(order.totalPrice).toFixed(2)}</h5>
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  <h5>TOTAL</h5>
-                </td>
-                <td>
-                  <h5>Rs.{parseFloat(order.totalPrice).toFixed(2)}</h5>
-                </td>
-              </tr>
-            </tbody>
-          </Table>
-          <div className="d-flex flex-row">
-            <input
-              className="form-control bg-dark-white"
-              placeholder="amount"
-              onChange={(e) => {
-                setTotalPaidAmount(e.target.value);
-              }}
-            />
-          </div>
-          <div className="d-flex flex-row mt-2">
-            <PrintBill
-              order={order}
-              date={currantDate}
-              paidamount={paidAmount}
-            />
-          </div>
+        <div className="col-md-4">
+          <Card>
+            <table style={{ color: "#f3f2f2" }} className="text-left">
+              <tbody>
+                <tr className="border-bottom border-secondary">
+                  <td>
+                    <h6>Total Items</h6>
+                  </td>
+                  <td>
+                    <h5>{order.itemsAmount}</h5>
+                  </td>
+                </tr>
+                <tr className="border-bottom border-secondary">
+                  <td>
+                    <h6>Sub total</h6>
+                  </td>
+                  <td>
+                    <h5>Rs.{parseFloat(order.totalPrice).toFixed(2)}</h5>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <h5>TOTAL</h5>
+                  </td>
+                  <td>
+                    <h5>Rs.{parseFloat(order.totalPrice).toFixed(2)}</h5>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <div className="d-flex flex-row">
+              <Input
+                placeholder="amount"
+                onChange={(e) => {
+                  setTotalPaidAmount(e.target.value);
+                }}
+              />
+            </div>
+            <div className="d-flex flex-row mt-2">
+              <PrintBill order={order} paidamount={paidAmount} />
+            </div>
 
-          <div className="d-flex flex-row mt-2">
-            <FinishOrder
-              currantDate={currantDate}
-              initOrderData={initOrderData}
-              pickOrderNumber={pickOrderNumber}
-            />
-          </div>
+            <div className="d-flex flex-row mt-2">
+              <FinishOrder
+                currantDate={currantDate}
+                initOrderData={initOrderData}
+                pickOrderNumber={pickOrderNumber}
+              />
+            </div>
+          </Card>
         </div>
       </div>
       <PricingBox

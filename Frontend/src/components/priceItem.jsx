@@ -1,19 +1,17 @@
 import React, { useState, useEffect } from "react";
-import { Button, Modal, Form } from "react-bootstrap";
+import { Row, Col, Modal, Button, Form, Input, Select } from "antd";
 import { uuid } from "uuidv4";
 
 function PricingBox(props) {
-  const [
-    { customPrice, priceType, itemAmount, item },
-    setLocalState,
-  ] = useState({
-    customPrice: 0,
+  // const [form] = Form.useForm();
+  console.log(props.rprice);
+  const [{ priceType, item }, setLocalState] = useState({
     priceType: "tPrice",
-    itemAmount: 0,
     item: props.rprice,
   });
 
   useEffect(() => {
+    // form.resetFields();
     setLocalState((currantState) => ({
       ...currantState,
       item: props.rprice,
@@ -28,20 +26,24 @@ function PricingBox(props) {
       item: newCurrantItem,
     }));
   };
-  const handleSubmit = (event) => {
-    event.preventDefault();
+  const handleSubmit = (data) => {
     let order = JSON.parse(localStorage.getItem("order"));
     let newItem = {
-      itemName: item.value || item.itemName,
-      customPrice: parseFloat(customPrice),
-      amount: itemAmount,
-      unitPrice: parseFloat(item[priceType]),
+      itemName: data.customItemname || item.itemName,
+      customPrice: parseFloat(data.customPrice) || 0,
+      amount: data.itemAmount,
+      unitPrice: parseFloat(
+        data.customPrice || item[data.priceType || priceType]
+      ),
       gotPrice: parseFloat(item.gotPrice),
       tPrice: parseFloat(item.tPrice),
       rPrice: parseFloat(item.rPrice),
       wPrice: parseFloat(item.wPrice),
       orderId: order.orderNo,
-      total: parseFloat((customPrice || item[priceType]) * itemAmount),
+      total: parseFloat(
+        (data.customPrice || item[data.priceType || priceType]) *
+          data.itemAmount
+      ),
     };
     if (props?.isedit == "true") {
       const itemPlace = order.orderItems.findIndex(
@@ -62,85 +64,80 @@ function PricingBox(props) {
       customItemName: "",
       priceType: "tPrice",
     }));
+    // form.resetFields();
     props.onHide();
-  };
-
-  const changePriceGenure = (value) => {
-    setLocalState((currantState) => ({
-      ...currantState,
-      priceType: value,
-    }));
-  };
-
-  const changeCustomPrice = (value) => {
-    setLocalState((currantState) => ({
-      ...currantState,
-      customPrice: value,
-    }));
-  };
-
-  const changeItemAmount = (value) => {
-    setLocalState((currantState) => ({
-      ...currantState,
-      itemAmount: value,
-    }));
   };
 
   return (
     <Modal
-      show={props.show}
-      onHide={props.onHide}
-      size="md"
-      aria-labelledby="contained-modal-title-vcenter"
-      centered
+      title={item.value || item.itemName || ""}
+      visible={props.show}
+      closable={false}
+      destroyOnClose={true}
+      onOk={props.onHide}
+      onCancel={props.onHide}
+      footer={null}
     >
-      <Modal.Header>
-        <Modal.Title id="contained-modal-title-vcenter">
-          <h6>{item.value || item.itemName || ""}</h6>
-        </Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        <Form onSubmit={handleSubmit}>
-          <Form.Group controlId="formBasicText">
-            <select onChange={(e) => changePriceGenure(e.target.value)}>
-              <option value="tPrice">Ton Price Rs {item.tPrice || ""}</option>
-              <option value="wPrice">Whole Price Rs {item.wPrice || ""}</option>
-              <option value="rPrice">
-                Retail Price Rs {item.rPrice || ""}
-              </option>
-            </select>
-          </Form.Group>
-          <Form.Group controlId="formBasicCustomItemName">
-            <Form.Control
-              type="text"
-              value={item.value || item.itemName || ""}
-              onChange={(e) => changeCurrantItemName(e.target.value)}
-            />
-          </Form.Group>
-          <Form.Group controlId="formBasicCustomValue">
-            <Form.Control
-              type="text"
-              placeholder="custom price"
-              onChange={(e) => changeCustomPrice(e.target.value)}
-            />
-          </Form.Group>
-          <Form.Group controlId="formBasicAmount">
-            <Form.Control
-              type="text"
-              placeholder="amount"
-              onChange={(e) => changeItemAmount(e.target.value)}
-            />
-          </Form.Group>
-          <div className="text-right">
-            <Button className="mr-2" onClick={props.onHide}>
-              Close
-            </Button>
-            <Button variant="primary" type="submit">
-              Submit
-            </Button>
-          </div>
-        </Form>
-      </Modal.Body>
+      <Row gutter={[40, 0]}>
+        <Col span={24}>
+          <Form
+            // form={form}
+            onFinish={handleSubmit}
+            initialValues={{
+              priceType: "tPrice",
+              customItemname: props.rprice.value || item.itemName || "",
+            }}
+          >
+            <Form.Item name="priceType">
+              <Select>
+                <Select.Option value="tPrice">
+                  Ton Price Rs {item.tPrice || ""}
+                </Select.Option>
+                <Select.Option value="wPrice">
+                  Whole Price Rs {item.wPrice || ""}
+                </Select.Option>
+                <Select.Option value="rPrice">
+                  Retail Price Rs {item.rPrice || ""}
+                </Select.Option>
+              </Select>
+            </Form.Item>
+            <Form.Item name="customItemname">
+              <Input onChange={(e) => changeCurrantItemName(e.target.value)} />
+            </Form.Item>
+            <Form.Item
+              name="customPrice"
+              rules={[
+                {
+                  pattern: /^[0-9-.]*$/,
+                  message: "Numbers are only allowed",
+                },
+              ]}
+            >
+              <Input placeholder="custom price" value={0} />
+            </Form.Item>
+            <Form.Item
+              name="itemAmount"
+              rules={[
+                {
+                  required: true,
+                  message: "Amount required!",
+                },
+                {
+                  pattern: /^[0-9-.]*$/,
+                  message: "Numbers are only allowed",
+                },
+              ]}
+            >
+              <Input placeholder="item amount" />
+            </Form.Item>
+            <Form.Item>
+              <Button type="primary" htmlType="submit">
+                Save
+              </Button>
+            </Form.Item>
+          </Form>
+        </Col>
+      </Row>
     </Modal>
   );
 }

@@ -1,6 +1,9 @@
 import React, { useState, Fragment, useEffect } from "react";
 import PricingBox from "./priceItem";
-import axios from "axios";
+import { Input } from "antd";
+import { loadSearchItems } from "../services/http";
+
+const { Search } = Input;
 function SearchBox(props) {
   const [
     {
@@ -20,15 +23,13 @@ function SearchBox(props) {
     textBoxValue: "",
     searchItems: [],
   });
-  //http://dhananjayatrades.com/ http://localhost:3800/
+
   const refrs = React.createRef();
   useEffect(() => {
     refrs.current.focus();
-    axios
-      .get("http://dhananjayatrades.com/api/items/search")
-      .then((resolve) => {
-        setSearchItems(resolve.data);
-      });
+    loadSearchItems().then((resolve) => {
+      setSearchItems(resolve.data);
+    });
   }, []);
 
   const setSearchItems = (data) => {
@@ -77,7 +78,20 @@ function SearchBox(props) {
 
   const searchItem = (value) => {
     let suggestions = [];
-
+    // if (/^\d+$/.test(value)) {
+    //   console.log(typeof value);
+    //   const item = searchItems.filter((item) => item.id === parseInt(value));
+    //   console.log(item);
+    //   if (item.length == 1) {
+    //     setLocalState((currantSate) => ({
+    //       ...currantSate,
+    //       textBoxValue: "",
+    //       showPricingBox: true,
+    //       currantItem: Object.assign({}, item[0]),
+    //       suggestions: [],
+    //     }));
+    //   }
+    // } else {
     if (value.length > 0) {
       suggestions = searchItems.filter((item) => item.value.includes(value));
     }
@@ -87,6 +101,7 @@ function SearchBox(props) {
       cursor: 0,
       textBoxValue: value,
     }));
+    // }
   };
 
   const modalClose = () => {
@@ -137,18 +152,23 @@ function SearchBox(props) {
     }
   };
 
+  const onSelect = (value) => {
+    console.log("onSelect", value);
+  };
+
   return (
     <Fragment>
       <div style={dropDown}>
-        <input
-          className="form-control bg-dark-white dmr-sm-2"
-          placeholder="Search"
+        <Search
+          placeholder="search"
+          onSearch={(value) => console.log(value)}
+          style={{ width: 350 }}
           onKeyDown={handleKeyDown}
-          ref={refrs}
           value={textBoxValue}
           onChange={(e) => {
             searchItem(e.target.value);
           }}
+          ref={refrs}
         />
 
         <ul style={suggestions.length > 0 ? styles : showDropDown}>

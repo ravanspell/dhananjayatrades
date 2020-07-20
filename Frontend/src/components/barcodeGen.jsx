@@ -1,4 +1,4 @@
-import React, { useRef, Fragment } from "react";
+import React, { Fragment } from "react";
 var Barcode = require("react-barcode");
 
 class ComponentToPrint extends React.Component {

@@ -1,9 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { Button, Modal, Form } from "react-bootstrap";
+import { Row, Col, Input, Form, Button, message, Modal } from "antd";
 import axios from "axios";
+
+const tailLayout = {
+  wrapperCol: { offset: 21, span: 16 },
+};
 
 function EditStockItem(props) {
   const [item, setNewItem] = useState({
+    barcode: null,
     itemName: null,
     company: "",
     amount: 0,
@@ -13,14 +18,15 @@ function EditStockItem(props) {
     gotPrice: 0,
   });
   // IIFE  for set props to state when modal open
-  (() => {
+  useEffect(() => {
     if (
-      props.editdata.name != undefined &&
+      props.editdata.name !== undefined &&
       item.itemName === null &&
       props.show
     ) {
       setNewItem((currantState) => ({
         ...currantState,
+        barcode: props.editdata.barcode,
         itemName: props.editdata.name,
         company: props.editdata.company,
         amount: props.editdata.stock,
@@ -30,83 +36,26 @@ function EditStockItem(props) {
         gotPrice: props.editdata.got_price,
       }));
     }
-  })();
+  }, []);
 
-  const setItemName = (value) => {
-    setNewItem((currantState) => ({
-      ...currantState,
-      itemName: value,
-    }));
-  };
-  const setCompany = (value) => {
-    setNewItem((currantState) => ({
-      ...currantState,
-      company: value,
-    }));
-  };
-  const setAmount = (value) => {
-    setNewItem((currantState) => ({
-      ...currantState,
-      amount: value,
-    }));
-  };
-  const setTonPrice = (value) => {
-    setNewItem((currantState) => ({
-      ...currantState,
-      tonPrice: value,
-    }));
-  };
-
-  const setRetailPrice = (value) => {
-    setNewItem((currantState) => ({
-      ...currantState,
-      retailPrice: value,
-    }));
-  };
-
-  const setWholePrice = (value) => {
-    setNewItem((currantState) => ({
-      ...currantState,
-      wholePrice: value,
-    }));
-  };
-
-  const setGotPrice = (value) => {
-    setNewItem((currantState) => ({
-      ...currantState,
-      gotPrice: value,
-    }));
-  };
-  //http://localhost:3800/
-  const saveNewItem = (event) => {
-    event.preventDefault();
-    let editedData = {
-      barcode: props.editid,
-      name: item.itemName,
-      got_price: parseFloat(item.gotPrice),
-      t: parseFloat(item.tonPrice),
-      w: parseFloat(item.wholePrice),
-      r: parseFloat(item.retailPrice),
-      stock: parseInt(item.amount),
-      company: item.company,
-    };
+  //http://localhost:3800/ http://dhananjayatrades.com/
+  const saveNewItem = (newItemdata) => {
+    newItemdata["barcode"] = props.editdata.barcode;
     const editedAllData = [...props.data];
-    editedAllData[props.edititemindex] = editedData;
+    editedAllData[props.edititemindex] = newItemdata;
     props.updatedata(editedAllData);
     axios
       .put("http://dhananjayatrades.com/api/items/update", {
-        barcode: props.editid,
-        item_data: item,
+        item_data: newItemdata,
       })
       .then((res) => {
         console.log(res);
         if (res.data.status) {
+          message.success(res.data.message);
           closeModal();
-          // alert(res.data.message);
         } else {
-          alert(res.data.message);
+          message.error(res.data.message);
         }
-        console.log(res);
       });
   };
 
@@ -117,94 +66,142 @@ function EditStockItem(props) {
       itemName: null,
     }));
   };
+
+  const onCancle = () => {
+    props.onHide();
+  };
   return (
     <Modal
-      show={props.show}
-      onHide={props.onHide}
-      size="md"
-      aria-labelledby="contained-modal-title-vcenter"
-      centered
+      visible={props.show}
+      style={{ top: 10 }}
+      closable={false}
+      destroyOnClose={true}
+      onCancel={onCancle}
+      footer={null}
     >
-      <Modal.Header>
-        <Modal.Title id="contained-modal-title-vcenter">
-          <h6>Edit Item</h6>
-        </Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        <Form onSubmit={saveNewItem}>
-          <Form.Group>
-            <Form.Label style={{ color: "black" }}>Item Name</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Item Name"
-              value={item.itemName || ""}
-              onChange={(e) => setItemName(e.target.value)}
-            />
-          </Form.Group>
-          <Form.Group>
-            <Form.Label style={{ color: "black" }}>Company</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Company"
-              value={item.company}
-              onChange={(e) => setCompany(e.target.value)}
-            />
-          </Form.Group>
-          <Form.Group>
-            <Form.Label style={{ color: "black" }}>Stock Amount</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Amount"
-              value={item.amount}
-              onChange={(e) => setAmount(e.target.value)}
-            />
-          </Form.Group>
-          <Form.Group>
-            <Form.Label style={{ color: "black" }}>Ton Price</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Ton Price"
-              value={item.tonPrice}
-              onChange={(e) => setTonPrice(e.target.value)}
-            />
-          </Form.Group>
-          <Form.Group>
-            <Form.Label style={{ color: "black" }}>Retail Price</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Retail Price"
-              value={item.retailPrice}
-              onChange={(e) => setRetailPrice(e.target.value)}
-            />
-          </Form.Group>
-          <Form.Group>
-            <Form.Label style={{ color: "black" }}>Whole Price</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Whole Price"
-              value={item.wholePrice}
-              onChange={(e) => setWholePrice(e.target.value)}
-            />
-          </Form.Group>
-          <Form.Group>
-            <Form.Label style={{ color: "black" }}>Got Price</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Got Price"
-              value={item.gotPrice}
-              onChange={(e) => setGotPrice(e.target.value)}
-            />
-          </Form.Group>
-          <div className="text-right">
-            <Button className="mr-2" onClick={props.onHide}>
-              Close
-            </Button>
-            <Button variant="primary" type="submit">
-              Submit
-            </Button>
-          </div>
-        </Form>
-      </Modal.Body>
+      <Row gutter={[40, 0]}>
+        <Col span={24}>
+          <Form onFinish={saveNewItem} initialValues={props.editdata}>
+            <Form.Item
+              name="name"
+              label="Item Name"
+              rules={[
+                {
+                  required: true,
+                  message: "Item name required!",
+                },
+              ]}
+            >
+              <Input />
+            </Form.Item>
+
+            <Form.Item
+              name="company"
+              label="Company Name"
+              rules={[
+                {
+                  required: true,
+                  message: "Company name required!",
+                },
+                {
+                  type: "string",
+                  message: "Company name invalid",
+                },
+              ]}
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item
+              name="stock"
+              label="Stock Amount"
+              rules={[
+                {
+                  required: true,
+                  message: "Stock amount required!",
+                },
+                {
+                  pattern: /^(?=.)([+-]?([0-9]*)(\.([0-9]+))?)$/,
+                  message: "Numbers are only allowed",
+                },
+              ]}
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item
+              name="t"
+              label="Ton Price"
+              rules={[
+                {
+                  required: true,
+                  message: "Ton Price required!",
+                },
+                {
+                  pattern: /^(?=.)([+-]?([0-9]*)(\.([0-9]+))?)$/,
+                  message: "Numbers are only allowed",
+                },
+              ]}
+            >
+              <Input />
+            </Form.Item>
+
+            <Form.Item
+              name="r"
+              label="Retail Price"
+              rules={[
+                {
+                  required: true,
+                  message: "Retail price required!",
+                },
+                {
+                  pattern: /^(?=.)([+-]?([0-9]*)(\.([0-9]+))?)$/,
+                  message: "Numbers are only allowed",
+                },
+              ]}
+            >
+              <Input />
+            </Form.Item>
+
+            <Form.Item
+              name="w"
+              label="Whole Price"
+              rules={[
+                {
+                  required: true,
+                  message: "Whole price required!",
+                },
+                {
+                  pattern: /^(?=.)([+-]?([0-9]*)(\.([0-9]+))?)$/,
+                  message: "Numbers are only allowed",
+                },
+              ]}
+            >
+              <Input />
+            </Form.Item>
+
+            <Form.Item
+              name="got_price"
+              label="Got Price"
+              rules={[
+                {
+                  required: true,
+                  message: "Got price required!",
+                },
+                {
+                  pattern: /^(?=.)([+-]?([0-9]*)(\.([0-9]+))?)$/,
+                  message: "Numbers are only allowed",
+                },
+              ]}
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item {...tailLayout}>
+              <Button type="primary" htmlType="submit">
+                Save
+              </Button>
+            </Form.Item>
+          </Form>
+        </Col>
+      </Row>
     </Modal>
   );
 }
