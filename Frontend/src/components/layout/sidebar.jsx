@@ -10,6 +10,7 @@ import {
 } from "@ant-design/icons";
 
 function SideNav() {
+  const { SubMenu } = Menu;
   const history = useHistory();
   const handleOrderClick = () => {
     history.push("/");
@@ -23,10 +24,13 @@ function SideNav() {
   const handleStockClick = () => {
     history.push("/stock/all");
   };
-
   const handleDashboardClick = () => {
     history.push("/dashboard");
   };
+  const handleOrderHistoryClick = () => {
+    history.push("/order/history");
+  };
+
   return (
     <div>
       <Menu theme="dark" mode="inline" defaultSelectedKeys={["1"]}>
@@ -34,10 +38,15 @@ function SideNav() {
           <BarChartOutlined />
           <span> Dashboard</span>
         </Menu.Item>
-        <Menu.Item key="1" onClick={handleOrderClick}>
-          <ShoppingCartOutlined />
-          <span> Order</span>
-        </Menu.Item>
+
+        <SubMenu key="sub2" icon={<ShoppingCartOutlined />} title="Orders">
+          <Menu.Item key="x" onClick={handleOrderClick}>
+            Order
+          </Menu.Item>
+          <Menu.Item key="6p" onClick={handleOrderHistoryClick}>
+            Order History
+          </Menu.Item>
+        </SubMenu>
         <Menu.Item key="2" onClick={handleBrcodeGenClick}>
           <BarcodeOutlined />
           <span> Barcode Gen</span>

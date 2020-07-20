@@ -1,6 +1,8 @@
-import React, { Fragment } from "react";
-import { Row, Col, Input, Form, Button, message, Card } from "antd";
+import React, { Fragment, useEffect } from "react";
+import { Row, Col, Input, Form, Button, message, Card, Select } from "antd";
 import { saveItem } from "../services/http";
+import { useState } from "react";
+import { getCategories } from "../services/http";
 
 const layout = {
   labelCol: { span: 8 },
@@ -12,6 +14,12 @@ const tailLayout = {
 };
 
 function NewItemSave() {
+  const [catagories, setCategories] = useState([]);
+  useEffect(() => {
+    getCategories().then((response) => {
+      setCategories(response.data.data);
+    });
+  }, []);
   const saveNewItem = async (newItem) => {
     try {
       const res = await saveItem(newItem);
@@ -77,6 +85,26 @@ function NewItemSave() {
                 ]}
               >
                 <Input />
+              </Form.Item>
+              <Form.Item
+                name="catagory"
+                label="Catagory"
+                rules={[
+                  {
+                    required: true,
+                    message: "Catagory required!",
+                  },
+                ]}
+              >
+                <Select>
+                  {catagories.map((cat, i) => {
+                    return (
+                      <Select.Option key={i} value={cat.catagory_id}>
+                        {cat.catagory}
+                      </Select.Option>
+                    );
+                  })}
+                </Select>
               </Form.Item>
               <Form.Item
                 name="amount"

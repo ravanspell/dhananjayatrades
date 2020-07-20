@@ -85,7 +85,7 @@ function PricingBox(props) {
             onFinish={handleSubmit}
             initialValues={{
               priceType: "tPrice",
-              customItemname: item.value || props.rprice.itemName || "",
+              customItemname: props.rprice.value || item.itemName || "",
             }}
           >
             <Form.Item name="priceType">
@@ -108,7 +108,7 @@ function PricingBox(props) {
               name="customPrice"
               rules={[
                 {
-                  pattern: /^[0-9-]*$/,
+                  pattern: /^[0-9-.]*$/,
                   message: "Numbers are only allowed",
                 },
               ]}
@@ -123,7 +123,7 @@ function PricingBox(props) {
                   message: "Amount required!",
                 },
                 {
-                  pattern: /^[0-9]*$/,
+                  pattern: /^[0-9-.]*$/,
                   message: "Numbers are only allowed",
                 },
               ]}

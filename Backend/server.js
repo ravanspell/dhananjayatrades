@@ -32,10 +32,13 @@ const user = require('./routes/user');
 const items = require('./routes/items');
 const orders = require('./routes/orders');
 const dashboard = require('./routes/dashboard');
+const catagories = require('./routes/catagoryes');
+
 app.use('/api/user', user);
 app.use('/api/items', items);
 app.use('/api/orders', orders);
 app.use('/api/dashboard', dashboard);
+app.use('/api/catagories', catagories);
 
 //start node js server
 app.listen(port, () => {

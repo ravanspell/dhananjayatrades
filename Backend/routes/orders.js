@@ -68,22 +68,39 @@ const getItem = async (barcode) => {
     }
 }
 
-// router.get('/:orderId', async (req, res) => {
-//     try {
-//         let orderId = req.params.orderId;
-//         let orderData = await Order.find({ orderId: orderId });
-//         res.status(200).json(orderData);
-//     } catch (error) {
-//         res.status(400).json({ status: false, error: error });
-//     }
-// });
-// router.get('/cancle', async (req, res) => {
-//     try {
-//         await Order.deleteOne({ _id: req.body.orderId });
-//         res.status(200).json({ status: true, message: 'Order has been cancled' });
-//     } catch (error) {
-//         res.status(400).json({ status: false, error: error.message });
-//     }
+//get all stock data 
+router.route('/hostory/:page/:limit').get(auth, async (req, res) => {
+    const { page, limit } = req.params;
+    const offset = (page - 1) * limit;
+    //! should change table name after development
+    const stockQuery = `SELECT * FROM status ORDER BY date ASC LIMIT ${limit} OFFSET ${offset}`;
+    const dataCountQuery = `SELECT COUNT(*) AS count FROM status`;
 
-// });
+    const [pageItems, allCount] = await Promise.all([
+        mysqldb.query(stockQuery),
+        mysqldb.query(dataCountQuery),
+    ])
+    return res.status(201).json({ status: true, data: pageItems, count: allCount[0].count });
+});
+
+router.get('/:orderId', async (req, res) => {
+    try {
+        const { orderId } = req.params;
+        const orderQuery = `SELECT * FROM Sale INNER JOIN WHERE order_id = ${orderId}`;
+        const orderData = await mysqldb.query(orderQuery);
+        return res.status(201).json({ status: true, data: orderData });
+    } catch (error) {
+        return res.status(400).json({ status: false, error: error });
+    }
+});
+//search stock data 
+router.route('/search/all/:tearm').get(auth, async (req, res) => {
+    const { tearm } = req.params;
+    const stockSearchQuery = `SELECT * FROM status 
+                              WHERE order_id LIKE "%${tearm}%" 
+                              OR date LIKE "%${tearm}%"
+                              ORDER BY date ASC `;
+    const result = await mysqldb.query(stockSearchQuery);
+    return res.status(201).json({ status: true, data: result, count: result.length });
+});
 module.exports = router;

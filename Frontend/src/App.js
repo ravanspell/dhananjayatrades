@@ -6,6 +6,7 @@ import NewItemSave from "./components/newItemSave";
 import ViewAllStock from "./components/viewAllStock";
 import AuthHandller from "./components/authHandllerComponent";
 import BarcodeGenarator from "./components/barcodeGenarator";
+import OrderHistory from "./components/orderHistory";
 import Login from "./components/login";
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import MainLayout from "./components/layout/mainLayout";
@@ -62,6 +63,12 @@ const privateRoutes = [
     component: NewItemSave,
     exact: true
   },
+  {
+    key: "history",
+    path: "/order/history",
+    component: OrderHistory,
+    exact: true
+  },
 ];
 const App = () => {
   return (
@@ -72,7 +79,7 @@ const App = () => {
             <Route component={Login} />
           </Switch>
         </Route>
-        <Route exact path={["/", "/dashboard", "/barcode", "/save/item", "/stock/all"]}>
+        <Route exact path={["/", "/dashboard", "/barcode", "/save/item", "/stock/all", "/order/history"]}>
           <MainLayout>
             <Switch>
               {privateRoutes.map(privateRouteProps => (

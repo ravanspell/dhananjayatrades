@@ -1,7 +1,31 @@
 import React from "react";
 import { useSelector } from "react-redux";
+import { getOldOrder } from "../services/http";
+
+const buttonStyles = {
+  edit: {
+    backgroundColor: "#1d9baecc",
+    border: "none",
+    width: "30px",
+    borderRadius: "2px",
+    color: "#e9ecef",
+  },
+};
 function PrintBill(props) {
   let order = useSelector((state) => state.orderReducer.order);
+  if (props.is_history) {
+    getOldOrder(props.is_history).then((result) => {
+      order = result.data.data;
+    });
+  }
+  const currantDate = () => {
+    const dateObj = new Date();
+    const date = dateObj.getDate();
+    const month = dateObj.getMonth() + 1;
+    const year = dateObj.getFullYear();
+    return `${year}-${month}-${date}`;
+  };
+
   const printx = () => {
     let str = "";
     Object.keys(order.orderItems || {}).forEach(
@@ -58,7 +82,7 @@ function PrintBill(props) {
           <tr>
             <th colSpan="4">
               193/A, Diyawala, Kirindiwela
-              <br /> TP:076-3916919 Date:${props.date()}
+              <br /> TP:076-3916919 Date:${currantDate()}
             </th>
           </tr>
 
@@ -119,6 +143,13 @@ function PrintBill(props) {
     return true;
   };
 
+  if (props.is_history) {
+    return (
+      <button style={buttonStyles.edit} title="Edit item info" onClick={printx}>
+        <i className="fa fa-eye"></i>
+      </button>
+    );
+  }
   return (
     <button onClick={printx} type="button" className="print-btn">
       <i className="fa fa-print">

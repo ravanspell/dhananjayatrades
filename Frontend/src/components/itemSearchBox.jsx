@@ -78,7 +78,20 @@ function SearchBox(props) {
 
   const searchItem = (value) => {
     let suggestions = [];
-
+    // if (/^\d+$/.test(value)) {
+    //   console.log(typeof value);
+    //   const item = searchItems.filter((item) => item.id === parseInt(value));
+    //   console.log(item);
+    //   if (item.length == 1) {
+    //     setLocalState((currantSate) => ({
+    //       ...currantSate,
+    //       textBoxValue: "",
+    //       showPricingBox: true,
+    //       currantItem: Object.assign({}, item[0]),
+    //       suggestions: [],
+    //     }));
+    //   }
+    // } else {
     if (value.length > 0) {
       suggestions = searchItems.filter((item) => item.value.includes(value));
     }
@@ -88,6 +101,7 @@ function SearchBox(props) {
       cursor: 0,
       textBoxValue: value,
     }));
+    // }
   };
 
   const modalClose = () => {

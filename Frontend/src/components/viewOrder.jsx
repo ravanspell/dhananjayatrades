@@ -280,11 +280,7 @@ function ViewOrder(props) {
               />
             </div>
             <div className="d-flex flex-row mt-2">
-              <PrintBill
-                order={order}
-                date={currantDate}
-                paidamount={paidAmount}
-              />
+              <PrintBill order={order} paidamount={paidAmount} />
             </div>
 
             <div className="d-flex flex-row mt-2">

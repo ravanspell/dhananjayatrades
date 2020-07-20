@@ -25,14 +25,14 @@ router.route('/search').get(auth, async (req, res) => {
 //save stock
 router.post('/save', auth, async (req, res) => {
   try {
-    const { barcode, itemName, amount, tonPrice, wholePrice, retailPrice, company, gotPrice } = req.body;
+    const { barcode, itemName, amount, tonPrice, wholePrice, retailPrice, company, gotPrice, catagory } = req.body;
     const query = `SELECT barcode FROM items WHERE barcode =${barcode}`;
     const item = await mysqldb.query(query);
     if (item.length > 0) {
       return res.status(400).json({ status: false, message: "Barcode alredy in use" });
     }
-    const itemSaveQuery = `INSERT INTO items (barcode,name,stock,t,w,r,company,got_price) 
-                           VALUES(${barcode},"${itemName}",${amount},${tonPrice},${wholePrice},${retailPrice},"${company}",${gotPrice})`;
+    const itemSaveQuery = `INSERT INTO items (barcode,catagory,name,stock,t,w,r,company,got_price) 
+                           VALUES(${barcode},${catagory},"${itemName}",${amount},${tonPrice},${wholePrice},${retailPrice},"${company}",${gotPrice})`;
     await mysqldb.query(itemSaveQuery);
     return res.status(201).json({ status: true, message: "Item has been saved" });
   } catch (error) {
@@ -54,6 +54,22 @@ router.route('/all/:page/:limit').get(auth, async (req, res) => {
   return res.status(201).json({ status: true, data: pageItems, count: allCount[0].count });
 });
 
+//search stock data 
+router.route('/search/all/:tearm').get(auth, async (req, res) => {
+  const { tearm } = req.params;
+  const stockSearchQuery = `SELECT * FROM items 
+                            WHERE barcode LIKE "%${tearm}%" 
+                            OR name LIKE "%${tearm}%"
+                            OR t LIKE "%${tearm}%" 
+                            OR w LIKE "%${tearm}%" 
+                            OR r LIKE "%${tearm}%" 
+                            OR got_price LIKE "%${tearm}%"
+                            OR company LIKE "%${tearm}%"
+                            OR stock LIKE "%${tearm}%" 
+                            ORDER BY barcode ASC `;
+  const result = await mysqldb.query(stockSearchQuery);
+  return res.status(201).json({ status: true, data: result, count: result.length });
+});
 
 router.route('/delete', auth).delete(async (req, res) => {
   //! should change table name after development
