@@ -3,8 +3,7 @@ import { Row, Col, Modal, Button, Form, Input, Select } from "antd";
 import { uuid } from "uuidv4";
 
 function PricingBox(props) {
-  // const [form] = Form.useForm();
-  console.log(props.rprice);
+
   const [{ priceType, item }, setLocalState] = useState({
     priceType: "tPrice",
     item: props.rprice,
@@ -27,7 +26,7 @@ function PricingBox(props) {
     }));
   };
   const handleSubmit = (data) => {
-    let order = JSON.parse(localStorage.getItem("order"));
+    let order = JSON.parse(localStorage.getItem("order")).find((ord) => ord.active);
     let newItem = {
       itemName: data.customItemname || item.itemName,
       customPrice: parseFloat(data.customPrice) || 0,
@@ -85,7 +84,7 @@ function PricingBox(props) {
             onFinish={handleSubmit}
             initialValues={{
               priceType: "tPrice",
-              customItemname: props.rprice.value || item.itemName || "",
+              customItemname: props.rprice.value || item.itemName ||  props.rprice.itemName || "",
             }}
           >
             <Form.Item name="priceType">

@@ -1,5 +1,5 @@
 import React, { useState, Fragment, useEffect } from "react";
-import { Table, Space, Input, Popconfirm } from "antd";
+import { Table, Space, Input, Popconfirm, Button, Tag  } from "antd";
 import SearchBox from "./itemSearchBox";
 import PrintBill from "./printBill";
 import PricingBox from "./priceItem";
@@ -31,10 +31,60 @@ function ViewOrder(props) {
   const dispatch = useDispatch();
 
   /**
-   * Initilize the order
+   * Initialize the order
    * save order data structure in browser store to offline usage.
    */
   let order = useSelector((state) => state.orderReducer.order);
+
+  const getOrders = () => {
+    const currentOrder =  localStorage.getItem("order")
+    if(currentOrder !== null) {
+      return JSON.parse(currentOrder);
+    }
+    return null;
+  }
+
+  const getCurrentOrder = (orders = []) => {
+    return orders.find((order) => order.active === true);
+  }
+
+  const createOrderTemplate = (orderNumber) => {
+    return  {
+      orderNo: orderNumber, 
+      orderItems: [], 
+      itemsAmount: 0, 
+      totalPrice: 0, 
+      totalGotPrice: 0,
+      active: true,
+    }
+  }
+
+  const addNewOrder = () => {
+    const orders = getOrders();
+
+    const newOrderNumber = pickOrderNumber();
+    console.log(newOrderNumber);
+    const newOrder = createOrderTemplate(newOrderNumber);
+    let ordersString = JSON.stringify([newOrder])
+
+    if(orders !== null){
+    for (let i = 0; i < orders.length; i++) {
+      const order = orders[i];
+      if(order.active === true){
+        order.active = false;
+        break;
+      }
+    }
+
+   
+    orders.push(newOrder);
+    ordersString = JSON.stringify(orders)
+  }
+  localStorage.setItem("order",ordersString);
+    dispatch(
+      createOrder(newOrder)
+    );
+  }
   useEffect(() => {
     let finishedOrders = null;
 
@@ -46,11 +96,9 @@ function ViewOrder(props) {
         localStorage.setItem("finishOrders", "{}");
       }
       if (order == null) {
-        const newOrderNumber = pickOrderNumber();
-        console.log(newOrderNumber);
-        initOrderData(newOrderNumber);
+        addNewOrder()
       } else {
-        updateCounts(order);
+        updateCounts(getCurrentOrder(order));
       }
     }
 
@@ -84,20 +132,48 @@ function ViewOrder(props) {
     setPaidAmount((currantState) => ({ ...currantState, paidAmount: value }));
   };
 
-  const initOrderData = (newOrderNumber) => {
-    localStorage.setItem(
-      "order",
-      `{"orderNo": "${newOrderNumber}", "orderItems": [], "itemsAmount": 0, "totalPrice": 0, "totalGotPrice": 0}`
-    );
-    dispatch(
-      createOrder({
-        orderNo: newOrderNumber, //data.response || data.orderNo,
-        orderItems: [], //data.orderItems ||
-        itemsAmount: 0,
-        totalPrice: 0,
-      })
-    );
-  };
+  // const initOrderData = (newOrderNumber) => {
+  //   localStorage.setItem(
+  //     "order",
+  //     `{"orderNo": "${newOrderNumber}", "orderItems": [], "itemsAmount": 0, "totalPrice": 0, "totalGotPrice": 0}`
+  //   );
+  //   dispatch(
+  //     createOrder({
+  //       orderNo: newOrderNumber, //data.response || data.orderNo,
+  //       orderItems: [], //data.orderItems ||
+  //       itemsAmount: 0,
+  //       totalPrice: 0,
+  //     })
+  //   );
+  // };
+
+  const changeOrder = (orderId) => {
+    const orders = getOrders();
+
+    for (let i = 0; i < orders.length; i++) {
+      const order = orders[i];
+      if(order.active === true){
+        order.active = false;
+      }
+      if(order.orderNo === orderId){
+        order.active = true;
+        dispatch(
+          createOrder(order)
+        );
+      }
+    }
+    localStorage.setItem("order",JSON.stringify(orders));
+  }
+
+
+  const removeOrder = (orderId) => {
+    const orders = getOrders();
+
+    if(orders !== null) {
+      const restOfOrders = orders.filter((odr) => odr.orderNo !== orderId)
+      localStorage.setItem("order",JSON.stringify(restOfOrders));
+    }
+  }
 
   const updateCounts = (order) => {
     let totalPrice = 0;
@@ -111,8 +187,15 @@ function ViewOrder(props) {
     order.itemsAmount = itemsAmount;
     order.totalPrice = totalPrice;
     order.totalGotPrice = totalGotPrice;
-    localStorage.setItem("order", JSON.stringify(order));
-    dispatch(createOrder(order));
+    const allOrders = getOrders();
+    const updatedOrders = allOrders.map((odr) =>{
+      if(odr.orderNo === order.orderNo){
+        return order
+      }
+      return odr
+    })
+    localStorage.setItem("order", JSON.stringify(updatedOrders));
+    dispatch(createOrder({...order}));
     // return order
   };
   const currantDate = () => {
@@ -153,6 +236,7 @@ function ViewOrder(props) {
     setPaidAmount((currantSate) => ({
       ...currantSate,
       showEditPricingBox: false,
+      editItem: {},
     }));
   };
 
@@ -168,16 +252,31 @@ function ViewOrder(props) {
   return (
     <Fragment>
       <Card>
-        <div className="d-flex flex-row">
+        <div className="d-flex flex-row justify-content-space-between">
           <div className="mr-1">
-            <h6>{order.orderNo} </h6>
+            <h6>{order.orderNo}</h6>
           </div>
           <div className="ml-1">
             <SearchBox updateorder={updateCounts} />
           </div>
+          <div  className="ml-2">
+            <Button onClick={addNewOrder} type="primary" size="middle" >New Order </Button>
+          </div>
         </div>
       </Card>
-
+        <div className="d-flex flex-row mt-2">
+          {getOrders() !== null && getOrders().map((odr) => {
+            return (
+              <Tag 
+              closable={!odr.active}
+              key={odr.orderNo}
+              onClick={!odr.active? () => changeOrder(odr.orderNo): (() => {})} 
+              onClose={() => removeOrder(odr.orderNo)}>
+                {odr.orderNo}
+              </Tag>
+            )
+          })} 
+        </div>
       <div className="row mt-2">
         <div className="col-md-8 pr-0">
           <Card>
@@ -286,7 +385,7 @@ function ViewOrder(props) {
             <div className="d-flex flex-row mt-2">
               <FinishOrder
                 currantDate={currantDate}
-                initOrderData={initOrderData}
+                initOrderData={addNewOrder}
                 pickOrderNumber={pickOrderNumber}
               />
             </div>

@@ -13,9 +13,15 @@ function FinishOrder(props) {
       order["date"] = toDay;
       finishedOrders[toDay].push(order);
       localStorage.setItem("finishOrders", JSON.stringify(finishedOrders));
-      localStorage.removeItem("order");
-      const newOrderNumber = props.pickOrderNumber();
-      props.initOrderData(newOrderNumber);
+      let allOrders = JSON.parse(localStorage.getItem("order"));
+      const restOfOrders = allOrders.filter((odr) => odr.orderNo !== order.orderNo);
+
+      if(restOfOrders.length > 0) {
+        localStorage.setItem("order", JSON.stringify(restOfOrders));
+      }else{
+        localStorage.removeItem("order");
+      }
+      props.initOrderData();
     }
   };
 

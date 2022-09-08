@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const baseUrl = "http://dhananjayatrades.com/"; //"http://localhost:3800/";
+const baseUrl = "http://localhost:3800/"; //"http://dhananjayatrades.com/";
 
 const get = (url, params = {}) => {
   return axios.get(url);
