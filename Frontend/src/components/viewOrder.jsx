@@ -9,6 +9,8 @@ import { useSelector, useDispatch } from "react-redux";
 import { createOrder } from "../actions";
 import { addOrder } from "../services/http";
 import { Card } from "antd";
+import Hotkeys from 'react-hot-keys';
+
 
 function ViewOrder(props) {
   const buttonStyles = {
@@ -251,6 +253,13 @@ function ViewOrder(props) {
 
   return (
     <Fragment>
+      <Hotkeys 
+        filter={(event) => {
+          if(event.ctrlKey && event.key === 'm' && event.type === 'keydown'){
+            addNewOrder()
+          }
+        }}
+      />
       <Card>
         <div className="d-flex flex-row justify-content-space-between">
           <div className="mr-1">
@@ -266,12 +275,16 @@ function ViewOrder(props) {
       </Card>
         <div className="d-flex flex-row mt-2">
           {getOrders() !== null && getOrders().map((odr) => {
+           
             return (
               <Tag 
-              closable={!odr.active}
-              key={odr.orderNo}
-              onClick={!odr.active? () => changeOrder(odr.orderNo): (() => {})} 
-              onClose={() => removeOrder(odr.orderNo)}>
+                style={{cursor: !odr.active? 'pointer': ""}}
+                color={!odr.active? "": "green"}
+                closable={!odr.active}
+                key={odr.orderNo}
+                onClick={!odr.active? () => changeOrder(odr.orderNo): (() => {})} 
+                onClose={() => removeOrder(odr.orderNo)}
+              >
                 {odr.orderNo}
               </Tag>
             )
@@ -346,10 +359,10 @@ function ViewOrder(props) {
               <tbody>
                 <tr className="border-bottom border-secondary">
                   <td>
-                    <h6>Total Items</h6>
+                    <h6>Total Items :</h6>
                   </td>
                   <td>
-                    <h5>{order.itemsAmount}</h5>
+                    <h5>{ order.itemsAmount}</h5>
                   </td>
                 </tr>
                 <tr className="border-bottom border-secondary">
