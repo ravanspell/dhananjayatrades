@@ -82,7 +82,7 @@ function PrintBill(props) {
           <tr>
             <th colSpan="4">
               193/A, Diyawala, Kirindiwela
-              <br /> TP:076-3916919 Date:${currantDate()}
+              <br /> TP:076-3916919 / 033-2267558 Date:${currantDate()}
             </th>
           </tr>
 
