@@ -1,6 +1,7 @@
 import React from "react";
 import { useSelector } from "react-redux";
 import { getOldOrder } from "../services/http";
+import { message } from 'antd';
 
 const buttonStyles = {
   edit: {
@@ -11,13 +12,9 @@ const buttonStyles = {
     color: "#e9ecef",
   },
 };
-function PrintBill(props) {
+const  PrintBill = (props) => {
   let order = useSelector((state) => state.orderReducer.order);
-  if (props.is_history) {
-    getOldOrder(props.is_history).then((result) => {
-      order = result.data.data;
-    });
-  }
+
   const currantDate = () => {
     const dateObj = new Date();
     const date = dateObj.getDate();
@@ -26,6 +23,17 @@ function PrintBill(props) {
     return `${year}-${month}-${date}`;
   };
 
+  const printOldOrder = () => {
+    const hideLoading = message.loading('Processing..', 0);
+    getOldOrder(props.orderId).then((result) => {
+      order = {orderItems: result.data.data};
+      hideLoading();
+      printx();
+    }).catch((error) => {
+      hideLoading();
+      message.error(`Error - ${error.message}`, 2.9);
+    });
+  }
   const printx = () => {
     let str = "";
     Object.keys(order.orderItems || {}).forEach(
@@ -33,15 +41,15 @@ function PrintBill(props) {
         (str =
           str +
           `<tr key=${order?.orderItems[item].barcode}>
-          <td rowspan="1">${order.orderItems[item].itemName}</td>
+          <td rowspan="1">${order.orderItems[item].itemName || order.orderItems[item].order_name}</td>
           <td>
-            ${parseFloat(
+            ${props?.orderId ? parseFloat(order.orderItems[item].unit_price).toFixed(2) : parseFloat(
               order.orderItems[item].customPrice > 0
                 ? order.orderItems[item].customPrice
                 : order.orderItems[item].unitPrice
             ).toFixed(2)}
           </td>
-          <td>${order.orderItems[item].amount}</td>
+          <td>${order.orderItems[item].amount || order.orderItems[item].qty}</td>
           <td>${parseFloat(order.orderItems[item].total).toFixed(2)}</td>
         </tr>`)
     );
@@ -77,7 +85,7 @@ function PrintBill(props) {
             <th colSpan="4"> Dhananjaya Trade Center</th>
           </tr>
           <tr>
-            <th colSpan="4"> ${order?.orderNo}</th>
+            <th colSpan="4"> ${order?.orderNo || props?.orderId}</th>
           </tr>
           <tr>
             <th colSpan="4">
@@ -96,12 +104,12 @@ function PrintBill(props) {
         <tbody>
             ${str}
             <tr>
-            <td>${order.itemsAmount} items</td>
+            <td>${order.itemsAmount || order?.orderItems?.length} items</td>
             <td colSpan="2">
               <b> Total Cost </b>
             </td>
             <td>
-              <b>${order.totalPrice.toFixed(2)}</b>
+              <b>${order?.totalPrice? order.totalPrice.toFixed(2): order.orderItems[0]?.total?.toFixed(2)}</b>
             </td>
           </tr>
           <tr>
@@ -110,7 +118,7 @@ function PrintBill(props) {
               <b> Cach </b>
             </td>
             <td>
-              <b>${props.paidamount}</b>
+              <b>${props?.paidamount || 0}</b>
             </td>
           </tr>
           <tr>
@@ -120,7 +128,7 @@ function PrintBill(props) {
             </td>
             <td>
               <b>
-                ${(props.paidamount - order.totalPrice).toFixed(2)}
+                ${props?.paidamount ? (props.paidamount - order.totalPrice).toFixed(2): 0}
               </b>
             </td>
           </tr>
@@ -143,10 +151,11 @@ function PrintBill(props) {
     return true;
   };
 
-  if (props.is_history) {
+  if (props.orderId) {
     return (
-      <button style={buttonStyles.edit} title="Edit item info" onClick={printx}>
-        <i className="fa fa-eye"></i>
+      <button style={buttonStyles.edit} title="Edit item info" onClick={printOldOrder}>
+        
+         <i className="fa fa-print" />
       </button>
     );
   }

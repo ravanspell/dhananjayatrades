@@ -86,22 +86,23 @@ function OrderHistory(props) {
       dataIndex: "profit",
       sortable: true,
     },
-    // {
-    //   key: "9",
-    //   title: "Action",
-    //   key: "action",
-    //   render: (text, record) => (
-    //     <Space size="middle">
-    //       <button
-    //         style={buttonStyles.edit}
-    //         title="Edit item info"
-    //         onClick={() => handleAction(record.barcode)}
-    //       >
-    //         <i className="fa fa-edit"></i>
-    //       </button>
-    //     </Space>
-    //   ),
-    // },
+    {
+      key: "9",
+      title: "Action",
+      key: "action",
+      render: (text, record) => (
+        // <Space size="middle">
+        //   <button
+        //     style={buttonStyles.edit}
+        //     title="Edit item info"
+        //     onClick={() => handleAction(record.barcode)}
+        //   >
+        //     <i className="fa fa-edit"></i>
+        //   </button>
+        // </Space>
+        <PrintBill orderId ={record.order_id} />
+      ),
+    },
   ];
 
   const handlePageChange = (currantPage, pageSize) => {
