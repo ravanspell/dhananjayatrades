@@ -86,7 +86,12 @@ router.route('/hostory/:page/:limit').get(auth, async (req, res) => {
 router.get('/:orderId', async (req, res) => {
     try {
         const { orderId } = req.params;
-        const orderQuery = `SELECT * FROM Sale INNER JOIN WHERE order_id = ${orderId}`;
+        const orderQuery =  `SELECT *
+                                FROM Sale
+                                INNER JOIN status
+                                ON Sale.order_id = status.order_id
+                                WHERE Sale.order_id="${orderId}"`;
+                            
         const orderData = await mysqldb.query(orderQuery);
         return res.status(201).json({ status: true, data: orderData });
     } catch (error) {
@@ -103,4 +108,5 @@ router.route('/search/all/:tearm').get(auth, async (req, res) => {
     const result = await mysqldb.query(stockSearchQuery);
     return res.status(201).json({ status: true, data: result, count: result.length });
 });
+
 module.exports = router;
