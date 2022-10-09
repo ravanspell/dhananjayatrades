@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Row, Col, Modal, Button, Form, Input, Select } from "antd";
 import { uuid } from "uuidv4";
+import { useSelector } from "react-redux";
 
 function PricingBox(props) {
 
+  const currentOrder = useSelector((state) => state.orders.order);
   const [{ priceType, item }, setLocalState] = useState({
     priceType: "tPrice",
     item: props.rprice,
@@ -25,8 +27,12 @@ function PricingBox(props) {
       item: newCurrantItem,
     }));
   };
+
+  const getCurrentOrder = () => {
+    return JSON.parse(JSON.stringify(currentOrder))
+  }
   const handleSubmit = (data) => {
-    let order = JSON.parse(localStorage.getItem("order")).find((ord) => ord.active);
+    const order = getCurrentOrder();
     let newItem = {
       itemName: data.customItemname || item.itemName,
       customPrice: parseFloat(data.customPrice) || 0,
@@ -54,7 +60,7 @@ function PricingBox(props) {
     } else {
       newItem["id"] = uuid();
       newItem["barcode"] = item.id;
-      order.orderItems.push(newItem);
+      order.orderItems = [...order.orderItems, newItem];
     }
     props.updateorder(order);
     setLocalState((currantState) => ({

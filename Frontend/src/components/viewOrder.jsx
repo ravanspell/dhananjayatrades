@@ -3,14 +3,11 @@ import { Table, Space, Input, Popconfirm, Button, Tag  } from "antd";
 import SearchBox from "./itemSearchBox";
 import PrintBill from "./printBill";
 import PricingBox from "./priceItem";
-//import CancleOrder from "./cancleOrder";
 import FinishOrder from "./finishOrder";
 import { useSelector, useDispatch } from "react-redux";
-import { createOrder } from "../actions";
-import { addOrder } from "../services/http";
 import { Card } from "antd";
 import Hotkeys from 'react-hot-keys';
-
+import {createOrder, changeOrder, updateOrder, setOrderDate} from '../slices/order.slice'
 
 function ViewOrder(props) {
   const buttonStyles = {
@@ -36,18 +33,17 @@ function ViewOrder(props) {
    * Initialize the order
    * save order data structure in browser store to offline usage.
    */
-  let order = useSelector((state) => state.orderReducer.order);
+  let order = useSelector((state) => state.orders.order);
+  const allOrders = useSelector((state) => state.orders.orders);
+  const userId = useSelector((state) => state.user.id);
+  const orderDate = useSelector((state) => state.orders.orderDate);
 
   const getOrders = () => {
-    const currentOrder =  localStorage.getItem("order")
-    if(currentOrder !== null) {
-      return JSON.parse(currentOrder);
-    }
-    return null;
+    return JSON.parse(JSON.stringify(allOrders))
   }
 
-  const getCurrentOrder = (orders = []) => {
-    return orders.find((order) => order.active === true);
+  const getCurrentOrder = () => {
+    return JSON.parse(JSON.stringify(order))
   }
 
   const createOrderTemplate = (orderNumber) => {
@@ -57,67 +53,46 @@ function ViewOrder(props) {
       itemsAmount: 0, 
       totalPrice: 0, 
       totalGotPrice: 0,
-      active: true,
+      // active | pending | done
+      status: 'active',
     }
   }
 
-  const addNewOrder = () => {
-    const orders = getOrders();
+  const addNewOrder = (alteredOrderData) => {
+    const orders = alteredOrderData? alteredOrderData: getOrders();
 
     const newOrderNumber = pickOrderNumber();
     console.log(newOrderNumber);
     const newOrder = createOrderTemplate(newOrderNumber);
-    let ordersString = JSON.stringify([newOrder])
 
-    if(orders !== null){
     for (let i = 0; i < orders.length; i++) {
       const order = orders[i];
-      if(order.active === true){
-        order.active = false;
+      if(order.status === 'active'){
+        order.status = 'pending';
         break;
       }
     }
-
-   
-    orders.push(newOrder);
-    ordersString = JSON.stringify(orders)
-  }
-  localStorage.setItem("order",ordersString);
     dispatch(
-      createOrder(newOrder)
+      createOrder({newOrder, allOrders: orders})
     );
   }
   useEffect(() => {
-    let finishedOrders = null;
-
-    if (order === "") {
-      order = JSON.parse(localStorage.getItem("order"));
-      finishedOrders = JSON.parse(localStorage.getItem("finishOrders"));
-
-      if (finishedOrders == null) {
-        localStorage.setItem("finishOrders", "{}");
-      }
-      if (order == null) {
-        addNewOrder()
-      } else {
-        updateCounts(getCurrentOrder(order));
-      }
+    if (!order?.orderNo) {
+      addNewOrder()
     }
-
-    if (finishedOrders !== null) {
-      const toDay = currantDate();
-      const toDayOrders = finishedOrders[toDay]
-        ? `{"${toDay}":${JSON.stringify(finishedOrders[toDay])}}`
-        : "{}";
-      delete finishedOrders[toDay];
-      if (Object.keys(finishedOrders).length > 0) {
-        addOrder(finishedOrders).then((resolve) => {
-          console.log(resolve.data);
-          if (resolve.data.status) {
-            localStorage.setItem("finishOrders", toDayOrders);
-          }
-        });
+    // remove older orders
+    if(orderDate !== ""){
+      const today = new Date(currantDate()).getTime() 
+      const previousDate = new Date(orderDate).getTime()
+      if(today !== previousDate){
+        const currentOrders = getOrders();
+        if(currentOrders.length > 0){
+          const pendingOrders = currentOrders.filter(odr => odr.status !== 'done');
+          dispatch(updateOrder({order: null, orders: pendingOrders}))
+        }
       }
+    }else{
+      dispatch(setOrderDate(currantDate()))
     }
   }, []);
 
@@ -134,46 +109,41 @@ function ViewOrder(props) {
     setPaidAmount((currantState) => ({ ...currantState, paidAmount: value }));
   };
 
-  // const initOrderData = (newOrderNumber) => {
-  //   localStorage.setItem(
-  //     "order",
-  //     `{"orderNo": "${newOrderNumber}", "orderItems": [], "itemsAmount": 0, "totalPrice": 0, "totalGotPrice": 0}`
-  //   );
-  //   dispatch(
-  //     createOrder({
-  //       orderNo: newOrderNumber, //data.response || data.orderNo,
-  //       orderItems: [], //data.orderItems ||
-  //       itemsAmount: 0,
-  //       totalPrice: 0,
-  //     })
-  //   );
-  // };
-
-  const changeOrder = (orderId) => {
+  const changeActiveOrder = (orderId) => {
     const orders = getOrders();
+    const currentOrder= getCurrentOrder()
 
-    for (let i = 0; i < orders.length; i++) {
-      const order = orders[i];
-      if(order.active === true){
-        order.active = false;
-      }
-      if(order.orderNo === orderId){
-        order.active = true;
-        dispatch(
-          createOrder(order)
-        );
-      }
+    const selectedOrder = orders.find((odr) => odr.orderNo == orderId)
+
+    if(selectedOrder){
+      selectedOrder.status = 'active'
+
+      const currentOrderId = currentOrder.orderNo;
+
+      const updatedOrderData = orders.map(odr => {
+        if(odr.orderNo === currentOrderId){
+          odr.status = 'pending'
+        }
+
+        if(odr.orderNo === selectedOrder.orderNo ){
+          odr.status = 'active'
+        }
+        return odr
+      })
+      
+      dispatch(
+        changeOrder({order: selectedOrder, orders: updatedOrderData})
+      );
     }
-    localStorage.setItem("order",JSON.stringify(orders));
   }
 
 
   const removeOrder = (orderId) => {
     const orders = getOrders();
-
     if(orders !== null) {
       const restOfOrders = orders.filter((odr) => odr.orderNo !== orderId)
-      localStorage.setItem("order",JSON.stringify(restOfOrders));
+      dispatch(updateOrder({order: null, orders: restOfOrders}))
+      // localStorage.setItem("order",JSON.stringify(restOfOrders));
     }
   }
 
@@ -189,17 +159,26 @@ function ViewOrder(props) {
     order.itemsAmount = itemsAmount;
     order.totalPrice = totalPrice;
     order.totalGotPrice = totalGotPrice;
-    const allOrders = getOrders();
+    //const allOrders = getOrders();
     const updatedOrders = allOrders.map((odr) =>{
       if(odr.orderNo === order.orderNo){
         return order
       }
       return odr
     })
-    localStorage.setItem("order", JSON.stringify(updatedOrders));
-    dispatch(createOrder({...order}));
-    // return order
+    orderUpdate({...order})
   };
+
+  const orderUpdate = (order) => {
+    const allOrderData = allOrders.map((odr) => {
+      if (order.orderNo === odr.orderNo) {
+          return order
+      } 
+      return odr
+    })
+    dispatch(updateOrder({order, orders: allOrderData}))
+  }
+
   const currantDate = () => {
     const dateObj = new Date();
     const date = dateObj.getDate();
@@ -210,24 +189,20 @@ function ViewOrder(props) {
 
   const pickOrderNumber = () => {
     const toDay = currantDate();
-    const finishedOrders = JSON.parse(localStorage.getItem("finishOrders"));
     let orderId = 0;
-    while (!Boolean(orderId)) {
-      let orderid = Math.floor(Math.random() * 99999);
-      orderid = `${toDay}-${orderid}`;
-      let orders = [];
-      if (finishedOrders[toDay] != undefined)
-        orders = finishedOrders[toDay].filter(
-          (singleOrder) => singleOrder.orderNo === orderid
-        );
-      if (orders.length < 1) {
-        orderId = orderid;
-        return orderId;
+    while (true) {
+      let randomNumber = Math.floor(Math.random() * 99999);
+      orderId = `${toDay}-${userId}-${randomNumber}`;
+      // check wether order id unique or not.
+      const isOrderIdAvailable = allOrders.some((odr) => odr.orderNo === orderId)
+      if(!isOrderIdAvailable){
+        break;
       }
     }
+    return orderId;
   };
   const deleteOrderItem = (orderId) => {
-    let currantOrder = { ...order };
+    let currantOrder = getCurrentOrder();
     currantOrder.orderItems = currantOrder.orderItems.filter(
       (orderItem) => orderItem.id !== orderId
     );
@@ -269,20 +244,20 @@ function ViewOrder(props) {
             <SearchBox updateorder={updateCounts} />
           </div>
           <div  className="ml-2">
-            <Button onClick={addNewOrder} type="primary" size="middle" >New Order </Button>
+            <Button onClick={() => addNewOrder()} type="primary" size="middle" >New Order </Button>
           </div>
         </div>
       </Card>
         <div className="d-flex flex-row mt-2">
-          {getOrders() !== null && getOrders().map((odr) => {
+          {allOrders?.length > 0 && allOrders.filter(odr => odr.status !== 'done').map((odr) => {
            
             return (
               <Tag 
-                style={{cursor: !odr.active? 'pointer': ""}}
-                color={!odr.active? "": "green"}
-                closable={!odr.active}
+                style={{cursor: odr.status == 'pending' ? 'pointer': ""}}
+                color={odr.status == 'pending'? "": "green"}
+                closable={odr.status == 'pending'}
                 key={odr.orderNo}
-                onClick={!odr.active? () => changeOrder(odr.orderNo): (() => {})} 
+                onClick={odr.status == 'pending'? () => changeActiveOrder(odr.orderNo): (() => {})} 
                 onClose={() => removeOrder(odr.orderNo)}
               >
                 {odr.orderNo}
@@ -400,6 +375,7 @@ function ViewOrder(props) {
                 currantDate={currantDate}
                 initOrderData={addNewOrder}
                 pickOrderNumber={pickOrderNumber}
+                getAllOrders={getOrders}
               />
             </div>
           </Card>

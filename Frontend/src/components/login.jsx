@@ -1,40 +1,55 @@
 import React, { Fragment, useState } from "react";
 
 import { useHistory } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { login, verifyUser } from "../actions";
 import axios from "axios";
 import { Row, Form, Input, Button, Checkbox, message, Card } from "antd";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
-import { sendLogin } from "../services/http";
+// import { sendLogin } from "../services/http";
+import {userLogin} from '../slices/users.slice'
 function Login(props) {
   const dispatch = useDispatch();
   const history = useHistory();
-  const [loading, setLoading] = useState(false);
+  const loading = useSelector(state => state.user.loading)
 
-  const loginForm = (userData) => {
-    setLoading(true);
-    sendLogin(userData)
-      .then((response) => {
-        if (response.data.status) {
-          axios.interceptors.request.use((config) => {
-            config.headers.authorization = `Bearer ${response.data.token}`;
-            return config;
-          });
-          dispatch(login(response.data.token));
-          dispatch(verifyUser(response.data.username));
-          setLoading(false);
-          history.push("/");
-        } else {
-          setLoading(false);
-          message.error(response.data.message);
-        }
-      })
-      .catch((error) => {
-        setLoading(false);
-        message.error(error.message);
+  // const loginForm = (userData) => {
+  //   setLoading(true);
+  //   sendLogin(userData)
+  //     .then((response) => {
+  //       if (response.data.status) {
+  //         axios.interceptors.request.use((config) => {
+  //           config.headers.authorization = `Bearer ${response.data.token}`;
+  //           return config;
+  //         });
+  //         dispatch(login(response.data.token));
+  //         dispatch(verifyUser(response.data.username));
+  //         setLoading(false);
+  //         history.push("/");
+  //       } else {
+  //         setLoading(false);
+  //         message.error(response.data.message);
+  //       }
+  //     })
+  //     .catch((error) => {
+  //       setLoading(false);
+  //       message.error(error.message);
+  //     });
+  // };
+
+  const loginForm = async (userData) => {
+    try {
+      const res = await dispatch(userLogin(userData)).unwrap()
+      axios.interceptors.request.use((config) => {
+        config.headers.authorization = `Bearer ${res.data.token}`;
+        return config;
       });
+      history.push("/");
+    } catch (error) {
+      message.error(error.message);
+    }
   };
+  
   //<img className="logo" src="img/logo.png" alt="" />
   return (
     <Fragment>

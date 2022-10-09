@@ -4,7 +4,7 @@ import { Route, Redirect } from "react-router-dom";
 
 function AuthHandller(props) {
   const { component: Component, ...restProps } = props;
-  const authToken = useSelector((state) => state.userAuthReducer.authToken);
+  const authToken = useSelector((state) => state.user.authToken);
 
   return (
     <Route

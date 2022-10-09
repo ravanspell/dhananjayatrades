@@ -1,27 +1,49 @@
 import React, { Fragment } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { addFailedOrders, saveOrder, updateOrder } from "../slices/order.slice";
 
 function FinishOrder(props) {
-  let order = useSelector((state) => state.orderReducer.order);
-  const finishOrder = () => {
-    if (order.orderItems.length > 0) {
-      const toDay = props.currantDate();
-      let finishedOrders = JSON.parse(localStorage.getItem("finishOrders"));
-      if (!finishedOrders.hasOwnProperty(toDay)) {
-        finishedOrders[toDay] = [];
-      }
-      order["date"] = toDay;
-      finishedOrders[toDay].push(order);
-      localStorage.setItem("finishOrders", JSON.stringify(finishedOrders));
-      let allOrders = JSON.parse(localStorage.getItem("order"));
-      const restOfOrders = allOrders.filter((odr) => odr.orderNo !== order.orderNo);
+  const dispatch = useDispatch();
 
-      if(restOfOrders.length > 0) {
-        localStorage.setItem("order", JSON.stringify(restOfOrders));
-      }else{
-        localStorage.removeItem("order");
+  let order = useSelector((state) => state.orders.order);
+  let failedOrders = useSelector((state) => state.orders.failedOrders);
+
+  const getFailedOrders = () => {
+    return JSON.parse(JSON.stringify(failedOrders))
+  }
+
+  const saveFailedOrder = (order) => {
+    const failedOrders = getFailedOrders();
+    failedOrders.push(order)
+    dispatch(addFailedOrders(failedOrders))
+  }
+
+  const processOrderAsync = async (currentOrder) => {
+    try {
+      await dispatch(saveOrder(currentOrder)).unwrap()
+
+    } catch (error) {
+      console.log('====================================');
+      console.log('failed order', currentOrder.orderNo);
+      console.log('====================================');
+      saveFailedOrder(order)
+    }
+  }
+  const finishOrder = async () => {
+    if (order.orderItems.length > 0) {
+      const allOrders = props.getAllOrders()
+      const alteredOrderData = allOrders.map((odr) => {
+        if (odr.orderNo === order.orderNo) {
+          return { orderNo: odr.orderNo, status: 'done' }
+        }
+        return odr
+      })
+      try {
+        props.initOrderData(alteredOrderData);
+        processOrderAsync(order)
+      } catch (error) {
+        saveFailedOrder(order)
       }
-      props.initOrderData();
     }
   };
 

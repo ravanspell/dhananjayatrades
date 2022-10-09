@@ -6,13 +6,20 @@ import * as serviceWorker from './serviceWorker';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'font-awesome/css/font-awesome.min.css';
 import 'antd/dist/antd.dark.css';
-import { createStore } from 'redux';
 import { Provider } from 'react-redux';
-import allReducers from './reducers';
+import store from './store';
+import { PersistGate } from 'redux-persist/integration/react';
+import { persistStore } from 'redux-persist';
 
-const store = createStore(allReducers, window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__());
+let persister = persistStore(store);
 
-ReactDOM.render(<Provider store={store} ><App /></Provider>, document.getElementById('root'));
+ReactDOM.render(
+<Provider store={store} >
+    <PersistGate loading={null} persistor={persister}>
+        <App />
+    </PersistGate>
+</Provider>, 
+document.getElementById('root'));
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.

@@ -13,7 +13,7 @@ const buttonStyles = {
   },
 };
 const  PrintBill = (props) => {
-  let order = useSelector((state) => state.orderReducer.order);
+  let order = useSelector((state) => state.orders.order);
 
   const currantDate = () => {
     const dateObj = new Date();
