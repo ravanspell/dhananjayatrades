@@ -7,6 +7,7 @@ import {
   UploadOutlined,
   StockOutlined,
   BarChartOutlined,
+  UserSwitchOutlined,
 } from "@ant-design/icons";
 
 function SideNav() {
@@ -30,7 +31,12 @@ function SideNav() {
   const handleOrderHistoryClick = () => {
     history.push("/order/history");
   };
-
+  const handleCustomersClick = () => {
+    history.push("/customers");
+  };
+  const handleAddCustomersClick = () => {
+    history.push("/customers/add");
+  };
   return (
     <div>
       <Menu theme="dark" mode="inline" defaultSelectedKeys={["1"]}>
@@ -45,6 +51,14 @@ function SideNav() {
           </Menu.Item>
           <Menu.Item key="6p" onClick={handleOrderHistoryClick}>
             Order History
+          </Menu.Item>
+        </SubMenu>
+        <SubMenu key="sub3" icon={<UserSwitchOutlined />} title="Customers">
+          <Menu.Item key="customers" onClick={handleCustomersClick}>
+            Customers
+          </Menu.Item>
+          <Menu.Item key="add-customers" onClick={handleAddCustomersClick}>
+            Add Customers
           </Menu.Item>
         </SubMenu>
         <Menu.Item key="2" onClick={handleBrcodeGenClick}>

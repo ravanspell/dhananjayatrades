@@ -68,3 +68,12 @@ export const loadSearchItems = () => {
 export const getCategories = () => {
   return get(baseUrl + `api/catagories/all`);
 };
+
+//-------------- customers ---------------//
+export const addCustomer = (data) => {
+  return post(baseUrl + "api/customers", data);
+};
+
+export const customers = () => {
+  return get(baseUrl + `api/customers`);
+};

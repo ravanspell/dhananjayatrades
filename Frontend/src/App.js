@@ -11,6 +11,8 @@ import Login from "./components/login";
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import MainLayout from "./components/layout/mainLayout";
 import PageNotFound from "./components/layout/pageNotFound";
+import SaveNewCustomer from './components/addCustomers';
+import ViewCustomers from './components/customers';
 
 // const style = {
 //   height: 40,
@@ -69,6 +71,18 @@ const privateRoutes = [
     component: OrderHistory,
     exact: true
   },
+  {
+    key: "customers",
+    path: "/customers",
+    component: ViewCustomers,
+    exact: true
+  },
+  {
+    key: "add-customers",
+    path: "/customers/add",
+    component: SaveNewCustomer,
+    exact: true
+  },
 ];
 const App = () => {
   return (
@@ -79,7 +93,16 @@ const App = () => {
             <Route component={Login} />
           </Switch>
         </Route>
-        <Route exact path={["/", "/dashboard", "/barcode", "/save/item", "/stock/all", "/order/history"]}>
+        <Route exact path={[
+          "/", 
+          "/dashboard", 
+          "/barcode", 
+          "/save/item", 
+          "/stock/all", 
+          "/order/history",
+          "/customers",
+          "/customers/add"
+        ]}>
           <MainLayout>
             <Switch>
               {privateRoutes.map(privateRouteProps => (
