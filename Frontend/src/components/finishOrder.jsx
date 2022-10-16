@@ -1,5 +1,6 @@
 import React, { Fragment } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { getAllItems } from "../slices/items.slice";
 import { addFailedOrders, saveOrder, updateOrder } from "../slices/order.slice";
 
 function FinishOrder(props) {
@@ -21,7 +22,7 @@ function FinishOrder(props) {
   const processOrderAsync = async (currentOrder) => {
     try {
       await dispatch(saveOrder(currentOrder)).unwrap()
-
+      dispatch(getAllItems());
     } catch (error) {
       console.log('====================================');
       console.log('failed order', currentOrder.orderNo);
