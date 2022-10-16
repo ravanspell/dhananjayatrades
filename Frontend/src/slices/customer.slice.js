@@ -3,6 +3,7 @@ import {
     createAsyncThunk, 
     createEntityAdapter 
 } from '@reduxjs/toolkit'
+import { message } from 'antd'
 import { addCustomer, customers } from '../services/http'
 
 const initialState = {
@@ -72,10 +73,13 @@ export const customerSlice = createSlice({
             const {data} = action.payload.data
             state.loading = false
             customersAdapter.addOne(state, data);
+            message.success('Customer saved')
+            
         });
 
         builder.addCase(saveCustomer.rejected, (state) => {
             state.loading = false
+            message.error('Error: customer not saved');
         });
 
         /**
