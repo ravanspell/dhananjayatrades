@@ -30,7 +30,7 @@ router.post('/add', async (req, res) => {
 
 router.post('/login', async (req, res) => {
     const { username, password } = req.body;
-    const [user] = await mysqldb.query(`SELECT id,Name,Password FROM user WHERE Name ='${username}'`);
+    const [user] = await mysqldb.query(`SELECT id,Name,Password,role FROM user WHERE Name ='${username}'`);
     if (!user) {
         return res.status(400).json({ status: false, message: 'Sorry you do not have an account' });
     }
@@ -38,9 +38,9 @@ router.post('/login', async (req, res) => {
     if (!is_authnticted) {
         return res.status(400).send('Your user name or password incorrect');
     }
-    const accessToken = jwt.sign({ user: user.Name }, process.env.SECRET_KEY);
+    const accessToken = jwt.sign({ user: user.Name, id: user.id, role: user.role }, process.env.SECRET_KEY);
     //return res.header('auth-token', accessToken).send(accessToken);
-    return res.status(200).json({ status: true, username: user.Name, token: accessToken, id: user.id });
+    return res.status(200).json({ status: true, username: user.Name, token: accessToken, id: user.id, role: user.role});
 });
 
 router.route('/currant').get(auth, async (req, res) => {

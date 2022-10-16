@@ -1,6 +1,8 @@
 const router = require('express').Router();
 let mysqldb = require('../mysqldb');
 const auth = require('../middleware/auth');
+const roles = require('../middleware/roles');
+const constants = require("../constants.js")
 
 router.route('/').get(auth, async (req, res) => {
   try {
@@ -21,7 +23,7 @@ router.route('/').get(auth, async (req, res) => {
   }
 });
 //save stock
-router.post('/', auth, async (req, res) => {
+router.post('/', [auth, roles([constants.SUPER_ADMIN, constants.ADMIN])], async (req, res) => {
   try {
     const { name, contactNo, address, shopName } = req.body;
     

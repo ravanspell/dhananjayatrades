@@ -1,10 +1,12 @@
 const router = require('express').Router();
 let mysqldb = require('../mysqldb');
 const auth = require('../middleware/auth');
+const roles = require('../middleware/roles');
+const constants = require("../constants.js")
 /**
  * Return this month and last month profit data
  */
-router.get('/profit', auth, async (req, res) => {
+router.get('/profit', [auth, roles([constants.SUPER_ADMIN])], async (req, res) => {
     let thisMonth = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     let lastMonth = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
