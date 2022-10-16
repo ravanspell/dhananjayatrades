@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Row, Col, Input, Form, Button, message, Modal } from "antd";
 import axios from "axios";
+import { baseUrl } from "../services/http";
 
 const tailLayout = {
   wrapperCol: { offset: 21, span: 16 },
@@ -38,14 +39,13 @@ function EditStockItem(props) {
     }
   }, []);
 
-  //http://localhost:3800/ http://dhananjayatrades.com/
   const saveNewItem = (newItemdata) => {
     newItemdata["barcode"] = props.editdata.barcode;
     const editedAllData = [...props.data];
     editedAllData[props.edititemindex] = newItemdata;
     props.updatedata(editedAllData);
     axios
-      .put("http://dhananjayatrades.com/api/items/update", {
+      .put(`${baseUrl}api/items/update`, {
         item_data: newItemdata,
       })
       .then((res) => {

@@ -3,6 +3,7 @@ import { Line } from "react-chartjs-2";
 import axios from "axios";
 import { Card, Statistic } from "antd";
 import { ArrowUpOutlined, ArrowDownOutlined } from "@ant-design/icons";
+import { baseUrl } from "../services/http";
 
 function Dashboard(props) {
   const [
@@ -69,7 +70,7 @@ function Dashboard(props) {
     const abortController = new AbortController();
     const signal = abortController.signal;
     axios
-      .get("http://dhananjayatrades.com/api/dashboard/profit", { signal })
+      .get(`${baseUrl}api/dashboard/profit`, { signal })
       .then((resolve) => {
         console.log(resolve);
         setGraphData((currantState) => ({

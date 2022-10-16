@@ -3,7 +3,7 @@ import { Table, Space, Popconfirm, Card, Input } from "antd";
 //import { useSelector, useDispatch } from "react-redux";
 import EditStockItem from "./editItemModal";
 import axios from "axios";
-import { getItemData, itemSearch } from "../services/http";
+import { baseUrl, getItemData, itemSearch } from "../services/http";
 
 function ViewAllStock(props) {
   const { Search } = Input;
@@ -138,7 +138,7 @@ function ViewAllStock(props) {
   const removeStockItem = (itemId) => {
     setLoading(true);
     axios
-      .delete("http://dhananjayatrades.com/api/items/delete", {
+      .delete(`${baseUrl}api/items/delete`, {
         data: { item_id: itemId },
       })
       .then((responseData) => {
