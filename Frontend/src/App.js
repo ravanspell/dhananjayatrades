@@ -13,7 +13,7 @@ import MainLayout from "./components/layout/mainLayout";
 import PageNotFound from "./components/layout/pageNotFound";
 import SaveNewCustomer from './components/addCustomers';
 import ViewCustomers from './components/customers';
-
+import { ADMIN, USER, SUPER_ADMIN } from './constants'
 // const style = {
 //   height: 40,
 //   width: 40,
@@ -34,54 +34,62 @@ import ViewCustomers from './components/customers';
 //   },
 // ]
 
-const privateRoutes = [
+export const privateRoutes = [
   {
     key: "orders",
     path: "/",
     component: ViewOrder,
-    exact: true
+    exact: true,
+    roles: [ADMIN, USER, SUPER_ADMIN]
   },
   {
     key: "dashboard",
     path: "/dashboard",
     component: Dashboard,
-    exact: true
+    exact: true,
+    roles: [SUPER_ADMIN]
   },
   {
     key: "stock",
     path: "/stock/all",
     component: ViewAllStock,
-    exact: true
+    exact: true,
+    roles: [ADMIN, USER, SUPER_ADMIN],
   },
   {
     key: "barcode",
     path: "/barcode",
     component: BarcodeGenarator,
-    exact: true
+    exact: true,
+    roles: [ADMIN, USER, SUPER_ADMIN],
   },
   {
     key: "newItem",
     path: "/save/item",
     component: NewItemSave,
-    exact: true
+    exact: true,
+    roles: [ADMIN, SUPER_ADMIN],
   },
   {
     key: "history",
     path: "/order/history",
     component: OrderHistory,
-    exact: true
+    exact: true,
+    roles: [SUPER_ADMIN],
   },
   {
     key: "customers",
     path: "/customers",
     component: ViewCustomers,
-    exact: true
+    exact: true,
+    roles: [ADMIN, USER, SUPER_ADMIN],
   },
   {
     key: "add-customers",
     path: "/customers/add",
     component: SaveNewCustomer,
-    exact: true
+    exact: true,
+    roles: [ADMIN, SUPER_ADMIN],
   },
 ];
 const App = () => {
@@ -94,11 +102,11 @@ const App = () => {
           </Switch>
         </Route>
         <Route exact path={[
-          "/", 
-          "/dashboard", 
-          "/barcode", 
-          "/save/item", 
-          "/stock/all", 
+          "/",
+          "/dashboard",
+          "/barcode",
+          "/save/item",
+          "/stock/all",
           "/order/history",
           "/customers",
           "/customers/add"
