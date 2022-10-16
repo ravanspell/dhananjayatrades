@@ -40,7 +40,11 @@ function FinishOrder(props) {
       })
       try {
         props.initOrderData(alteredOrderData);
-        processOrderAsync(order)
+        const orderData = {
+          ...order,
+          date: new Date()
+        }
+        processOrderAsync(orderData)
       } catch (error) {
         saveFailedOrder(order)
       }
