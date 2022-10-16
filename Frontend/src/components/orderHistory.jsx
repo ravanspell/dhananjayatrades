@@ -87,9 +87,14 @@ function OrderHistory(props) {
       sortable: true,
     },
     {
+        key: "6",
+        title: "Customer Name",
+        dataIndex: "name",
+        sortable: true,
+    },
+    {
       key: "9",
       title: "Action",
-      key: "action",
       render: (text, record) => (
         // <Space size="middle">
         //   <button
