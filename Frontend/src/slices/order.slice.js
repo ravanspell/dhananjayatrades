@@ -6,13 +6,13 @@ const initialState = {
     order: {},
     failedOrders: [],
     loading: false,
-    orderDate: ""
+    orderDate: "",
 }
 
 export const saveOrder = createAsyncThunk(
     'order/save',
     async (orderData) => {
-        return await addOrder(orderData);
+        return await addOrder([orderData]);
     }
 )
 
@@ -72,7 +72,7 @@ export const {
     changeOrder,
     updateOrder,
     addFailedOrders,
-    setOrderDate
+    setOrderDate,
 } = orderSlice.actions
 
 export default orderSlice.reducer
