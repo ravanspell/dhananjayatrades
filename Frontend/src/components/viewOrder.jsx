@@ -8,8 +8,10 @@ import { useSelector, useDispatch } from "react-redux";
 import { Card } from "antd";
 import Hotkeys from 'react-hot-keys';
 import {createOrder, changeOrder, updateOrder, setOrderDate} from '../slices/order.slice'
+import { getCustomers } from "../slices/customer.slice";
+import CustomerSearchBox from "./customerSearchBox";
 
-function ViewOrder(props) {
+function ViewOrder() {
   const buttonStyles = {
     edit: {
       backgroundColor: "#1d9baecc",
@@ -55,6 +57,7 @@ function ViewOrder(props) {
       totalGotPrice: 0,
       // active | pending | done
       status: 'active',
+      customer: ""
     }
   }
 
@@ -77,6 +80,7 @@ function ViewOrder(props) {
     );
   }
   useEffect(() => {
+    dispatch(getCustomers());
     if (!order?.orderNo) {
       addNewOrder()
     }
@@ -245,6 +249,9 @@ function ViewOrder(props) {
           </div>
           <div  className="ml-2">
             <Button onClick={() => addNewOrder()} type="primary" size="middle" >New Order </Button>
+          </div>
+          <div className="ml-2">
+            <CustomerSearchBox />
           </div>
         </div>
       </Card>
