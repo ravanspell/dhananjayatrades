@@ -1,12 +1,10 @@
 import React, { useRef, useState, Fragment } from "react";
-import { useSelector } from "react-redux";
 import ReactToPrint from "react-to-print";
 import ComponentToPrint from "./barcodeGen";
 import { Card, Input, Form, Button } from "antd";
 
 const { TextArea } = Input;
-function BarcodeGenarator(props) {
-  let order = useSelector((state) => state.orderReducer.order);
+function BarcodeGenarator() {
   const componentRef = useRef();
 
   const [Allbarcodes, setAllBarcodeNumbers] = useState([]);
