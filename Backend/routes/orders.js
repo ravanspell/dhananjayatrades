@@ -8,7 +8,7 @@ const constants = require("../constants.js")
  */
 router.post('/add', auth, async (req, res) => {
     const orders = req.body;
-    
+
     for (let orderIndex = 0; orderIndex < orders.length; orderIndex++) {
         const order = orders[orderIndex];
         const { orderItems, orderNo, totalPrice, totalGotPrice, date, customer } = order;
@@ -97,10 +97,10 @@ router.get('/:orderId', async (req, res) => {
     try {
         const { orderId } = req.params;
         const orderQuery = `SELECT *
-                            FROM Sale
-                                     INNER JOIN status
-                                                ON Sale.order_id = status.order_id
-                            WHERE Sale.order_id = "${orderId}"`;
+                            FROM sale
+                                INNER JOIN status
+                                ON sale.order_id = status.order_id
+                            WHERE sale.order_id = "${orderId}"`;
 
         const orderData = await mysqldb.query(orderQuery);
         return res.status(201).json({ status: true, data: orderData });
