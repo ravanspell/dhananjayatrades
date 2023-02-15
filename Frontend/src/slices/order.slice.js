@@ -16,16 +16,74 @@ export const saveOrder = createAsyncThunk(
     }
 )
 
+const createOrderTemplate = (orderNumber, cust, orderType = 'dinein') => {
+    const customer =  { phone: '', name: '' }
+    customer.name = cust.name;
+    customer.phone = cust.phone;
+
+    return {
+        orderNo: orderNumber,
+        orderItems: [],
+        itemsAmount: 0,
+        totalPrice: 0,
+        totalGotPrice: 0,
+        // active | pending | done
+        status: 'active',
+        customer,
+        // takeway | dinein
+        type: orderType
+    }
+}
+
+// const currantDate = () => {
+//     const dateObj = new Date();
+//     const date = dateObj.getDate();
+//     const month = dateObj.getMonth() + 1;
+//     const year = dateObj.getFullYear();
+//     return `${year}-${month}-${date}`;
+// };
+
+const pickOrderNumber = (allOrders) => {
+    const dateObj = new Date();
+    const date = dateObj.getDate();
+    const month = dateObj.getMonth() + 1;
+    const year = dateObj.getFullYear().toString();
+
+    let orderId = 0;
+    while (true) {
+        let randomNumber = Math.floor(Math.random() * 9999);
+        orderId = `${year.slice(year.length - 2)}${month}${date}${randomNumber}`;
+        // check wether order id unique or not.
+        const isOrderIdAvailable = allOrders.some((odr) => odr.orderNo === orderId)
+        if (!isOrderIdAvailable) {
+            break;
+        }
+    }
+    return orderId;
+};
+
 export const orderSlice = createSlice({
     name: 'orders',
     initialState,
     reducers: {
         createOrder: (state, action) => {
-            const { newOrder, allOrders } = action.payload
+            const { allOrders, customer, orderType } = action.payload
+
+            const newOrderNumber = pickOrderNumber(allOrders);
+            console.log(newOrderNumber);
+            const newOrder = createOrderTemplate(newOrderNumber, customer, orderType);
+            // set pending for previous active order
+            for (let i = 0; i < allOrders.length; i++) {
+                const order = allOrders[i];
+                if (order.status === 'active') {
+                    order.status = 'pending';
+                    break;
+                }
+            }
             state.order = newOrder
             state.orders = [...allOrders, newOrder]
         },
-        changeOrder: (state, action) => {
+        changeOrder: (state, action,) => {
             const { order, orders } = action.payload
             state.order = order
             state.orders = orders
@@ -46,6 +104,7 @@ export const orderSlice = createSlice({
             state.orderDate = action.payload
         },
     },
+
     extraReducers: builder => {
 
         builder.addCase(saveOrder.pending, (state) => {

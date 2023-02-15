@@ -14,6 +14,7 @@ import PageNotFound from "./components/layout/pageNotFound";
 import SaveNewCustomer from './components/addCustomers';
 import ViewCustomers from './components/customers';
 import { ADMIN, USER, SUPER_ADMIN } from './constants'
+import KitchenOrderView from './components/KitchenOrderView';
 // const style = {
 //   height: 40,
 //   width: 40,
@@ -91,6 +92,13 @@ export const privateRoutes = [
     exact: true,
     roles: [ADMIN, SUPER_ADMIN],
   },
+  {
+    key: "kitchen-view",
+    path: "/kitchen",
+    component: KitchenOrderView,
+    exact: true,
+    roles: [USER, ADMIN, SUPER_ADMIN],
+  },
 ];
 const App = () => {
   return (
@@ -109,7 +117,8 @@ const App = () => {
           "/stock/all",
           "/order/history",
           "/customers",
-          "/customers/add"
+          "/customers/add",
+          "/kitchen"
         ]}>
           <MainLayout>
             <Switch>

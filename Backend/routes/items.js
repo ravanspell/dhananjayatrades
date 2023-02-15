@@ -7,48 +7,40 @@ const constants = require("../constants.js");
 router.route('/search').get(auth, async (req, res) => {
     try {
         console.log(req.user);
-        const query = `SELECT name, t, w, r, got_price, barcode, stock
+        const query = `SELECT id, name, price, stock, cost
                        FROM items;`;
         let items = await mysqldb.query(query);
         let newItems = items.map(searchItem => {
             return {
-                id: searchItem.barcode,
+                id: searchItem.id,
                 value: searchItem.name,
-                tPrice: searchItem.t,
-                wPrice: searchItem.w,
-                rPrice: searchItem.r,
-                gotPrice: searchItem.got_price,
+                cost: searchItem.cost,
+                price: searchItem.price,
                 stock: searchItem.stock,
             }
         })
         res.status(200).json(newItems);
     } catch (error) {
-        res.status(400).json({status: false, error: error.message});
+        res.status(400).json({ status: false, error: error.message });
     }
 });
 //save stock
 router.post('/save', [auth, roles([constants.SUPER_ADMIN, constants.ADMIN])], async (req, res) => {
     try {
-        const {barcode, itemName, amount, tonPrice, wholePrice, retailPrice, company, gotPrice, catagory} = req.body;
-        const query = `SELECT barcode
-                       FROM items
-                       WHERE barcode = ${barcode}`;
-        const item = await mysqldb.query(query);
-        if (item.length > 0) {
-            return res.status(400).json({status: false, message: "Barcode alredy in use"});
-        }
-        const itemSaveQuery = `INSERT INTO items (barcode, catagory, name, stock, t, w, r, company, got_price)
-                               VALUES (${barcode}, ${catagory}, "${itemName}", ${amount}, ${tonPrice}, ${wholePrice},
-                                       ${retailPrice}, "${company}", ${gotPrice})`;
+        const { itemName, amount, catagory, cost, price } = req.body;
+	
+        const itemSaveQuery = `INSERT INTO items (category, name, price, cost, stock )
+                               VALUES ( ${catagory}, "${itemName}", ${price}, ${cost}, ${amount})`;
+
         await mysqldb.query(itemSaveQuery);
-        return res.status(201).json({status: true, message: "Item has been saved"});
+        return res.status(201).json({ status: true, message: "Item has been saved" });
     } catch (error) {
-        res.status(500).json({status: false, message: error.message});
+        res.status(500).json({ status: false, message: error.message });
     }
 });
 //get all stock data 
 router.route('/all/:page/:limit').get(auth, async (req, res) => {
-    const {page, limit} = req.params;
+    const { page, limit } = req.params;
     const offset = (page - 1) * limit;
     //! should change table name after development
     const stockQuery = `SELECT *
@@ -62,12 +54,12 @@ router.route('/all/:page/:limit').get(auth, async (req, res) => {
         mysqldb.query(stockQuery),
         mysqldb.query(dataCountQuery),
     ])
-    return res.status(201).json({status: true, data: pageItems, count: allCount[0].count});
+    return res.status(201).json({ status: true, data: pageItems, count: allCount[0].count });
 });
 
 //search stock data 
 router.route('/search/all/:tearm').get(auth, async (req, res) => {
-    const {tearm} = req.params;
+    const { tearm } = req.params;
     const stockSearchQuery = `SELECT *
                               FROM items
                               WHERE barcode LIKE "%${tearm}%"
@@ -80,20 +72,20 @@ router.route('/search/all/:tearm').get(auth, async (req, res) => {
                                  OR stock LIKE "%${tearm}%"
                               ORDER BY barcode ASC `;
     const result = await mysqldb.query(stockSearchQuery);
-    return res.status(201).json({status: true, data: result, count: result.length});
+    return res.status(201).json({ status: true, data: result, count: result.length });
 });
 
 router.route('/delete').delete([auth, roles([constants.SUPER_ADMIN, constants.ADMIN])], async (req, res) => {
     //! should change table name after development
     try {
-        const {item_id} = req.body;
+        const { item_id } = req.body;
         const stockRemoveQuery = `DELETE
                                   FROM items
                                   WHERE barcode = ${item_id}`;
         const status = await mysqldb.query(stockRemoveQuery);
-        return res.status(201).json({status: true, message: 'Item has been deleted'});
+        return res.status(201).json({ status: true, message: 'Item has been deleted' });
     } catch (error) {
-        return res.status(400).json({status: false, message: error});
+        return res.status(400).json({ status: false, message: error });
     }
 });
 
@@ -101,7 +93,7 @@ router.route('/delete').delete([auth, roles([constants.SUPER_ADMIN, constants.AD
 router.route('/update').put([auth, roles([constants.SUPER_ADMIN, constants.ADMIN])], async (req, res) => {
     //! should change table name after development
     try {
-        const {item_data} = req.body;
+        const { item_data } = req.body;
 
         const editStockItemQuery = `UPDATE items
                                     SET name='${item_data.name}',
@@ -113,9 +105,9 @@ router.route('/update').put([auth, roles([constants.SUPER_ADMIN, constants.ADMIN
                                         company='${item_data.company}'
                                     WHERE barcode = ${item_data.barcode}`;
         const status = await mysqldb.query(editStockItemQuery);
-        return res.status(201).json({status: true, message: 'Item has been updated'});
+        return res.status(201).json({ status: true, message: 'Item has been updated' });
     } catch (error) {
-        return res.status(400).json({status: false, message: error});
+        return res.status(400).json({ status: false, message: error });
     }
 });
 // router.route('/empty/stockes').get(async (req, res) => {

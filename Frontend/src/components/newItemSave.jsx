@@ -40,7 +40,7 @@ function NewItemSave() {
         <Row gutter={[8, 0]}>
           <Col span={18}>
             <Form {...layout} onFinish={saveNewItem}>
-              <Form.Item
+              {/* <Form.Item
                 name="barcode"
                 label="Barcode"
                 rules={[
@@ -55,7 +55,7 @@ function NewItemSave() {
                 ]}
               >
                 <Input />
-              </Form.Item>
+              </Form.Item> */}
 
               <Form.Item
                 name="itemName"
@@ -70,7 +70,7 @@ function NewItemSave() {
                 <Input />
               </Form.Item>
 
-              <Form.Item
+              {/* <Form.Item
                 name="company"
                 label="Company Name"
                 rules={[
@@ -85,7 +85,7 @@ function NewItemSave() {
                 ]}
               >
                 <Input />
-              </Form.Item>
+              </Form.Item> */}
               <Form.Item
                 name="catagory"
                 label="Catagory"
@@ -99,8 +99,8 @@ function NewItemSave() {
                 <Select>
                   {catagories.map((cat, i) => {
                     return (
-                      <Select.Option key={i} value={cat.catagory_id}>
-                        {cat.catagory}
+                      <Select.Option key={i} value={cat.id}>
+                        {cat.category}
                       </Select.Option>
                     );
                   })}
@@ -123,12 +123,12 @@ function NewItemSave() {
                 <Input />
               </Form.Item>
               <Form.Item
-                name="tonPrice"
-                label="Ton Price"
+                name="price"
+                label="Price"
                 rules={[
                   {
                     required: true,
-                    message: "Ton Price required!",
+                    message: "Price required!",
                   },
                   {
                     pattern: /^(?=.)([+-]?([0-9]*)(\.([0-9]+))?)$/,
@@ -139,7 +139,7 @@ function NewItemSave() {
                 <Input />
               </Form.Item>
 
-              <Form.Item
+              {/* <Form.Item
                 name="retailPrice"
                 label="Retail Price"
                 rules={[
@@ -171,15 +171,15 @@ function NewItemSave() {
                 ]}
               >
                 <Input />
-              </Form.Item>
+              </Form.Item> */}
 
               <Form.Item
-                name="gotPrice"
-                label="Got Price"
+                name="cost"
+                label="Cost Price"
                 rules={[
                   {
                     required: true,
-                    message: "Got price required!",
+                    message: "Cost price required!",
                   },
                   {
                     pattern: /^(?=.)([+-]?([0-9]*)(\.([0-9]+))?)$/,

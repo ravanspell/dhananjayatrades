@@ -1,20 +1,22 @@
 import React, { useState, Fragment, useEffect } from "react";
-import PricingBox from "./priceItem";
 import { Input } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllItems } from '../slices/items.slice';
+import { uuid } from "uuidv4";
+import { deepCopy } from "../utils";
 
 const { Search } = Input;
 const SearchBox = (props) => {
 
     const dispatch = useDispatch();
     const searchItems = useSelector(state => state.items.items);
+    const currentOrder = useSelector((state) => state.orders.order);
 
     const [
         {
             suggestions,
-            showPricingBox,
-            currantItem,
+            // showPricingBox,
+            // currantItem,
             textBoxValue,
             cursor,
             //  searchItems,
@@ -33,28 +35,19 @@ const SearchBox = (props) => {
     useEffect(() => {
         refrs.current.focus();
         dispatch(getAllItems())
-        //    loadSearchItems().then((resolve) => {
-        //      setSearchItems(resolve.data);
-        //    });
     }, []);
-
-    //  const setSearchItems = (data) => {
-    //    setLocalState((currantState) => ({
-    //      ...currantState,
-    //      searchItems: data,
-    //    }));
-    //  };
 
     const chooseItem = (itemId) => {
         if (suggestions.length > 0) {
             const [clickedItem] = suggestions.filter(
                 (listItem) => listItem.id === itemId
             );
+            addCustomItem(clickedItem)
             setLocalState((currantSate) => ({
                 ...currantSate,
                 textBoxValue: "",
-                showPricingBox: true,
-                currantItem: Object.assign({}, clickedItem),
+                // showPricingBox: true,
+                // currantItem: Object.assign({}, clickedItem),
                 suggestions: [],
             }));
         }
@@ -80,7 +73,27 @@ const SearchBox = (props) => {
     const dropDown = {
         position: "relative",
         display: "inline-block",
+        cursor: "pointer",
     };
+
+    const addCustomItem = (item) => {
+        const order = deepCopy(currentOrder);
+        let newItem = {
+            id: uuid(),
+            barcode: item.id,
+            itemName: item.value,
+            customPrice: 0,
+            amount: 1,
+            unitPrice: parseFloat(item.price),
+            gotPrice: parseFloat(item.cost),
+            orderId: order.orderNo,
+            total: parseFloat(item.price * 1),
+            type: order.type,
+            note: "",
+        };
+        order.orderItems = [...order.orderItems, newItem];
+        props.updateorder(order);
+    }
 
     const searchItem = (value) => {
         let suggestions = [];
@@ -110,9 +123,9 @@ const SearchBox = (props) => {
         // }
     };
 
-    const modalClose = () => {
-        setLocalState((currantSate) => ({ ...currantSate, showPricingBox: false }));
-    };
+    // const modalClose = () => {
+    //     setLocalState((currantSate) => ({ ...currantSate, showPricingBox: false }));
+    // };
 
     const closeDropDown = () => {
         setLocalState((currantSate) => ({
@@ -146,20 +159,17 @@ const SearchBox = (props) => {
                 cursor: currantSate.cursor + 1,
             }));
         } else if (e.keyCode === 13 && suggestionsLength > 0) {
+            addCustomItem(suggestions[cursor])
             setLocalState((currantSate) => ({
                 ...currantSate,
                 textBoxValue: "",
-                showPricingBox: true,
-                currantItem: Object.assign({}, suggestions[cursor]),
+                // showPricingBox: true,
+                // currantItem: Object.assign({}, suggestions[cursor]),
                 suggestions: [],
             }));
         } else if (e.keyCode === 27) {
             closeDropDown();
         }
-    };
-
-    const onSelect = (value) => {
-        console.log("onSelect", value);
     };
 
     return (
@@ -192,14 +202,14 @@ const SearchBox = (props) => {
                 </ul>
             </div>
 
-            <PricingBox
+            {/* <PricingBox
                 show={showPricingBox}
                 isedit={"false"}
                 onHide={modalClose}
                 rprice={currantItem}
                 // changeItemName={changeCurrantItemName}
                 updateorder={props.updateorder}
-            />
+            /> */}
         </Fragment>
     );
 }

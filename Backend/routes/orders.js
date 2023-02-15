@@ -93,6 +93,13 @@ router.route('/hostory/:page/:limit').get([auth, roles([constants.SUPER_ADMIN])]
     return res.status(201).json({ status: true, data: pageItems, count: allCount[0].count });
 });
 
+//search order data
+router.route('/kitchen').get(auth, async (req, res) => {
+    const orderQuery = `SELECT orders FROM kitchen WHERE id= 1`;
+    const [response] = await mysqldb.query(orderQuery);
+    return res.status(200).json({ success: true, data: response });
+});
+
 router.get('/:orderId', async (req, res) => {
     try {
         const { orderId } = req.params;
@@ -118,6 +125,28 @@ router.route('/search/all/:tearm').get(auth, async (req, res) => {
                               ORDER BY date ASC `;
     const result = await mysqldb.query(stockSearchQuery);
     return res.status(201).json({ status: true, data: result, count: result.length });
+});
+
+
+//send order data to kitchen
+router.route('/pin').post(auth, async (req, res) => {
+    const orders = req.body;
+    const orderData = orders.filter(order => order.orderItems.length > 0).reverse()
+
+    const orderQuery = `SELECT orders FROM kitchen WHERE id= 1`;
+    const response = await mysqldb.query(orderQuery);
+    if (response.length > 0) {
+        let updateQuery = `UPDATE kitchen
+        SET orders = '${JSON.stringify(orderData).replace(/\s+/g, '')}'
+        WHERE id = 1`;
+        await mysqldb.query(updateQuery);
+    } else {
+        const insertQuery = `INSERT INTO kitchen (orders )
+                                VALUES ('${JSON.stringify(orderData).replace(/\s+/g, '')}')`;
+        await mysqldb.query(insertQuery);
+    }
+    // global.io.emit("broadcast", orders.filter(order => order.orderItems.length > 0).reverse());
+    return res.status(201).json({ success: true });
 });
 
 module.exports = router;

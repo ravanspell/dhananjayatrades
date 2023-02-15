@@ -1,12 +1,14 @@
 const Express = require('express');
+// const { createServer } = require("http");
 const mysql = require('mysql');
 const cors = require('cors');
+// const { Server } = require("socket.io");
 require('dotenv').config();
 
 const port = process.env.PORT;
 
 const app = Express();
-//Middlewares
+// Middleware
 app.use(cors());
 app.use(Express.json({ limit: '50mb' }));
 app.use(Express.urlencoded({ limit: '50mb', extended: true }));
@@ -42,7 +44,18 @@ app.use('/api/dashboard', dashboard);
 app.use('/api/catagories', catagories);
 app.use('/api/customers', customers);
 
-//start node js server
+//start node js server and socket io together
+// const httpServer = createServer(app);
+// const io = new Server(httpServer, {cors: {origin: "http://ceylontearepo.com"}});
+
+// global.io = io
+
+// io.on("connection", (socket) => {
+//     console.log("socket io server started" + socket.id);
+// });
+
+// httpServer.listen(port);
+
 app.listen(port, () => {
     console.log("server started");
 });

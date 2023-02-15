@@ -22,17 +22,25 @@ router.route('/').get(auth, async (req, res) => {
     res.status(400).json({ status: false, error: error.message });
   }
 });
-//save stock
-router.post('/', [auth, roles([constants.SUPER_ADMIN, constants.ADMIN])], async (req, res) => {
+//save customer
+// TODO: add this middleware -> [auth, roles([constants.SUPER_ADMIN, constants.ADMIN])]
+router.post('/', async (req, res) => {
   try {
-    const { name, contactNo, address, shopName } = req.body;
+    const { name, phone } = req.body;
     
-    const query = `INSERT INTO customers (name,address,contact_no,shop_name) 
-                           VALUES("${name}","${address}","${contactNo}","${shopName}")`;
+    const checkCustomerQuery = `SELECT phone FROM customers WHERE phone = ${phone}`;
+    const [isAlreadyAvailable] = await mysqldb.query(checkCustomerQuery);
+    if(isAlreadyAvailable){
+      return res.status(403).json({ status: false, message: 'Customer already exist' });
+    }
+    
+    const query = `INSERT INTO customers (phone,name) 
+                           VALUES("${phone}","${name}")`;
     const response = await mysqldb.query(query);
     const data = {
-        id: response?.insertId,
-        ...req.body,
+      ...response,
+      name, 
+      phone,
     }
     return res.status(201).json({ status: true, data });
   } catch (error) {
@@ -52,6 +60,16 @@ router.route('/all/:page/:limit').get(auth, async (req, res) => {
     mysqldb.query(dataCountQuery),
   ])
   return res.status(201).json({ status: true, data: pageItems, count: allCount[0].count });
+});
+
+// search customer by phone number
+// TODO: add this later -> auth,
+router.route('/search').get( async (req, res) => {
+  const { search } = req.query;
+  const query = `SELECT * FROM customers 
+                      WHERE phone LIKE "%${search}%"`;
+  const response = await mysqldb.query(query);
+  return res.status(200).json({ status: true, data: response });
 });
 
 //search stock data 

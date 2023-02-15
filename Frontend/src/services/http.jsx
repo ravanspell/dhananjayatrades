@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const baseUrl = "http://localhost:3800/"; // "http://dhananjayatrades.com/"; 
+export const baseUrl = 'http://ceylontearepo.com/'; // "http://dhananjayatrades.com/"; //;   "http://localhost:3800/";
 
 const get = (url, params = {}) => {
   return axios.get(url);
@@ -60,7 +60,7 @@ export const loadSearchItems = () => {
 //------------ Dashboard API ---------------//
 
 // export const getProfitStatus = (page, rowsPerPage) => {
-//     return get(baseUrl + `api/items/all/${page}/${rowsPerPage}`);
+//     return get(`${baseUrl}api/dashboard/profit`);
 //   };
 
 //-------------- categories ---------------//
@@ -76,4 +76,17 @@ export const addCustomer = (data) => {
 
 export const customers = () => {
   return get(baseUrl + `api/customers`);
+};
+
+export const searchCustomer = (customer) => {
+  return get(baseUrl + `api/customers/search?search=${customer}`);
+};
+
+//---------------Socket Io ----------------//
+export const sendOrdersToKitchen = (data) => {
+  return post(baseUrl + `api/orders/pin`, data);
+};
+
+export const getOrdersToKitchen = () => {
+  return get(baseUrl + `api/orders/kitchen`);
 };

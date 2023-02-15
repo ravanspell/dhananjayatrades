@@ -41,6 +41,9 @@ function SideNav() {
   const handleAddCustomersClick = () => {
     history.push("/customers/add");
   };
+  const handleKitchenViewClick = () => {
+    history.push("/kitchen");
+  };
   return (
     <div>
       <Menu theme="dark" mode="inline" defaultSelectedKeys={["1"]}>
@@ -88,6 +91,12 @@ function SideNav() {
           <Menu.Item key="4" onClick={handleStockClick}>
             <StockOutlined />
             <span> Stocks</span>
+          </Menu.Item>
+        }
+        {[ADMIN, USER, SUPER_ADMIN].includes(role) &&
+          <Menu.Item key="5" onClick={handleKitchenViewClick}>
+            <StockOutlined />
+            <span> Kitchen View</span>
           </Menu.Item>
         }
       </Menu>

@@ -1,5 +1,5 @@
-import React, { Fragment, useEffect } from "react";
-import { Row, Col, Input, Form, Button, message, Card, Select } from "antd";
+import React, { Fragment } from "react";
+import { Row, Col, Input, Form, Button, Card } from "antd";
 import {saveCustomer} from '../slices/customer.slice'
 import { useDispatch, useSelector } from "react-redux";
 const layout = {

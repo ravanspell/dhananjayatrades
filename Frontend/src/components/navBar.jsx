@@ -10,7 +10,7 @@ function Navigation() {
   const userName = useSelector((state) => state.userAuthReducer.user);
   return (
     <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
-      <Navbar.Brand href="#home">Dhananjaya Trades</Navbar.Brand>
+      <Navbar.Brand href="#home">Raba's Kitchen</Navbar.Brand>
       <Navbar.Toggle aria-controls="responsive-navbar-nav" />
       <Navbar.Collapse id="responsive-navbar-nav">
         <Nav className="mr-auto">
