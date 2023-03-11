@@ -22,9 +22,7 @@ const KitchenOrderView = (props) => {
         try {
             const res = await getOrdersToKitchen();
             const { orders } = JSON.parse(JSON.stringify(res.data.data))
-            console.log("🚀 ~ file: KitchenOrderView.jsx:25 ~ getData ~ orders", JSON.parse(orders))
             handleOrders(JSON.parse(orders))
-
         } catch (e) {
             console.log(e);
         }

@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const baseUrl = 'http://ceylontearepo.com/'; // "http://dhananjayatrades.com/"; //;   "http://localhost:3800/";
+export const baseUrl = 'http://ceylontearepo.com/';  // "http://dhananjayatrades.com/";  'http://ceylontearepo.com/';  "http://localhost:8080/"; 
 
 const get = (url, params = {}) => {
   return axios.get(url);
@@ -27,8 +27,13 @@ export const searchOrders = (tearm) => {
   return get(baseUrl + `api/orders/search/all/${tearm}`);
 };
 
-export const getOrderHistory = (page, rowsPerPage) => {
-  return get(baseUrl + `api/orders/hostory/${page}/${rowsPerPage}`);
+export const getOrderHistory = (page, rowsPerPage, params) => {
+  let url =  `${baseUrl}api/orders/hostory/${page}/${rowsPerPage}`;
+  if(params){
+    url = url + params;
+  }
+  console.log("order history uri", url);
+  return get(url);
 };
 
 export const getOldOrder = (orderId) => {

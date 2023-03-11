@@ -2,6 +2,8 @@ import React from "react";
 import { useSelector } from "react-redux";
 import { getOldOrder } from "../services/http";
 import { message } from 'antd';
+import { getServiceCharge } from "../utils";
+// import logo from '../assets/images/bill-logo.jpeg';
 
 const buttonStyles = {
   edit: {
@@ -34,6 +36,13 @@ const  PrintBill = (props) => {
       message.error(`Error - ${error.message}`, 2.9);
     });
   }
+
+  const addServiceCharge = (amount, order) => {
+    return (amount + getServiceCharge(order)).toFixed(2);
+  }
+
+  //  <img src="${logo}" /> <br>
+
   const printx = () => {
     let str = "";
     Object.keys(order.orderItems || {}).forEach(
@@ -74,7 +83,7 @@ const  PrintBill = (props) => {
     </head>
     <body>
 
-    <div class="container">
+    <div onafterprint="window.close() class="container">
       <div class="row">
         <div class="col-sm-2" >
         </div>
@@ -82,15 +91,18 @@ const  PrintBill = (props) => {
         <table id="records_table" border="1">
         <thead>
           <tr>
-            <th colSpan="4"> Dhananjaya Trade Center</th>
+            <th colSpan="4"> 
+            Raba's Kitchen <br>
+            158/3 kandy road , Nittambuwa <br>
+            0711398855
+            </th>s
           </tr>
           <tr>
             <th colSpan="4"> ${order?.orderNo || props?.orderId}</th>
           </tr>
           <tr>
             <th colSpan="4">
-              193/A, Diyawala, Kirindiwela
-              <br /> TP:076-3916919 / 033-2267558 Date:${currantDate()}
+             Date: ${currantDate()}
             </th>
           </tr>
 
@@ -103,13 +115,24 @@ const  PrintBill = (props) => {
         </thead>
         <tbody>
             ${str}
+
+            <tr>
+            <td></td>
+            <td colSpan="2">
+              <b> S/Charge </b>
+            </td>
+            <td>
+              <b>${getServiceCharge(order).toFixed(2)}</b>
+            </td>
+          </tr>
+
             <tr>
             <td>${order.itemsAmount || order?.orderItems?.length} items</td>
             <td colSpan="2">
               <b> Total Cost </b>
             </td>
             <td>
-              <b>${order?.totalPrice? order.totalPrice.toFixed(2): order.orderItems[0]?.total?.toFixed(2)}</b>
+              <b>${order?.totalPrice? addServiceCharge(order.totalPrice,order): addServiceCharge(order.orderItems[0]?.total, order)}</b>
             </td>
           </tr>
           <tr>
@@ -128,7 +151,7 @@ const  PrintBill = (props) => {
             </td>
             <td>
               <b>
-                ${props?.paidamount ? (props.paidamount - order.totalPrice).toFixed(2): 0}
+                ${props?.paidamount ? (props.paidamount - addServiceCharge(order.totalPrice, order)).toFixed(2): 0}
               </b>
             </td>
           </tr>

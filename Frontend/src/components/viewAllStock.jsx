@@ -44,6 +44,7 @@ function ViewAllStock(props) {
     getItemData(1, 7)
       .then((resolve) => {
         const { data: resolveData } = resolve;
+        console.log("resolved data", resolveData);
         setStock((currantState) => ({
           ...currantState,
           data: resolveData.data,
@@ -59,38 +60,26 @@ function ViewAllStock(props) {
   const columns = [
     {
       key: "1",
-      title: "barcode",
-      dataIndex: "barcode",
+      title: "Id",
+      dataIndex: "id",
       sortable: true,
     },
     {
       key: "2",
-      title: "name",
+      title: "Name",
       dataIndex: "name",
       sortable: true,
     },
     {
       key: "3",
-      title: "Got Price",
-      dataIndex: "got_price",
+      title: "Price",
+      dataIndex: "price",
       sortable: true,
     },
     {
       key: "4",
-      title: "Ton Price",
-      dataIndex: "t",
-      sortable: true,
-    },
-    {
-      key: "5",
-      title: "Whole Price",
-      dataIndex: "w",
-      sortable: true,
-    },
-    {
-      key: "6",
-      title: "Retail Price",
-      dataIndex: "r",
+      title: "Cost",
+      dataIndex: "cost",
       sortable: true,
     },
     {
@@ -100,13 +89,6 @@ function ViewAllStock(props) {
       sortable: true,
     },
     {
-      key: "8",
-      title: "Company",
-      dataIndex: "company",
-      sortable: true,
-    },
-
-    {
       key: "9",
       title: "Action",
       key: "action",
@@ -115,14 +97,14 @@ function ViewAllStock(props) {
           <button
             style={buttonStyles.edit}
             title="Edit item info"
-            onClick={() => handleAction(record.barcode)}
+            onClick={() => handleAction(record.id)}
           >
             <i className="fa fa-edit"></i>
           </button>
 
           <Popconfirm
             title="Remove this item ?"
-            onConfirm={(e) => removeStockItem(record.barcode)}
+            onConfirm={(e) => removeStockItem(record.id)}
             okText="Yes"
             cancelText="No"
           >
@@ -136,6 +118,7 @@ function ViewAllStock(props) {
   ];
 
   const removeStockItem = (itemId) => {
+    console.log("remove item id", itemId);
     setLoading(true);
     axios
       .delete(`${baseUrl}api/items/delete`, {
@@ -144,7 +127,7 @@ function ViewAllStock(props) {
       .then((responseData) => {
         setLoading(false);
         if (responseData.data.status) {
-          const newItemSet = data.filter((item) => item.barcode != itemId);
+          const newItemSet = data.filter((item) => item.id != itemId);
           updateItemsData(newItemSet);
         }
       });
@@ -152,7 +135,7 @@ function ViewAllStock(props) {
   };
 
   const handleAction = (value) => {
-    const editItemIndex = data.findIndex((item) => item.barcode == value);
+    const editItemIndex = data.findIndex((item) => item.id == value);
     setStock((currantSate) => ({
       ...currantSate,
       editItemIndex: editItemIndex,

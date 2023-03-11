@@ -9,14 +9,14 @@ const tailLayout = {
 
 function EditStockItem(props) {
   const [item, setNewItem] = useState({
-    barcode: null,
+    id: null,
     itemName: null,
-    company: "",
+    // company: "",
     amount: 0,
-    tonPrice: 0,
-    retailPrice: 0,
-    wholePrice: 0,
-    gotPrice: 0,
+    cost: 0,
+    // retailPrice: 0,
+    // wholePrice: 0,
+    price: 0,
   });
   // IIFE  for set props to state when modal open
   useEffect(() => {
@@ -27,20 +27,22 @@ function EditStockItem(props) {
     ) {
       setNewItem((currantState) => ({
         ...currantState,
-        barcode: props.editdata.barcode,
+        id: props.editdata.id,
         itemName: props.editdata.name,
-        company: props.editdata.company,
+        // company: props.editdata.company,
         amount: props.editdata.stock,
-        tonPrice: props.editdata.t,
-        retailPrice: props.editdata.r,
-        wholePrice: props.editdata.w,
-        gotPrice: props.editdata.got_price,
+        cost: props.editdata.cost,
+        // retailPrice: props.editdata.r,
+        // wholePrice: props.editdata.w,
+        price: props.editdata.price,
       }));
     }
   }, []);
 
   const saveNewItem = (newItemdata) => {
-    newItemdata["barcode"] = props.editdata.barcode;
+    console.log("props.editdata", props.editdata);
+    newItemdata["id"] = props.editdata.id;
+    console.log(' this is edited item', newItemdata);
     const editedAllData = [...props.data];
     editedAllData[props.edititemindex] = newItemdata;
     props.updatedata(editedAllData);
@@ -95,7 +97,7 @@ function EditStockItem(props) {
               <Input />
             </Form.Item>
 
-            <Form.Item
+            {/* <Form.Item
               name="company"
               label="Company Name"
               rules={[
@@ -110,7 +112,7 @@ function EditStockItem(props) {
               ]}
             >
               <Input />
-            </Form.Item>
+            </Form.Item> */}
             <Form.Item
               name="stock"
               label="Stock Amount"
@@ -127,7 +129,7 @@ function EditStockItem(props) {
             >
               <Input />
             </Form.Item>
-            <Form.Item
+            {/* <Form.Item
               name="t"
               label="Ton Price"
               rules={[
@@ -142,11 +144,11 @@ function EditStockItem(props) {
               ]}
             >
               <Input />
-            </Form.Item>
+            </Form.Item> */}
 
             <Form.Item
-              name="r"
-              label="Retail Price"
+              name="price"
+              label="Price"
               rules={[
                 {
                   required: true,
@@ -162,12 +164,12 @@ function EditStockItem(props) {
             </Form.Item>
 
             <Form.Item
-              name="w"
-              label="Whole Price"
+              name="cost"
+              label="Cost"
               rules={[
                 {
                   required: true,
-                  message: "Whole price required!",
+                  message: "Cost price required!",
                 },
                 {
                   pattern: /^(?=.)([+-]?([0-9]*)(\.([0-9]+))?)$/,
@@ -178,7 +180,7 @@ function EditStockItem(props) {
               <Input />
             </Form.Item>
 
-            <Form.Item
+            {/* <Form.Item
               name="got_price"
               label="Got Price"
               rules={[
@@ -193,7 +195,7 @@ function EditStockItem(props) {
               ]}
             >
               <Input />
-            </Form.Item>
+            </Form.Item> */}
             <Form.Item {...tailLayout}>
               <Button type="primary" htmlType="submit">
                 Save

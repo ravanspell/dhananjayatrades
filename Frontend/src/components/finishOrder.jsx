@@ -2,8 +2,10 @@ import React, { Fragment } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllItems } from "../slices/items.slice";
 import { addFailedOrders, saveOrder, updateOrder } from "../slices/order.slice";
+import moment from 'moment';
+import { getServiceCharge } from "../utils";
 
-function FinishOrder(props) {
+const FinishOrder = (props) => {
   const dispatch = useDispatch();
 
   let order = useSelector((state) => state.orders.order);
@@ -31,6 +33,7 @@ function FinishOrder(props) {
     }
   }
   const finishOrder = async () => {
+    console.log('this is wokred', order);
     if (order.orderItems.length > 0) {
       const allOrders = props.getAllOrders()
       const alteredOrderData = allOrders.map((odr) => {
@@ -40,13 +43,19 @@ function FinishOrder(props) {
         return odr
       })
       try {
-        props.initOrderData(alteredOrderData);
+        // props.initOrderData(alteredOrderData);
+        const serviceCharge = getServiceCharge(order);
         const orderData = {
           ...order,
-          date: new Date()
+          date: moment().format(),
+          total: order.total + serviceCharge,
+          serviceCharge,
         }
+        dispatch(updateOrder({order: {}, orders: alteredOrderData}));
+        console.log('Finish order', orderData);
         processOrderAsync(orderData)
       } catch (error) {
+        console.log('set failed order', error);
         saveFailedOrder(order)
       }
     }
