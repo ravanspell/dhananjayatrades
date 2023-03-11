@@ -8,7 +8,7 @@ import AuthHandller from "./components/authHandllerComponent";
 import BarcodeGenarator from "./components/barcodeGenarator";
 import OrderHistory from "./components/orderHistory";
 import Login from "./components/login";
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import { HashRouter as Router, Switch, Route } from 'react-router-dom';
 import MainLayout from "./components/layout/mainLayout";
 import PageNotFound from "./components/layout/pageNotFound";
 import SaveNewCustomer from './components/addCustomers';
@@ -92,18 +92,25 @@ export const privateRoutes = [
     exact: true,
     roles: [ADMIN, SUPER_ADMIN],
   },
-  {
-    key: "kitchen-view",
-    path: "/kitchen",
-    component: KitchenOrderView,
-    exact: true,
-    roles: [USER, ADMIN, SUPER_ADMIN],
-  },
+  // {
+  //   key: "kitchen-view",
+  //   path: "/kitchen",
+  //   component: KitchenOrderView,
+  //   exact: true,
+  //   roles: [USER, ADMIN, SUPER_ADMIN],
+  // },
 ];
 const App = () => {
   return (
     <Router>
       <Switch>
+      <Route exact path="/kitchen">
+          <MainLayout>
+            <Switch>
+            <Route component={KitchenOrderView} />
+            </Switch>
+          </MainLayout>
+        </Route>
         <Route exact path="/login">
           <Switch>
             <Route component={Login} />
@@ -118,7 +125,6 @@ const App = () => {
           "/order/history",
           "/customers",
           "/customers/add",
-          "/kitchen"
         ]}>
           <MainLayout>
             <Switch>

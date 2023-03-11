@@ -45,7 +45,7 @@ router.route('/all/:page/:limit').get(auth, async (req, res) => {
     //! should change table name after development
     const stockQuery = `SELECT *
                         FROM items
-                        ORDER BY barcode ASC LIMIT ${limit}
+                        ORDER BY id ASC LIMIT ${limit}
                         OFFSET ${offset}`;
     const dataCountQuery = `SELECT COUNT(*) AS count
                             FROM items`;
@@ -62,15 +62,12 @@ router.route('/search/all/:tearm').get(auth, async (req, res) => {
     const { tearm } = req.params;
     const stockSearchQuery = `SELECT *
                               FROM items
-                              WHERE barcode LIKE "%${tearm}%"
+                              WHERE id LIKE "%${tearm}%"
                                  OR name LIKE "%${tearm}%"
-                                 OR t LIKE "%${tearm}%"
-                                 OR w LIKE "%${tearm}%"
-                                 OR r LIKE "%${tearm}%"
-                                 OR got_price LIKE "%${tearm}%"
-                                 OR company LIKE "%${tearm}%"
+                                 OR cost LIKE "%${tearm}%"
+                                 OR price LIKE "%${tearm}%"
                                  OR stock LIKE "%${tearm}%"
-                              ORDER BY barcode ASC `;
+                              ORDER BY id ASC `;
     const result = await mysqldb.query(stockSearchQuery);
     return res.status(201).json({ status: true, data: result, count: result.length });
 });
@@ -81,7 +78,8 @@ router.route('/delete').delete([auth, roles([constants.SUPER_ADMIN, constants.AD
         const { item_id } = req.body;
         const stockRemoveQuery = `DELETE
                                   FROM items
-                                  WHERE barcode = ${item_id}`;
+                                  WHERE id = ${item_id}`;
+        console.log("stockRemoveQuery", stockRemoveQuery);
         const status = await mysqldb.query(stockRemoveQuery);
         return res.status(201).json({ status: true, message: 'Item has been deleted' });
     } catch (error) {
@@ -94,16 +92,12 @@ router.route('/update').put([auth, roles([constants.SUPER_ADMIN, constants.ADMIN
     //! should change table name after development
     try {
         const { item_data } = req.body;
-
         const editStockItemQuery = `UPDATE items
                                     SET name='${item_data.name}',
-                                        got_price=${item_data.got_price},
-                                        t=${item_data.t},
-                                        w=${item_data.w},
-                                        r=${item_data.r},
-                                        stock=${item_data.stock},
-                                        company='${item_data.company}'
-                                    WHERE barcode = ${item_data.barcode}`;
+                                        price=${item_data.price},
+                                        cost=${item_data.cost},
+                                        stock=${item_data.stock}
+                                    WHERE id = ${item_data.id}`;
         const status = await mysqldb.query(editStockItemQuery);
         return res.status(201).json({ status: true, message: 'Item has been updated' });
     } catch (error) {

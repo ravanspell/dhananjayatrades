@@ -1,6 +1,6 @@
 const Express = require('express');
 // const { createServer } = require("http");
-const mysql = require('mysql');
+const mysql = require('mysql2');
 const cors = require('cors');
 // const { Server } = require("socket.io");
 require('dotenv').config();

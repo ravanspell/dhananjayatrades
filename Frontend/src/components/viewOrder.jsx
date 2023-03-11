@@ -280,10 +280,10 @@ function ViewOrder() {
             <Tag
               style={{ cursor: odr.status == 'pending' ? 'pointer' : "", fontSize: '12pt', padding: '5px' }}
               color={odr.status == 'pending' ? "" : "green"}
-              closable={odr.status == 'pending'}
+              // closable={odr.status == 'pending'}
               key={odr.orderNo}
               onClick={odr.status == 'pending' ? () => changeActiveOrder(odr.orderNo) : (() => { })}
-              onClose={() => removeOrder(odr.orderNo)}
+              // onClose={() => removeOrder(odr.orderNo)}
             >
               {getOrderType(odr.type)} - {odr.customer.name}
             </Tag>

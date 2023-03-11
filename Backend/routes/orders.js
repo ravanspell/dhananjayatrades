@@ -11,25 +11,35 @@ router.post('/add', auth, async (req, res) => {
 
     for (let orderIndex = 0; orderIndex < orders.length; orderIndex++) {
         const order = orders[orderIndex];
-        const { orderItems, orderNo, totalPrice, totalGotPrice, date, customer } = order;
+        const {
+            orderItems,
+            orderNo,
+            totalPrice,
+            totalGotPrice,
+            customer,
+            date,
+            type,
+            serviceCharge
+        } = order;
+        // phone is the customer id
+        const { phone } = customer;
         console.log(orderNo);
         console.log(JSON.stringify(orderItems));
         console.log('<-------------------------------->');
         try {
-            const orderStatusUpdateQuery = `INSERT INTO status (order_id, customer_id, date, got_price_total, total, profit)
-                                            VALUES ("${orderNo}", "${customer}", "${date}", ${totalGotPrice},
-                                                    ${totalPrice}, ${totalPrice - totalGotPrice})`;
+            const orderStatusUpdateQuery = `INSERT INTO orders (id, customerId, total, totalCost, date, type, serviceCharge)
+                                            VALUES ("${orderNo}", "${phone}", ${totalPrice},
+                                                    ${totalGotPrice}, "${date}", "${type}", ${serviceCharge})`;
 
-            let insertNewOrderItemsQuery = `INSERT INTO sale (barcode, order_id, order_name, unit_price, qty, total)
+            let insertNewOrderItemsQuery = `INSERT INTO order_items (orderId, qty, itemId, unitPrice, note)
                                             VALUES ?`;
             const insertAllNewOrderItemsQuery = orderItems.map(item => {
                 return [
-                    item.barcode,
                     `${orderNo}`,
-                    `${item.itemName}`,
-                    item.unitPrice,
                     item.amount,
-                    item.total
+                    item.barcode,
+                    item.unitPrice,
+                    item.note,
                 ]
             });
             await mysqldb.query(orderStatusUpdateQuery); //update order status with total order profit and total got price
@@ -42,7 +52,6 @@ router.post('/add', auth, async (req, res) => {
             return res.status(500).json({ status: false });
         }
     }
-    // }
     return res.status(200).json({ status: true });
 });
 
@@ -55,7 +64,7 @@ const reduceStrock = async (newOrder) => {
         await Promise.all(newOrder.map(orderItem => {
             let updateAmountQuery = `UPDATE items
                                      SET stock = stock - ${orderItem.amount}
-                                     WHERE barcode = '${orderItem.barcode}'`;
+                                     WHERE id = '${orderItem.barcode}'`;
             return mysqldb.query(updateAmountQuery);
         }));
     } catch (error) {
@@ -75,22 +84,48 @@ const getItem = async (barcode) => {
 //get all stock data 
 router.route('/hostory/:page/:limit').get([auth, roles([constants.SUPER_ADMIN])], async (req, res) => {
     const { page, limit } = req.params;
+    const { startDate = null, endDate = null } = req.query;
+
     const offset = (page - 1) * limit;
     //! should change table name after development
-    const stockQuery = `SELECT *
-                        FROM status
-                        LEFT JOIN customers
-                        ON status.customer_id = customers.id
-                        ORDER BY date DESC LIMIT ${limit}
-                        OFFSET ${offset}`;
-    const dataCountQuery = `SELECT COUNT(*) AS count
-                            FROM status`;
+    let filters = "";
+    let findOrdersQuery = `SELECT * 
+                        FROM orders 
+                        LEFT JOIN customers 
+                        ON orders.customerId = customers.phone`;
 
+    if (startDate) {
+        filters = filters + `date BETWEEN "${startDate}" AND "${endDate}"`
+    }
+    // set filter clouses
+    if (filters) {
+        findOrdersQuery = findOrdersQuery + ' WHERE ' + filters
+    }
+    // set order clauses
+    findOrdersQuery = findOrdersQuery + ` ORDER BY date DESC LIMIT ${limit} OFFSET ${offset}`
+
+    console.log("stockQuery", findOrdersQuery);
+    let dataCountQuery = `SELECT COUNT(*) AS count, 
+                                 SUM(orders.total) AS ordersTotal, 
+                                 SUM(orders.totalCost) AS ordersCost
+                            FROM orders `;
+    // set filter clauses for get count
+    if (filters) {
+        dataCountQuery = dataCountQuery + ' WHERE ' + filters
+    }
+    console.log("🚀 ~ file: orders.js:114 ~ router.route ~ dataCountQuery:", dataCountQuery)
+    // make async togather at once
     const [pageItems, allCount] = await Promise.all([
-        mysqldb.query(stockQuery),
+        mysqldb.query(findOrdersQuery),
         mysqldb.query(dataCountQuery),
     ])
-    return res.status(201).json({ status: true, data: pageItems, count: allCount[0].count });
+    return res.status(201).json({ 
+        status: true, 
+        data: pageItems, 
+        count: allCount[0].count, 
+        ordersTotal: allCount[0].ordersTotal,
+        ordersCost: allCount[0].ordersCost,
+    });
 });
 
 //search order data
