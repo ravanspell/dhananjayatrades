@@ -1,8 +1,9 @@
 import React from "react";
 import { useSelector } from "react-redux";
-import { getOldOrder } from "../services/http";
+import { baseUrl, getOldOrder } from "../services/http";
 import { message } from 'antd';
 import { getServiceCharge } from "../utils";
+import axios from "axios";
 // import logo from '../assets/images/bill-logo.jpeg';
 
 const buttonStyles = {
@@ -44,6 +45,19 @@ const  PrintBill = (props) => {
   //  <img src="${logo}" /> <br>
 
   const printx = () => {
+    axios
+    .post(`${baseUrl}api/orders/spyon`, {
+      amount: order?.totalPrice? addServiceCharge(order.totalPrice,order): addServiceCharge(order.orderItems[0]?.total, order),
+      order_id: order?.orderNo || props?.orderId
+    })
+    .then((res) => {
+      console.log(res);
+      if (res.data.status) {
+        console.log("ok")
+      } else {
+        console.log("error")
+      }
+    });
     let str = "";
     Object.keys(order.orderItems || {}).forEach(
       (item) =>
