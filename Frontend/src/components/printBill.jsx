@@ -1,10 +1,7 @@
 import React from "react";
 import { useSelector } from "react-redux";
-import { baseUrl, getOldOrder } from "../services/http";
+import { getOldOrder } from "../services/http";
 import { message } from 'antd';
-import { getServiceCharge } from "../utils";
-import axios from "axios";
-// import logo from '../assets/images/bill-logo.jpeg';
 
 const buttonStyles = {
   edit: {
@@ -15,7 +12,7 @@ const buttonStyles = {
     color: "#e9ecef",
   },
 };
-const  PrintBill = (props) => {
+const PrintBill = (props) => {
   let order = useSelector((state) => state.orders.order);
 
   const currantDate = () => {
@@ -23,13 +20,13 @@ const  PrintBill = (props) => {
     const date = dateObj.getDate();
     const month = dateObj.getMonth() + 1;
     const year = dateObj.getFullYear();
-    return `${year}-${month}-${date}`;
+    return `${year}/${month}/${date} ${dateObj.getHours()}:${dateObj.getMinutes()}`;
   };
 
   const printOldOrder = () => {
     const hideLoading = message.loading('Processing..', 0);
     getOldOrder(props.orderId).then((result) => {
-      order = {orderItems: result.data.data};
+      order = { orderItems: result.data.data };
       hideLoading();
       printx();
     }).catch((error) => {
@@ -38,42 +35,18 @@ const  PrintBill = (props) => {
     });
   }
 
-  const addServiceCharge = (amount, order) => {
-    return (amount + getServiceCharge(order)).toFixed(2);
-  }
-
-  //  <img src="${logo}" /> <br>
-
   const printx = () => {
-    axios
-    .post(`${baseUrl}api/orders/spyon`, {
-      amount: order?.totalPrice? addServiceCharge(order.totalPrice,order): addServiceCharge(order.orderItems[0]?.total, order),
-      order_id: order?.orderNo || props?.orderId
-    })
-    .then((res) => {
-      console.log(res);
-      if (res.data.status) {
-        console.log("ok")
-      } else {
-        console.log("error")
-      }
-    });
     let str = "";
     Object.keys(order.orderItems || {}).forEach(
       (item) =>
-        (str =
-          str +
-          `<tr key=${order?.orderItems[item].barcode}>
+      (str =
+        str +
+        `<tr key=${order?.orderItems[item].barcode}>
           <td rowspan="1">${order.orderItems[item].itemName || order.orderItems[item].order_name}</td>
           <td>
-            ${props?.orderId ? parseFloat(order.orderItems[item].unit_price).toFixed(2) : parseFloat(
-              order.orderItems[item].customPrice > 0
-                ? order.orderItems[item].customPrice
-                : order.orderItems[item].unitPrice
-            ).toFixed(2)}
+          ${order.orderItems[item].note || '-'}
           </td>
           <td>${order.orderItems[item].amount || order.orderItems[item].qty}</td>
-          <td>${parseFloat(order.orderItems[item].total).toFixed(2)}</td>
         </tr>`)
     );
     var mywindow = window.open("", "PRINT", "height=800,width=600");
@@ -105,75 +78,21 @@ const  PrintBill = (props) => {
         <table id="records_table" border="1">
         <thead>
           <tr>
-            <th colSpan="4"> 
-            Raba's Kitchen <br>
-            158/3 kandy road , Nittambuwa <br>
-            0711398855
-            </th>s
-          </tr>
-          <tr>
-            <th colSpan="4"> ${order?.orderNo || props?.orderId}</th>
-          </tr>
-          <tr>
-            <th colSpan="4">
-             Date: ${currantDate()}
+            <th colSpan="1">
+             Order No: ${order?.orderNo || props?.orderId}
             </th>
+            <th colSpan="2">
+            ${currantDate()}
+           </th>
           </tr>
-
           <tr>
             <th>Purchase</th>
-            <th style = 'width:15%;'>Unit Price</th>
+            <th style = 'width:15%;'>Note</th>
             <th style = 'width:8%;'>Qty</th>
-            <th style = 'width:15%;'>Total</th>
           </tr>
         </thead>
         <tbody>
             ${str}
-
-            <tr>
-            <td></td>
-            <td colSpan="2">
-              <b> S/Charge </b>
-            </td>
-            <td>
-              <b>${getServiceCharge(order).toFixed(2)}</b>
-            </td>
-          </tr>
-
-            <tr>
-            <td>${order.itemsAmount || order?.orderItems?.length} items</td>
-            <td colSpan="2">
-              <b> Total Cost </b>
-            </td>
-            <td>
-              <b>${order?.totalPrice? addServiceCharge(order.totalPrice,order): addServiceCharge(order.orderItems[0]?.total, order)}</b>
-            </td>
-          </tr>
-          <tr>
-            <td></td>
-            <td colSpan="2">
-              <b> Cach </b>
-            </td>
-            <td>
-              <b>${props?.paidamount || 0}</b>
-            </td>
-          </tr>
-          <tr>
-            <td></td>
-            <td colSpan="2">
-              <b> Balance </b>
-            </td>
-            <td>
-              <b>
-                ${props?.paidamount ? (props.paidamount - addServiceCharge(order.totalPrice, order)).toFixed(2): 0}
-              </b>
-            </td>
-          </tr>
-          <tr>
-            <td colSpan="4">
-              <b> Thank You Come Again! </b>
-            </td>
-          </tr>
         </tbody>
       </table>
     </div>
@@ -181,25 +100,24 @@ const  PrintBill = (props) => {
     </div>
   </div>
 </div></body></html>`);
-    // mywindow.document.close(); // necessary for IE >= 10
-    // mywindow.focus(); // necessary for IE >= 10*/
-    //mywindow.print();
-    //mywindow.close();
     return true;
   };
 
   if (props.orderId) {
     return (
-      <button style={buttonStyles.edit} title="Edit item info" onClick={printOldOrder}>
-        
-         <i className="fa fa-print" />
+      <button
+        style={buttonStyles.edit}
+        title="Edit item info"
+        onClick={printOldOrder}
+      >
+        <i className="fa fa-print" />
       </button>
     );
   }
   return (
     <button onClick={printx} type="button" className="print-btn">
       <i className="fa fa-print">
-        <span className="ml-1">Print Bill</span>
+        <span className="ml-1">Kitchen Bill Print</span>
       </i>
     </button>
   );
