@@ -1,5 +1,15 @@
-import React, { useState, Fragment, useEffect } from "react";
-import { Table, Space, Input, Popconfirm, Button, Tag } from "antd";
+import React, { 
+  useState, 
+  Fragment, 
+  useEffect 
+} from "react";
+import { 
+  Table, 
+  Space, 
+  Input, 
+  Tooltip, 
+  Button, 
+  Tag } from "antd";
 import SearchBox from "./itemSearchBox";
 import PrintBill from "./printBill";
 import PricingBox from "./priceItem";
@@ -7,13 +17,17 @@ import FinishOrder from "./finishOrder";
 import { useSelector, useDispatch } from "react-redux";
 import { Card } from "antd";
 import Hotkeys from 'react-hot-keys';
-import { createOrder, changeOrder, updateOrder, setOrderDate } from '../slices/order.slice'
-import { getCustomers } from "../slices/customer.slice";
-import CustomerSearchBox from "./customerSearchBox";
+import { 
+  createOrder, 
+  changeOrder, 
+  updateOrder, 
+  setOrderDate 
+} from '../slices/order.slice'
 import { sendOrdersToKitchen } from "../services/http";
 import StartOrderModal from "./StartOrderModal";
-import { ReloadOutlined } from '@ant-design/icons';
 import { getOrderType } from "../utils";
+import DeleteConfirm from "./deleteConfirm";
+import NewPrintBill from "./newPrintBill";
 
 function ViewOrder() {
   const buttonStyles = {
@@ -49,6 +63,12 @@ function ViewOrder() {
     user: {},
     orderType: 'dinein'
   })
+
+  const [deleteItem, setInitDeleteItem] = useState({
+    showDialog: false,
+    orderId: ''
+  })
+
   const getOrders = () => {
     return JSON.parse(JSON.stringify(allOrders))
   }
@@ -74,7 +94,6 @@ function ViewOrder() {
     const orders = alteredOrderData ? alteredOrderData : getOrders();
 
     const newOrderNumber = pickOrderNumber();
-    console.log(newOrderNumber);
     const newOrder = createOrderTemplate(newOrderNumber);
 
     for (let i = 0; i < orders.length; i++) {
@@ -89,10 +108,6 @@ function ViewOrder() {
     );
   }
   useEffect(() => {
-    // dispatch(getCustomers());
-    // if (!order?.orderNo) {
-    //   addNewOrder()
-    // }
     // remove older orders
     if (orderDate !== "") {
       const today = new Date(currantDate()).getTime()
@@ -268,9 +283,6 @@ function ViewOrder() {
               New Order
             </Button>
           </div>
-          {/* <div className="ml-2">
-            <CustomerSearchBox />
-          </div> */}
         </div>
       </Card>
       <div className="d-flex flex-row mt-2 flex-wrap gap-1">
@@ -280,12 +292,10 @@ function ViewOrder() {
             <Tag
               style={{ cursor: odr.status == 'pending' ? 'pointer' : "", fontSize: '12pt', padding: '5px' }}
               color={odr.status == 'pending' ? "" : "green"}
-              // closable={odr.status == 'pending'}
               key={odr.orderNo}
               onClick={odr.status == 'pending' ? () => changeActiveOrder(odr.orderNo) : (() => { })}
-              // onClose={() => removeOrder(odr.orderNo)}
             >
-              {getOrderType(odr.type)} - {odr.customer.name}
+              {getOrderType(odr.type)} - {odr.customer.name} - {odr?.orderTime}
             </Tag>
           )
         })}
@@ -306,6 +316,18 @@ function ViewOrder() {
                   title: "Name",
                   dataIndex: "itemName",
                   key: "itemName",
+                  render: (text, record) => (
+                    <div className="d-flex align-items-center">
+                      {text}
+                      {record.note &&
+                        <div className="ml-2 mt-1">
+                          <Tooltip title={record.note}>
+                            <i className="fa fa-info-circle"></i>
+                          </Tooltip>
+                        </div>
+                      }
+                    </div>
+                  )
                 },
                 {
                   title: "Unit Price",
@@ -335,25 +357,21 @@ function ViewOrder() {
                       >
                         <i className="fa fa-edit mr-2"></i>
                       </button>
-
-                      <Popconfirm
-                        title="Remove this item ?"
-                        onConfirm={(e) => deleteOrderItem(record.id)}
-                        okText="Yes"
-                        cancelText="No"
+                      <button
+                        onClick={() => setInitDeleteItem({ showDialog: true, orderId: record.id })}
+                        style={buttonStyles.delete}
                       >
-                        <button style={buttonStyles.delete}>
-                          <i className="fa fa-trash"></i>
-                        </button>
-                      </Popconfirm>
+                        <i className="fa fa-trash"></i>
+                      </button>
                     </Space>
                   ),
                 },
               ]}
             />
           </Card>
-          <div style={{ marginTop: '10px' }} >
-            <Button icon={<ReloadOutlined />} onClick={updateKitchen} size="large" >Update Kitchen</Button>
+          <div style={{ marginTop: '10px', width: 'fit-content' }} >
+            {/* <Button icon={<ReloadOutlined />} onClick={updateKitchen} size="large" >Update Kitchen</Button> */}
+            <PrintBill order={order} paidamount={paidAmount} />
           </div>
         </div>
         <div className="col-md-4">
@@ -389,13 +407,14 @@ function ViewOrder() {
             <div className="d-flex flex-row">
               <Input
                 placeholder="amount"
+                value={paidAmount}
                 onChange={(e) => {
                   setTotalPaidAmount(e.target.value);
                 }}
               />
             </div>
             <div className="d-flex flex-row mt-2">
-              <PrintBill order={order} paidamount={paidAmount} />
+              <NewPrintBill order={order} paidamount={paidAmount} />
             </div>
 
             <div className="d-flex flex-row mt-2">
@@ -404,6 +423,7 @@ function ViewOrder() {
                 // initOrderData={addNewOrder}
                 pickOrderNumber={pickOrderNumber}
                 getAllOrders={getOrders}
+                setTotalPaidAmount={setTotalPaidAmount}
               />
             </div>
           </Card>
@@ -421,6 +441,11 @@ function ViewOrder() {
         show={newOrder.showDialog}
         onHide={() => setNewOrder(state => ({ ...state, showDialog: false }))}
         updateorder={updateCounts}
+      />
+      <DeleteConfirm
+        show={deleteItem.showDialog}
+        handleClose={() => setInitDeleteItem({ showDialog: false, orderId: '' })}
+        handleConfirmDelete={() => deleteOrderItem(deleteItem.orderId)}
       />
     </Fragment>
   );
