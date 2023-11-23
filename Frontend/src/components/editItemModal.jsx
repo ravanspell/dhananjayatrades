@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { Row, Col, Input, Form, Button, message, Modal } from "antd";
+import { 
+  Row, 
+  Col, 
+  Input, 
+  Form, 
+  Button, 
+  message, 
+  Modal } from "antd";
 import axios from "axios";
 import { baseUrl } from "../services/http";
 
@@ -11,11 +18,8 @@ function EditStockItem(props) {
   const [item, setNewItem] = useState({
     id: null,
     itemName: null,
-    // company: "",
     amount: 0,
     cost: 0,
-    // retailPrice: 0,
-    // wholePrice: 0,
     price: 0,
   });
   // IIFE  for set props to state when modal open
@@ -29,20 +33,15 @@ function EditStockItem(props) {
         ...currantState,
         id: props.editdata.id,
         itemName: props.editdata.name,
-        // company: props.editdata.company,
         amount: props.editdata.stock,
         cost: props.editdata.cost,
-        // retailPrice: props.editdata.r,
-        // wholePrice: props.editdata.w,
         price: props.editdata.price,
       }));
     }
   }, []);
 
   const saveNewItem = (newItemdata) => {
-    console.log("props.editdata", props.editdata);
     newItemdata["id"] = props.editdata.id;
-    console.log(' this is edited item', newItemdata);
     const editedAllData = [...props.data];
     editedAllData[props.edititemindex] = newItemdata;
     props.updatedata(editedAllData);
@@ -51,7 +50,6 @@ function EditStockItem(props) {
         item_data: newItemdata,
       })
       .then((res) => {
-        console.log(res);
         if (res.data.status) {
           message.success(res.data.message);
           closeModal();
@@ -96,23 +94,6 @@ function EditStockItem(props) {
             >
               <Input />
             </Form.Item>
-
-            {/* <Form.Item
-              name="company"
-              label="Company Name"
-              rules={[
-                {
-                  required: true,
-                  message: "Company name required!",
-                },
-                {
-                  type: "string",
-                  message: "Company name invalid",
-                },
-              ]}
-            >
-              <Input />
-            </Form.Item> */}
             <Form.Item
               name="stock"
               label="Stock Amount"
@@ -129,23 +110,6 @@ function EditStockItem(props) {
             >
               <Input />
             </Form.Item>
-            {/* <Form.Item
-              name="t"
-              label="Ton Price"
-              rules={[
-                {
-                  required: true,
-                  message: "Ton Price required!",
-                },
-                {
-                  pattern: /^(?=.)([+-]?([0-9]*)(\.([0-9]+))?)$/,
-                  message: "Numbers are only allowed",
-                },
-              ]}
-            >
-              <Input />
-            </Form.Item> */}
-
             <Form.Item
               name="price"
               label="Price"
@@ -179,23 +143,6 @@ function EditStockItem(props) {
             >
               <Input />
             </Form.Item>
-
-            {/* <Form.Item
-              name="got_price"
-              label="Got Price"
-              rules={[
-                {
-                  required: true,
-                  message: "Got price required!",
-                },
-                {
-                  pattern: /^(?=.)([+-]?([0-9]*)(\.([0-9]+))?)$/,
-                  message: "Numbers are only allowed",
-                },
-              ]}
-            >
-              <Input />
-            </Form.Item> */}
             <Form.Item {...tailLayout}>
               <Button type="primary" htmlType="submit">
                 Save

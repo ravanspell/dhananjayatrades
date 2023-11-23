@@ -1,5 +1,13 @@
 import React, { Fragment, useEffect } from "react";
-import { Row, Col, Input, Form, Button, message, Card, Select } from "antd";
+import { 
+  Row, 
+  Col, 
+  Input, 
+  Form, 
+  Button, 
+  message, 
+  Card, 
+  Select } from "antd";
 import { saveItem } from "../services/http";
 import { useState } from "react";
 import { getCategories } from "../services/http";
@@ -29,7 +37,6 @@ function NewItemSave() {
         message.error(res.data.message);
       }
     } catch (error) {
-      console.log(error);
       message.error(error.message);
     }
   };
@@ -40,23 +47,6 @@ function NewItemSave() {
         <Row gutter={[8, 0]}>
           <Col span={18}>
             <Form {...layout} onFinish={saveNewItem}>
-              {/* <Form.Item
-                name="barcode"
-                label="Barcode"
-                rules={[
-                  {
-                    required: true,
-                    message: "Barcode required!",
-                  },
-                  {
-                    pattern: /^[0-9]*$/,
-                    message: "Numbers are only allowed",
-                  },
-                ]}
-              >
-                <Input />
-              </Form.Item> */}
-
               <Form.Item
                 name="itemName"
                 label="Item Name"
@@ -69,23 +59,6 @@ function NewItemSave() {
               >
                 <Input />
               </Form.Item>
-
-              {/* <Form.Item
-                name="company"
-                label="Company Name"
-                rules={[
-                  {
-                    required: true,
-                    message: "Company name required!",
-                  },
-                  {
-                    type: "string",
-                    message: "Company name invalid",
-                  },
-                ]}
-              >
-                <Input />
-              </Form.Item> */}
               <Form.Item
                 name="catagory"
                 label="Catagory"
@@ -138,41 +111,6 @@ function NewItemSave() {
               >
                 <Input />
               </Form.Item>
-
-              {/* <Form.Item
-                name="retailPrice"
-                label="Retail Price"
-                rules={[
-                  {
-                    required: true,
-                    message: "Retail price required!",
-                  },
-                  {
-                    pattern: /^(?=.)([+-]?([0-9]*)(\.([0-9]+))?)$/,
-                    message: "Numbers are only allowed",
-                  },
-                ]}
-              >
-                <Input />
-              </Form.Item>
-
-              <Form.Item
-                name="wholePrice"
-                label="Whole Price"
-                rules={[
-                  {
-                    required: true,
-                    message: "Whole price required!",
-                  },
-                  {
-                    pattern: /^(?=.)([+-]?([0-9]*)(\.([0-9]+))?)$/,
-                    message: "Numbers are only allowed",
-                  },
-                ]}
-              >
-                <Input />
-              </Form.Item> */}
-
               <Form.Item
                 name="cost"
                 label="Cost Price"

@@ -177,7 +177,7 @@ const SearchBox = (props) => {
             <div style={dropDown}>
                 <Search
                     placeholder="search"
-                    onSearch={(value) => console.log(value)}
+                    onSearch={() => {}}
                     style={{ width: 350 }}
                     onKeyDown={handleKeyDown}
                     value={textBoxValue}

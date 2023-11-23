@@ -1,5 +1,5 @@
 import React, { useState, Fragment, useEffect, useRef } from "react";
-import { io } from "socket.io-client";
+// import { io } from "socket.io-client";
 import { Card, Col, Row, Button, Table, Tag } from "antd";
 import { useDispatch } from "react-redux";
 import sound from '../assets/audio/Bell.mp3';
@@ -10,9 +10,8 @@ import { getOrdersToKitchen } from "../services/http";
 //     rejectUnauthorized: false // WARN: please do not do this in production
 // });
 
-const KitchenOrderView = (props) => {
+const KitchenOrderView = () => {
     const [orders, setOrders] = useState([]);
-    const [isNewOrder, setNewOrder] = useState(false);
 
     const dispatch = useDispatch();
     const audioRef = useRef(new Audio(sound));

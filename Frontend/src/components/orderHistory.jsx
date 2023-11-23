@@ -61,7 +61,6 @@ function OrderHistory(props) {
       })
       .catch((error) => {
         setLoading(false);
-        console.log(error);
       });
   }, []);
   const columns = [
@@ -91,12 +90,9 @@ function OrderHistory(props) {
     },
     {
       key: "5",
-      title: "Profit",
-      dataIndex: "profit",
+      title: "Service Charge",
+      dataIndex: "serviceCharge",
       sortable: true,
-      render: (text, record) => (
-        <div>{(record.total - record.totalCost).toFixed(2)} </div>
-      ),
     },
     {
       key: "6",
@@ -137,12 +133,10 @@ function OrderHistory(props) {
       })
       .catch((error) => {
         setLoading(false);
-        console.log(error);
       });
   };
 
   const onSearch = async (tearm) => {
-    console.log(tearm);
     if (tearm !== "") {
       const result = await searchOrders(tearm);
       setStock((currantState) => ({
@@ -211,7 +205,6 @@ function OrderHistory(props) {
       })
       .catch((error) => {
         setLoading(false);
-        console.log(error);
       });
   };
   return (

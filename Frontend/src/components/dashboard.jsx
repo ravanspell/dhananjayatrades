@@ -72,7 +72,6 @@ function Dashboard(props) {
     axios
       .get(`${baseUrl}api/dashboard/profit`, { signal })
       .then((resolve) => {
-        console.log(resolve);
         setGraphData((currantState) => ({
           ...currantState,
           profitDashboardData: resolve.data.response,

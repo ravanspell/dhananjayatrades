@@ -32,7 +32,6 @@ export const getOrderHistory = (page, rowsPerPage, params) => {
   if(params){
     url = url + params;
   }
-  console.log("order history uri", url);
   return get(url);
 };
 

@@ -50,7 +50,6 @@ const NewPrintBill = (props) => {
                 order_id: order?.orderNo || props?.orderId
             })
             .then((res) => {
-                console.log(res);
                 if (res.data.status) {
                     console.log("ok")
                 } else {

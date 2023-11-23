@@ -30,7 +30,6 @@ export const login = (jwt) => {
 }
 
 export const verifyUser = (user) => {
-    console.log(user);
     return {
         type: 'VERIFY_USER',
         data: user
