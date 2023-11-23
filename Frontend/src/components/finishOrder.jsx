@@ -4,6 +4,7 @@ import { getAllItems } from "../slices/items.slice";
 import { addFailedOrders, saveOrder, updateOrder } from "../slices/order.slice";
 import moment from 'moment';
 import { getServiceCharge } from "../utils";
+import { Popconfirm } from 'antd';
 
 const FinishOrder = (props) => {
   const dispatch = useDispatch();
@@ -23,18 +24,31 @@ const FinishOrder = (props) => {
 
   const processOrderAsync = async (currentOrder) => {
     try {
-      await dispatch(saveOrder(currentOrder)).unwrap()
+      // const failedOrders = getFailedOrders();
+      
+      let orders = [
+        currentOrder
+      ]
+      // if (failedOrders) {
+      //   console.log("failedOrders", failedOrders);
+      //   if (failedOrders.length > 0) {
+      //     orders = [...orders, ...failedOrders];
+      //     console.log("orders---------", orders);
+      //   }
+      // }
+      await dispatch(saveOrder(orders)).unwrap();
+      
       dispatch(getAllItems());
     } catch (error) {
-      console.log('====================================');
-      console.log('failed order', currentOrder.orderNo);
-      console.log('====================================');
+      // console.log('====================================');
+      // console.log('failed order', currentOrder.orderNo);
+      // console.log('====================================');
       saveFailedOrder(order)
     }
   }
   const finishOrder = async () => {
-    console.log('this is wokred', order);
     if (order.orderItems.length > 0) {
+      props.setTotalPaidAmount(0);
       const allOrders = props.getAllOrders()
       const alteredOrderData = allOrders.map((odr) => {
         if (odr.orderNo === order.orderNo) {
@@ -51,11 +65,9 @@ const FinishOrder = (props) => {
           total: order.total + serviceCharge,
           serviceCharge,
         }
-        dispatch(updateOrder({order: {}, orders: alteredOrderData}));
-        console.log('Finish order', orderData);
+        dispatch(updateOrder({ order: {}, orders: alteredOrderData }));
         processOrderAsync(orderData)
       } catch (error) {
-        console.log('set failed order', error);
         saveFailedOrder(order)
       }
     }
@@ -63,11 +75,19 @@ const FinishOrder = (props) => {
 
   return (
     <Fragment>
-      <button type="button" onClick={finishOrder} className="finish-order-btn">
-        <i className="fa fa-check">
-          <span className="ml-1">Finish Order</span>
-        </i>
-      </button>
+      <Popconfirm
+        title="Submit order!"
+        description="Are you sure to submit this order?"
+        onConfirm={finishOrder}
+        okText="Yes"
+        cancelText="No"
+      >
+        <button type="button" className="finish-order-btn">
+          <i className="fa fa-check">
+            <span className="ml-1">Finish Order</span>
+          </i>
+        </button>
+      </Popconfirm>
     </Fragment>
   );
 }
