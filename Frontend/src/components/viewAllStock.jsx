@@ -1,11 +1,10 @@
 import React, { useState, Fragment, useEffect } from "react";
 import { Table, Space, Popconfirm, Card, Input } from "antd";
-//import { useSelector, useDispatch } from "react-redux";
 import EditStockItem from "./editItemModal";
 import axios from "axios";
 import { baseUrl, getItemData, itemSearch } from "../services/http";
 
-function ViewAllStock(props) {
+function ViewAllStock() {
   const { Search } = Input;
 
   const buttonStyles = {
@@ -27,7 +26,12 @@ function ViewAllStock(props) {
   };
 
   const [
-    { data, allRowCount, showItemEditModal, editDataSet, editItemIndex },
+    { data, 
+      allRowCount, 
+      showItemEditModal, 
+      editDataSet, 
+      editItemIndex 
+    },
     setStock,
   ] = useState({
     data: [],
@@ -44,7 +48,6 @@ function ViewAllStock(props) {
     getItemData(1, 7)
       .then((resolve) => {
         const { data: resolveData } = resolve;
-        console.log("resolved data", resolveData);
         setStock((currantState) => ({
           ...currantState,
           data: resolveData.data,
@@ -54,7 +57,6 @@ function ViewAllStock(props) {
       })
       .catch((error) => {
         setLoading(false);
-        console.log(error);
       });
   }, []);
   const columns = [
@@ -118,7 +120,6 @@ function ViewAllStock(props) {
   ];
 
   const removeStockItem = (itemId) => {
-    console.log("remove item id", itemId);
     setLoading(true);
     axios
       .delete(`${baseUrl}api/items/delete`, {
@@ -143,7 +144,6 @@ function ViewAllStock(props) {
       editId: value,
       showItemEditModal: true,
     }));
-    // console.log(value.target.id);
   };
 
   const modalClose = () => {
@@ -159,7 +159,6 @@ function ViewAllStock(props) {
   };
 
   const updateItemsData = (newItemSet) => {
-    console.log(newItemSet);
     setStock((currantState) => ({
       ...currantState,
       data: newItemSet,
@@ -180,12 +179,10 @@ function ViewAllStock(props) {
       })
       .catch((error) => {
         setLoading(false);
-        console.log(error);
       });
   };
 
   const onSearch = async (tearm) => {
-    console.log(tearm);
     if (tearm !== "") {
       const result = await itemSearch(tearm);
       setStock((currantState) => ({
@@ -211,7 +208,6 @@ function ViewAllStock(props) {
       })
       .catch((error) => {
         setLoading(false);
-        console.log(error);
       });
   };
   return (
