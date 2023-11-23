@@ -16,40 +16,26 @@ function PricingBox(props) {
     const [form] = Form.useForm();
 
     useEffect(() => {
-        console.log('props.item', props.item);
-        // setLocalState((currantState) => ({
-        //     ...currantState,
-        //     item: deepCopy(props.item),
-        // }));
-        form.resetFields();
+        form.setFieldsValue({
+            itemAmount: props.item.amount,
+            orderType: props.item.type,
+            note: props.item.note,
+        });
+        return (() => {
+            form.resetFields();
+        });
     }, [props.item]);
-
-    // const changeCurrantItemName = (newName) => {
-    //     let newCurrantItem = { ...item };
-    //     newCurrantItem.value = newName;
-    //     setLocalState((currantSate) => ({
-    //         ...currantSate,
-    //         item: newCurrantItem,
-    //     }));
-    // };
 
     const handleSubmit = (data) => {
         const order = deepCopy(currentOrder)
         const item = deepCopy(props.item)
-        console.log('item', item)
         let newItem = {
             ...item,
-            // itemName: data.customItemname || item.itemName,
             customPrice: parseFloat(data.customPrice) || 0,
             amount: data.itemAmount,
             unitPrice: parseFloat(
                 data.customPrice || item.unitPrice,
             ),
-            // gotPrice: parseFloat(item.cost),
-            // tPrice: parseFloat(item.tPrice),
-            // rPrice: parseFloat(item.rPrice),
-            // wPrice: parseFloat(item.wPrice),
-            // orderId: order.orderNo,
             total: parseFloat(
                 (data.customPrice || item.unitPrice) *
                 data.itemAmount
@@ -57,28 +43,11 @@ function PricingBox(props) {
             type: data.orderType,
             note: data?.note
         };
-        // if (props?.isedit == "true") {
         const itemPlace = order.orderItems.findIndex(
             (orderItem) => orderItem.id == item.id
         );
-        // newItem.id = item.id;
-        // newItem.barcode = item.barcode;
         order.orderItems[itemPlace] = newItem;
-        //} 
-
-        // else {
-        //     newItem["id"] = uuid();
-        //     newItem["barcode"] = item.id;
-        //     order.orderItems = [...order.orderItems, newItem];
-        // }
         props.updateorder(order);
-        // setLocalState((currantState) => ({
-        //     ...currantState,
-        //     customPrice: 0,
-        //     customItemName: "",
-        //     priceType: "tPrice",
-        // }));
-        // form.resetFields();
         props.onHide();
     };
 
@@ -106,29 +75,11 @@ function PricingBox(props) {
                         form={form}
                         onFinish={handleSubmit}
                         initialValues={{
-                            // priceType: "tPrice",
-                            // customItemname: props.item.value || item.itemName || props.item.itemName || "",
-                            orderType: props.item?.type,
-                            itemAmount: props.item?.amount,
-                            note: props.item?.note
+                            orderType: "dinein",
+                            itemAmount: 0,
+                            note: '',
                         }}
                     >
-                        {/* <Form.Item name="priceType">
-                            <Select>
-                                <Select.Option value="tPrice">
-                                    Ton Price Rs {item.tPrice || ""}
-                                </Select.Option>
-                                <Select.Option value="wPrice">
-                                    Whole Price Rs {item.wPrice || ""}
-                                </Select.Option>
-                                <Select.Option value="rPrice">
-                                    Retail Price Rs {item.rPrice || ""}
-                                </Select.Option>
-                            </Select>
-                        </Form.Item> */}
-                        {/* <Form.Item name="customItemname">
-                            <Input onChange={(e) => changeCurrantItemName(e.target.value)} />
-                        </Form.Item> */}
                         <Form.Item
                             name="customPrice"
                             rules={[
