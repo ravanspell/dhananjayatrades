@@ -23,5 +23,5 @@ export const getServiceCharge = (order) => {
     const totalDineIn = order.orderItems
                         .filter((item) => item.type === DINE_IN)
                         .reduce((total, item) => total + item.total, 0);
-    return totalDineIn / 100 * 8;
+    return totalDineIn / 100 * 10;
   }
