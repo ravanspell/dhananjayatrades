@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import { addOrder } from '../services/http'
+import moment from 'moment';
 
 const initialState = {
     orders: [],
@@ -12,7 +13,7 @@ const initialState = {
 export const saveOrder = createAsyncThunk(
     'order/save',
     async (orderData) => {
-        return await addOrder([orderData]);
+        return await addOrder(orderData);
     }
 )
 
@@ -31,17 +32,10 @@ const createOrderTemplate = (orderNumber, cust, orderType = 'dinein') => {
         status: 'active',
         customer,
         // takeway | dinein
-        type: orderType
+        type: orderType,
+        orderTime: moment().format('HH:mm')
     }
 }
-
-// const currantDate = () => {
-//     const dateObj = new Date();
-//     const date = dateObj.getDate();
-//     const month = dateObj.getMonth() + 1;
-//     const year = dateObj.getFullYear();
-//     return `${year}-${month}-${date}`;
-// };
 
 const pickOrderNumber = (allOrders) => {
     const dateObj = new Date();
@@ -70,7 +64,6 @@ export const orderSlice = createSlice({
             const { allOrders, customer, orderType } = action.payload
 
             const newOrderNumber = pickOrderNumber(allOrders);
-            console.log(newOrderNumber);
             const newOrder = createOrderTemplate(newOrderNumber, customer, orderType);
             // set pending for previous active order
             for (let i = 0; i < allOrders.length; i++) {
