@@ -5,9 +5,8 @@ import { useDispatch, useSelector } from "react-redux";
 import SearchInput from "./searchInput";
 import { searchCustomer } from "../services/http";
 import { saveCustomer } from "../slices/customer.slice";
-import { StatusCodes } from 'http-status-codes';
 import { createOrder } from "../slices/order.slice";
-import { BOTH, DINE_IN, TAKE_WAY } from "../constants";
+import { BYOB, DINE_IN, TAKE_WAY } from "../constants";
 import { deepCopy } from "../utils";
 
 
@@ -160,6 +159,7 @@ const StartOrderModal = (props) => {
                             <Radio.Group size="large">
                                 <Radio.Button value={DINE_IN}>Dine In</Radio.Button>
                                 <Radio.Button value={TAKE_WAY}>Take Away</Radio.Button>
+                                <Radio.Button value={BYOB}>BYOB</Radio.Button>
                             </Radio.Group>
                         </Form.Item>
                         <Form.Item>

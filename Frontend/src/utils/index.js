@@ -1,4 +1,4 @@
-import { BOTH, DINE_IN, TAKE_WAY } from '../constants';
+import { BOTH, BYOB, DINE_IN, TAKE_WAY } from '../constants';
 
 // short and format order type
 export const getOrderType = (orderType) => {
@@ -21,7 +21,10 @@ export const deepCopy = (data) => {
 
 export const getServiceCharge = (order) => {
     const totalDineIn = order.orderItems
-                        .filter((item) => item.type === DINE_IN)
+                        .filter((item) => (item.type !== TAKE_WAY))
                         .reduce((total, item) => total + item.total, 0);
+    if(order.type === BYOB){
+        return totalDineIn / 100 * 20;
+    }
     return totalDineIn / 100 * 10;
   }

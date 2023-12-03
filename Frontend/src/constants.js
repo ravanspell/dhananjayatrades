@@ -7,3 +7,4 @@ export const SUPER_ADMIN = 'superadmin';
 export const DINE_IN = 'dinein';
 export const TAKE_WAY = 'takeaway';
 export const BOTH = 'both';
+export const BYOB = 'byob';

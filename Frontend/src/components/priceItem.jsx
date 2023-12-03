@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { Row, Col, Modal, Button, Form, Input, Radio } from "antd";
 import { useSelector } from "react-redux";
-import { BOTH, DINE_IN, TAKE_WAY } from "../constants";
+import { BYOB, DINE_IN, TAKE_WAY } from "../constants";
 import { deepCopy } from "../utils";
 
 const {TextArea} = Input;
@@ -9,9 +9,6 @@ const {TextArea} = Input;
 function PricingBox(props) {
 
     const currentOrder = useSelector((state) => state.orders.order);
-    // const [{ item }, setLocalState] = useState({
-    //     item: props.item,
-    // });
 
     const [form] = Form.useForm();
 
@@ -118,6 +115,7 @@ function PricingBox(props) {
                             <Radio.Group size="large">
                                 <Radio.Button value={DINE_IN}>Dine In</Radio.Button>
                                 <Radio.Button value={TAKE_WAY}>Take Away</Radio.Button>
+                                <Radio.Button value={BYOB}>BYOB</Radio.Button>
                             </Radio.Group>
                         </Form.Item>
                         <Form.Item>

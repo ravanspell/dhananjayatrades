@@ -29,20 +29,10 @@ const FinishOrder = (props) => {
       let orders = [
         currentOrder
       ]
-      // if (failedOrders) {
-      //   console.log("failedOrders", failedOrders);
-      //   if (failedOrders.length > 0) {
-      //     orders = [...orders, ...failedOrders];
-      //     console.log("orders---------", orders);
-      //   }
-      // }
       await dispatch(saveOrder(orders)).unwrap();
       
       dispatch(getAllItems());
     } catch (error) {
-      // console.log('====================================');
-      // console.log('failed order', currentOrder.orderNo);
-      // console.log('====================================');
       saveFailedOrder(order)
     }
   }
