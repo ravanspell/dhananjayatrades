@@ -1,10 +1,12 @@
 import React, { useState, Fragment, useEffect } from "react";
-import { Table, DatePicker, Card, Input, Space, Button, Row, Col, Statistic, Tag } from "antd";
-import { SearchOutlined } from '@ant-design/icons';
-import PrintBill from "./printBill";
+import { Table, DatePicker, Card, Space, Button, Row, Col, Statistic, Tag } from "antd";
+import { SearchOutlined, EyeOutlined } from '@ant-design/icons';
 import { getOrderHistory, searchOrders } from "../services/http";
+import { useSelector, useDispatch } from "react-redux";
 import moment from "moment";
 import { DINE_IN, TAKE_WAY } from "../constants";
+import { clearOldOrder, fetchOldOrder } from "../slices/order.slice";
+import ViewOldOrder from "./viewOldOrder";
 
 // initial filter defined here for ease of clear filters
 const initialFilters = {
@@ -14,26 +16,13 @@ const initialFilters = {
 const { RangePicker } = DatePicker;
 
 function OrderHistory(props) {
-  const { Search } = Input;
 
   const [filters, setFilters] = useState(initialFilters)
-  const buttonStyles = {
-    edit: {
-      backgroundColor: "#1d9baecc",
-      border: "none",
-      width: "30px",
-      borderRadius: "2px",
-      color: "#e9ecef",
-    },
-    delete: {
-      backgroundColor: "#903b3b",
-      marginLeft: "3px",
-      border: "none",
-      width: "30px",
-      borderRadius: "2px",
-      color: "#e9ecef",
-    },
-  };
+  const dispatch = useDispatch();
+  const { 
+    orderItems, 
+    loading: oldOrderLoading, 
+    orderId: oldOrderId } = useSelector((state) => state.orders.oldOrder);
 
   const [
     { data, allRowCount, ordersTotal, ordersCost },
@@ -63,6 +52,11 @@ function OrderHistory(props) {
         setLoading(false);
       });
   }, []);
+
+  const handleGetOrderContent = (orderId) => {
+    dispatch(fetchOldOrder(orderId))
+  };
+
   const columns = [
     {
       key: "1",
@@ -115,6 +109,20 @@ function OrderHistory(props) {
           )
         }
       },
+    },
+    {
+      key: "10",
+      title: "Actions",
+      render: (text, record) => (
+        <Button
+          key={record.id}
+          type="dashed"
+          icon={<EyeOutlined />}
+          htmlType="button"
+          loading={oldOrderId === record.id && oldOrderLoading}
+          onClick={() => handleGetOrderContent(record.id)}
+        />
+      ),
     },
   ];
 
@@ -287,6 +295,12 @@ function OrderHistory(props) {
           }}
         />
       </Card>
+      <ViewOldOrder
+        show={orderItems.length > 0}
+        data={orderItems}
+        onHide={() => dispatch(clearOldOrder())}
+        orderId={oldOrderId}
+      />
     </Fragment>
   );
 }
