@@ -9,7 +9,8 @@ const middleware = []
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: ['orders']
+  blacklist: ['orders.oldOrder'],
+  whitelist: ['orders'],
 };
 //!change this when needed
 const showReduxLogs = false;

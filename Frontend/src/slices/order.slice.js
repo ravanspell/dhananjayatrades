@@ -1,6 +1,14 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import { addOrder } from '../services/http'
+import { addOrder, getOldOrder } from '../services/http'
 import moment from 'moment';
+
+
+const oldOrderInitialState = {
+    orderId: "",
+    orderItems: [],
+    loading: false,
+    error: ''
+};
 
 const initialState = {
     orders: [],
@@ -8,12 +16,20 @@ const initialState = {
     failedOrders: [],
     loading: false,
     orderDate: "",
+    oldOrder: oldOrderInitialState,
 }
 
 export const saveOrder = createAsyncThunk(
     'order/save',
     async (orderData) => {
         return await addOrder(orderData);
+    }
+)
+
+export const fetchOldOrder = createAsyncThunk(
+    'order/getOld',
+    async (orderId) => {
+        return await getOldOrder(orderId);
     }
 )
 
@@ -96,6 +112,10 @@ export const orderSlice = createSlice({
         setOrderDate: (state, action) => {
             state.orderDate = action.payload
         },
+
+        clearOldOrder: (state) => {
+            state.oldOrder = oldOrderInitialState
+        },
     },
 
     extraReducers: builder => {
@@ -115,6 +135,24 @@ export const orderSlice = createSlice({
         builder.addCase(saveOrder.rejected, (state) => {
             state.loading = false
         });
+
+        /**Get old order */
+        builder.addCase(fetchOldOrder.pending, (state, action) => {
+            state.oldOrder.loading  = true
+            state.oldOrder.orderId  = action.meta.arg;
+            state.oldOrder.error = ""
+        });
+
+        builder.addCase(fetchOldOrder.fulfilled, (state, action) => {
+            const {data}= action.payload.data
+            state.oldOrder.loading  = false
+            state.oldOrder.orderItems = data
+        });
+
+        builder.addCase(fetchOldOrder.rejected, (state) => {
+            state.oldOrder.loading = false
+            state.oldOrder.error = "Something went wrong"
+        });
     }
 })
 
@@ -125,6 +163,7 @@ export const {
     updateOrder,
     addFailedOrders,
     setOrderDate,
+    clearOldOrder,
 } = orderSlice.actions
 
 export default orderSlice.reducer
